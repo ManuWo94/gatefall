@@ -64,12 +64,24 @@ class AuthAPI {
         }
         return response.json();
     }
+    static async completeAwakening() {
+        const response = await fetch('/api/awakening/complete', {
+            method: 'POST',
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Erwachen fehlgeschlagen');
+        }
+        return response.json();
+    }
 }
 AuthAPI.baseUrl = '/api';
 // Auth UI
 class AuthUI {
     constructor() {
         this.currentProfile = null;
+        this.awakeningAvailable = false;
     }
     async init() {
         this.setupTabs();
@@ -77,6 +89,8 @@ class AuthUI {
         this.setupRegisterForm();
         this.setupLogout();
         this.setupResendVerification();
+        this.setupAwakening();
+        this.setupStatusScreen();
         await this.checkSession();
         this.checkForVerificationToken();
         this.checkDiscordLogin();
@@ -311,6 +325,7 @@ class AuthUI {
                 displayNameEl.textContent = profile.displayName;
             this.showGame();
             this.updateVerificationUI();
+            this.checkAwakening();
         }
         catch (error) {
             this.showAuth();
@@ -329,6 +344,7 @@ class AuthUI {
             window.gameState.updateUI();
         }
         this.updateVerificationUI();
+        this.checkAwakening();
     }
     showGame() {
         const authScreen = document.getElementById('auth-screen');
@@ -366,11 +382,138 @@ class AuthUI {
         });
         this.clearErrors();
     }
+    setupAwakening() {
+        const awakenBtn = document.getElementById('btn-awaken');
+        awakenBtn?.addEventListener('click', async () => {
+            try {
+                await AuthAPI.completeAwakening();
+                // Hide awakening modal
+                const modal = document.getElementById('awakening-modal');
+                if (modal)
+                    modal.style.display = 'none';
+                // Log system message
+                if (window.ui) {
+                    window.ui.log('SYSTEM: Erwachen abgeschlossen.');
+                }
+                // Reload profile to get updated awakening state
+                await this.loadProfile();
+                // Show status screen
+                this.showStatusScreen();
+            }
+            catch (error) {
+                console.error('Awakening error:', error);
+                alert('Fehler beim Erwachen: ' + error.message);
+            }
+        });
+    }
+    setupStatusScreen() {
+        const closeBtn = document.getElementById('btn-close-status');
+        closeBtn?.addEventListener('click', () => {
+            const modal = document.getElementById('status-modal');
+            if (modal)
+                modal.style.display = 'none';
+        });
+    }
+    showStatusScreen() {
+        if (!this.currentProfile)
+            return;
+        const modal = document.getElementById('status-modal');
+        if (!modal)
+            return;
+        // Update level
+        const levelEl = document.getElementById('status-level');
+        if (levelEl)
+            levelEl.textContent = this.currentProfile.progression.level.toString();
+        // Update job (original role - nicht implementiert in diesem Schritt)
+        const jobEl = document.getElementById('status-job');
+        if (jobEl)
+            jobEl.textContent = 'None';
+        // Update HP/MP bars (placeholder values)
+        const hpFill = document.getElementById('status-hp-fill');
+        const hpValue = document.getElementById('status-hp-value');
+        const mpFill = document.getElementById('status-mp-fill');
+        const mpValue = document.getElementById('status-mp-value');
+        // Use current combat state if available
+        if (window.engine) {
+            const state = window.engine.getState();
+            if (hpFill)
+                hpFill.style.width = `${(state.player.hp / state.player.maxHp) * 100}%`;
+            if (hpValue)
+                hpValue.textContent = `${state.player.hp} / ${state.player.maxHp}`;
+            if (mpFill)
+                mpFill.style.width = `${(state.player.mp / state.player.maxMp) * 100}%`;
+            if (mpValue)
+                mpValue.textContent = `${state.player.mp} / ${state.player.maxMp}`;
+        }
+        else {
+            if (hpFill)
+                hpFill.style.width = '100%';
+            if (hpValue)
+                hpValue.textContent = '100 / 100';
+            if (mpFill)
+                mpFill.style.width = '100%';
+            if (mpValue)
+                mpValue.textContent = '50 / 50';
+        }
+        // Update attributes (placeholder - keine Attribute-Berechnung in diesem Schritt)
+        const baseStats = { str: 10, vit: 10, agi: 10, int: 10, per: 10 };
+        const level = this.currentProfile.progression.level;
+        const strEl = document.getElementById('status-str');
+        const vitEl = document.getElementById('status-vit');
+        const agiEl = document.getElementById('status-agi');
+        const intEl = document.getElementById('status-int');
+        const perEl = document.getElementById('status-per');
+        if (strEl)
+            strEl.textContent = (baseStats.str + level * 2).toString();
+        if (vitEl)
+            vitEl.textContent = (baseStats.vit + level).toString();
+        if (agiEl)
+            agiEl.textContent = (baseStats.agi + level).toString();
+        if (intEl)
+            intEl.textContent = (baseStats.int + level).toString();
+        if (perEl)
+            perEl.textContent = (baseStats.per + level).toString();
+        modal.style.display = 'flex';
+    }
+    checkAwakening() {
+        if (!this.currentProfile)
+            return;
+        const awakeningState = this.currentProfile.progression.awakeningState || 'locked';
+        const level = this.currentProfile.progression.level;
+        // Check if awakening should be available
+        if (level >= 10 && awakeningState === 'locked') {
+            this.awakeningAvailable = true;
+        }
+        // Disable role switching if awakened
+        if (awakeningState === 'awakened') {
+            const roleSelect = document.getElementById('role-select');
+            if (roleSelect) {
+                roleSelect.disabled = true;
+                roleSelect.title = 'Rollenwechsel nach Erwachen deaktiviert';
+            }
+        }
+    }
+    showAwakeningModal() {
+        if (!this.awakeningAvailable)
+            return;
+        const modal = document.getElementById('awakening-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Log system message
+            if (window.ui) {
+                window.ui.log('SYSTEM: Erwachen verfügbar.');
+            }
+        }
+    }
 }
 // Initialize combat engine and UI renderer
 const engine = new CombatEngine();
 const ui = new UIRenderer();
 const authUI = new AuthUI();
+// Make globally accessible
+window.engine = engine;
+window.ui = ui;
+window.authUI = authUI;
 // Make gameState globally accessible for auth integration
 window.gameState = {
     level: 1,
@@ -396,6 +539,12 @@ engine.setOnStateUpdate((state) => {
 });
 engine.setOnCombatEvent((event) => {
     ui.addLogEntry(event);
+});
+// Register dungeon completion callback for awakening
+engine.setOnDungeonComplete(() => {
+    if (window.authUI) {
+        window.authUI.showAwakeningModal();
+    }
 });
 // Auto-save function with debounce
 let saveTimeout = null;

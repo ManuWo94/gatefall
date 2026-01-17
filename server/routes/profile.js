@@ -32,7 +32,7 @@ router.get('/', requireAuth, (req, res) => {
 
         // Progression holen
         db.get(
-          'SELECT level, xp, gold FROM progression WHERE user_id = ?',
+          'SELECT level, xp, gold, awakening_state FROM progression WHERE user_id = ?',
           [userId],
           (err, progression) => {
             if (err) {
@@ -52,7 +52,8 @@ router.get('/', requireAuth, (req, res) => {
               progression: {
                 level: progression.level,
                 xp: progression.xp,
-                gold: progression.gold
+                gold: progression.gold,
+                awakeningState: progression.awakening_state || 'locked'
               }
             });
           }
@@ -102,6 +103,59 @@ router.post('/save', requireAuth, (req, res) => {
   } catch (error) {
     console.error('Save progression error:', error);
     res.status(500).json({ error: 'Serverfehler beim Speichern' });
+  }
+});
+
+// POST /api/awakening/complete
+router.post('/awakening/complete', requireAuth, (req, res) => {
+  const userId = req.session.userId;
+
+  try {
+    // Check current state
+    db.get(
+      'SELECT level, awakening_state FROM progression WHERE user_id = ?',
+      [userId],
+      (err, progression) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Serverfehler' });
+        }
+
+        if (!progression) {
+          return res.status(404).json({ error: 'Progression nicht gefunden' });
+        }
+
+        // Validate level requirement
+        if (progression.level < 10) {
+          return res.status(400).json({ error: 'Level 10 erforderlich' });
+        }
+
+        // Validate state transition
+        if (progression.awakening_state === 'awakened') {
+          return res.status(400).json({ error: 'Erwachen bereits abgeschlossen' });
+        }
+
+        // Update awakening state
+        db.run(
+          'UPDATE progression SET awakening_state = ? WHERE user_id = ?',
+          ['awakened', userId],
+          function(err) {
+            if (err) {
+              console.error('Database error:', err);
+              return res.status(500).json({ error: 'Serverfehler' });
+            }
+
+            res.json({
+              success: true,
+              awakeningState: 'awakened'
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Awakening error:', error);
+    res.status(500).json({ error: 'Serverfehler' });
   }
 });
 

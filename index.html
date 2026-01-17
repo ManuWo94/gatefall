@@ -299,6 +299,94 @@
     </div>
     </div>
 
+    <!-- Awakening System Modal -->
+    <div id="awakening-modal" class="awakening-modal" style="display: none;">
+        <div class="awakening-overlay"></div>
+        <div class="awakening-content">
+            <div class="system-title">SYSTEMMELDUNG</div>
+            <div class="awakening-message">Erwachen verfügbar.</div>
+            <button id="btn-awaken" class="awaken-btn">Erwachen</button>
+        </div>
+    </div>
+
+    <!-- Status Screen Modal -->
+    <div id="status-modal" class="status-modal" style="display: none;">
+        <div class="status-overlay"></div>
+        <div class="status-content">
+            <div class="status-header">
+                <div class="status-title">STATUS</div>
+            </div>
+            
+            <div class="status-body">
+                <div class="status-level-section">
+                    <div class="status-level-number" id="status-level">18</div>
+                    <div class="status-level-label">LEVEL</div>
+                </div>
+                
+                <div class="status-job-section">
+                    <div class="status-job-line">
+                        <span class="status-job-label">JOB</span>
+                        <span class="status-job-value" id="status-job">None</span>
+                    </div>
+                    <div class="status-title-line">
+                        <span class="status-title-label">TITEL</span>
+                        <span class="status-title-value">Hunter</span>
+                    </div>
+                </div>
+                
+                <div class="status-bars-section">
+                    <div class="status-stat-row">
+                        <div class="status-stat-icon">❤️</div>
+                        <div class="status-stat-bar">
+                            <div class="status-stat-fill status-hp-fill" id="status-hp-fill" style="width: 75%"></div>
+                        </div>
+                        <div class="status-stat-value" id="status-hp-value">2220 / 350</div>
+                    </div>
+                    
+                    <div class="status-stat-row">
+                        <div class="status-stat-icon">✨</div>
+                        <div class="status-stat-bar">
+                            <div class="status-stat-fill status-mp-fill" id="status-mp-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="status-stat-value" id="status-mp-value">350 / 350</div>
+                    </div>
+                </div>
+                
+                <div class="status-attributes-section">
+                    <div class="status-attr-row">
+                        <div class="status-attr-icon">💪</div>
+                        <div class="status-attr-label">Stärke</div>
+                        <div class="status-attr-value" id="status-str">48</div>
+                    </div>
+                    <div class="status-attr-row">
+                        <div class="status-attr-icon">❤️</div>
+                        <div class="status-attr-label">Vitalität</div>
+                        <div class="status-attr-value" id="status-vit">27</div>
+                    </div>
+                    <div class="status-attr-row">
+                        <div class="status-attr-icon">⚡</div>
+                        <div class="status-attr-label">Beweglichkeit</div>
+                        <div class="status-attr-value" id="status-agi">27</div>
+                    </div>
+                    <div class="status-attr-row">
+                        <div class="status-attr-icon">🧠</div>
+                        <div class="status-attr-label">Intelligenz</div>
+                        <div class="status-attr-value" id="status-int">27</div>
+                    </div>
+                    <div class="status-attr-row">
+                        <div class="status-attr-icon">👁️</div>
+                        <div class="status-attr-label">Wahrnehmung</div>
+                        <div class="status-attr-value" id="status-per">27</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-footer">
+                <button id="btn-close-status" class="status-close-btn">Schließen</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="./dist/main.js?v=4"></script>
 </body>
 </html>

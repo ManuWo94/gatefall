@@ -19,6 +19,7 @@ export declare class CombatEngine {
     private bossSpecialTriggerTimer;
     private bossSpecialIntervalTimer;
     private shouldInterruptBossSpecial;
+    private onDungeonComplete;
     constructor();
     /**
      * Create the initial combat state
@@ -32,6 +33,10 @@ export declare class CombatEngine {
      * Register callback for combat events
      */
     setOnCombatEvent(callback: (event: CombatEvent) => void): void;
+    /**
+     * Register callback for dungeon completion
+     */
+    setOnDungeonComplete(callback: () => void): void;
     /**
      * Get current combat state
      */

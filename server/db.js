@@ -79,6 +79,23 @@ db.serialize(() => {
     }
   });
 
+  // Migration: Add awakening_state to progression table
+  db.all("PRAGMA table_info(progression)", [], (err, columns) => {
+    if (err) {
+      console.error('Fehler beim Prüfen der progression Tabelle:', err);
+      return;
+    }
+
+    const hasAwakeningState = columns.some(col => col.name === 'awakening_state');
+
+    if (!hasAwakeningState) {
+      db.run('ALTER TABLE progression ADD COLUMN awakening_state TEXT DEFAULT "locked"', (err) => {
+        if (err) console.error('Fehler beim Hinzufügen von awakening_state:', err);
+        else console.log('✓ Spalte awakening_state hinzugefügt');
+      });
+    }
+  });
+
   db.run(`
     CREATE TABLE IF NOT EXISTS progression (
       user_id INTEGER UNIQUE NOT NULL,

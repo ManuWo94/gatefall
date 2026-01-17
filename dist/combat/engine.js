@@ -28,6 +28,8 @@ export class CombatEngine {
         this.bossSpecialTriggerTimer = null;
         this.bossSpecialIntervalTimer = null;
         this.shouldInterruptBossSpecial = false;
+        // Awakening callback
+        this.onDungeonComplete = null;
         this.state = this.createInitialState();
     }
     /**
@@ -96,6 +98,12 @@ export class CombatEngine {
      */
     setOnCombatEvent(callback) {
         this.onCombatEvent = callback;
+    }
+    /**
+     * Register callback for dungeon completion
+     */
+    setOnDungeonComplete(callback) {
+        this.onDungeonComplete = callback;
     }
     /**
      * Get current combat state
@@ -340,6 +348,10 @@ export class CombatEngine {
                 }
                 // Check if all enemies defeated
                 const allDefeated = dungeon.enemies.every(e => e.isDefeated);
+                // Trigger awakening check callback
+                if (this.onDungeonComplete) {
+                    this.onDungeonComplete();
+                }
                 if (allDefeated) {
                     this.state.dungeonState.isActive = false;
                     this.emitEvent(CombatEventType.VICTORY, '=== Dungeon abgeschlossen! ===');
