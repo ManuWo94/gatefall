@@ -43,7 +43,7 @@ const sessionConfig = {
   name: 'gatefall.sid', // Custom cookie name
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // HTTPS in Produktion
+    secure: false, // TEMPORÄR AUF FALSE FÜR DEBUGGING
     sameSite: 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 Tage
     path: '/'
