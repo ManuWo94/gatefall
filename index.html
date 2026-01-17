@@ -105,120 +105,192 @@
             
             <!-- DASHBOARD PANEL -->
             <div class="panel active" id="panel-dashboard">
-                <div class="panel-header">
-                    <h1 class="panel-title">SYSTEM STATUS</h1>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">HUNTER-RANG</div>
-                        <div class="stat-value large" id="dash-hunter-rank">D</div>
+                <!-- Top Status Cards -->
+                <div class="dash-top-grid">
+                    <div class="dash-card rank-card">
+                        <div class="dash-card-icon">⭐</div>
+                        <div class="dash-card-content">
+                            <div class="dash-card-label">HUNTER-RANG</div>
+                            <div class="dash-card-value" id="dash-hunter-rank">D</div>
+                        </div>
+                        <div class="dash-card-glow"></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">LEVEL</div>
-                        <div class="stat-value large" id="dash-level">1</div>
+                    <div class="dash-card level-card">
+                        <div class="dash-card-icon">🎯</div>
+                        <div class="dash-card-content">
+                            <div class="dash-card-label">LEVEL</div>
+                            <div class="dash-card-value" id="dash-level">1</div>
+                        </div>
+                        <div class="dash-card-glow"></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">TITEL</div>
-                        <div class="stat-value" id="dash-title">HUNTER</div>
+                    <div class="dash-card title-card">
+                        <div class="dash-card-icon">🏆</div>
+                        <div class="dash-card-content">
+                            <div class="dash-card-label">TITEL</div>
+                            <div class="dash-card-value small" id="dash-title">HUNTER</div>
+                        </div>
+                        <div class="dash-card-glow"></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">VEREINIGUNG</div>
-                        <div class="stat-value" id="dash-guild">KEINE</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2 class="section-title">SCHNELLAKTIONEN</h2>
-                    <div class="action-grid">
-                        <button class="action-btn" data-action="enter-gate">
-                            <span class="action-label">GATE BETRETEN</span>
-                        </button>
-                        <button class="action-btn" data-action="start-dungeon">
-                            <span class="action-label">DUNGEON STARTEN</span>
-                        </button>
-                        <button class="action-btn" data-action="manage-skills">
-                            <span class="action-label">FÄHIGKEITEN</span>
-                        </button>
+                    <div class="dash-card guild-card">
+                        <div class="dash-card-icon">🏛️</div>
+                        <div class="dash-card-content">
+                            <div class="dash-card-label">VEREINIGUNG</div>
+                            <div class="dash-card-value small" id="dash-guild">KEINE</div>
+                        </div>
+                        <div class="dash-card-glow"></div>
                     </div>
                 </div>
 
-                <div class="section">
-                    <h2 class="section-title">SYSTEMMELDUNGEN</h2>
-                    <div class="system-log" id="dashboard-log">
-                        <div class="log-entry">System bereit</div>
+                <!-- Quick Actions -->
+                <div class="dash-section">
+                    <div class="section-header">
+                        <span class="section-icon">⚡</span>
+                        <span class="section-title">SCHNELLZUGRIFF</span>
+                    </div>
+                    <div class="dash-actions">
+                        <button class="dash-action-btn" data-action="enter-gate">
+                            <div class="action-icon">🚪</div>
+                            <div class="action-content">
+                                <div class="action-title">GATE BETRETEN</div>
+                                <div class="action-desc">Starte ein neues Gate</div>
+                            </div>
+                            <div class="action-arrow">→</div>
+                        </button>
+                        <button class="dash-action-btn" data-action="start-dungeon">
+                            <div class="action-icon">🏰</div>
+                            <div class="action-content">
+                                <div class="action-title">DUNGEON</div>
+                                <div class="action-desc">Betrete einen Dungeon</div>
+                            </div>
+                            <div class="action-arrow">→</div>
+                        </button>
+                        <button class="dash-action-btn" data-action="manage-skills">
+                            <div class="action-icon">✨</div>
+                            <div class="action-content">
+                                <div class="action-title">FÄHIGKEITEN</div>
+                                <div class="action-desc">Verwalte deine Skills</div>
+                            </div>
+                            <div class="action-arrow">→</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- System Log -->
+                <div class="dash-section">
+                    <div class="section-header">
+                        <span class="section-icon">📡</span>
+                        <span class="section-title">SYSTEM-PROTOKOLL</span>
+                    </div>
+                    <div class="dash-log" id="dashboard-log">
+                        <div class="log-entry"><span class="log-time">[00:00:00]</span> System bereit</div>
                     </div>
                 </div>
             </div>
 
             <!-- STATUS PANEL -->
             <div class="panel" id="panel-status">
-                <div class="panel-header">
-                    <h1 class="panel-title">STATUS</h1>
+                <!-- Character Overview -->
+                <div class="status-overview">
+                    <div class="status-level-display">
+                        <div class="level-circle">
+                            <div class="level-number" id="status-level">1</div>
+                        </div>
+                        <div class="level-text">LEVEL</div>
+                    </div>
+                    <div class="status-info-grid">
+                        <div class="status-info-item">
+                            <div class="info-icon">🏆</div>
+                            <div class="info-content">
+                                <div class="info-label">TITEL</div>
+                                <div class="info-value" id="status-title">HUNTER</div>
+                            </div>
+                        </div>
+                        <div class="status-info-item">
+                            <div class="info-icon">⭐</div>
+                            <div class="info-content">
+                                <div class="info-label">RANG</div>
+                                <div class="info-value" id="status-rank">D</div>
+                            </div>
+                        </div>
+                        <div class="status-info-item">
+                            <div class="info-icon">⚔️</div>
+                            <div class="info-content">
+                                <div class="info-label">ROLLE</div>
+                                <div class="info-value" id="status-role">ASSASSINE</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="status-main">
-                    <div class="status-level">
-                        <div class="level-label">LEVEL</div>
-                        <div class="level-number" id="status-level">1</div>
-                    </div>
-
-                    <div class="status-info">
-                        <div class="info-row">
-                            <span class="info-label">TITEL</span>
-                            <span class="info-value" id="status-title">HUNTER</span>
+                <!-- HP/MP Bars -->
+                <div class="status-vitals">
+                    <div class="vital-bar-container">
+                        <div class="vital-header">
+                            <span class="vital-icon">❤️</span>
+                            <span class="vital-label">LEBENSPUNKTE</span>
+                            <span class="vital-value" id="status-hp">85 / 85</span>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">HUNTER-RANG</span>
-                            <span class="info-value" id="status-rank">D</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">ROLLE</span>
-                            <span class="info-value" id="status-role">ASSASSINE</span>
-                        </div>
-                    </div>
-
-                    <div class="status-bars">
-                        <div class="bar-group">
-                            <div class="bar-header">
-                                <span class="bar-label">HP</span>
-                                <span class="bar-value" id="status-hp">85 / 85</span>
-                            </div>
-                            <div class="bar-track">
-                                <div class="bar-fill hp" id="status-hp-bar" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-header">
-                                <span class="bar-label">MP</span>
-                                <span class="bar-value" id="status-mp">60 / 60</span>
-                            </div>
-                            <div class="bar-track">
-                                <div class="bar-fill mp" id="status-mp-bar" style="width: 100%"></div>
+                        <div class="vital-bar-track">
+                            <div class="vital-bar-fill hp" id="status-hp-bar" style="width: 100%">
+                                <div class="bar-shine"></div>
                             </div>
                         </div>
                     </div>
+                    <div class="vital-bar-container">
+                        <div class="vital-header">
+                            <span class="vital-icon">💠</span>
+                            <span class="vital-label">MANAPUNKTE</span>
+                            <span class="vital-value" id="status-mp">60 / 60</span>
+                        </div>
+                        <div class="vital-bar-track">
+                            <div class="vital-bar-fill mp" id="status-mp-bar" style="width: 100%">
+                                <div class="bar-shine"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <div class="status-attributes">
-                        <div class="attr-row">
-                            <span class="attr-label">STÄRKE</span>
-                            <span class="attr-value" id="attr-str">10</span>
+                <!-- Attributes -->
+                <div class="status-attrs">
+                    <div class="section-header">
+                        <span class="section-icon">📊</span>
+                        <span class="section-title">ATTRIBUTE</span>
+                    </div>
+                    <div class="attr-grid">
+                        <div class="attr-card">
+                            <div class="attr-icon">💪</div>
+                            <div class="attr-content">
+                                <div class="attr-label">STÄRKE</div>
+                                <div class="attr-value" id="attr-str">10</div>
+                            </div>
                         </div>
-                        <div class="attr-row">
-                            <span class="attr-label">VITALITÄT</span>
-                            <span class="attr-value" id="attr-vit">10</span>
+                        <div class="attr-card">
+                            <div class="attr-icon">❤️</div>
+                            <div class="attr-content">
+                                <div class="attr-label">VITALITÄT</div>
+                                <div class="attr-value" id="attr-vit">10</div>
+                            </div>
                         </div>
-                        <div class="attr-row">
-                            <span class="attr-label">BEWEGLICHKEIT</span>
-                            <span class="attr-value" id="attr-agi">10</span>
+                        <div class="attr-card">
+                            <div class="attr-icon">⚡</div>
+                            <div class="attr-content">
+                                <div class="attr-label">BEWEGLICHKEIT</div>
+                                <div class="attr-value" id="attr-agi">10</div>
+                            </div>
                         </div>
-                        <div class="attr-row">
-                            <span class="attr-label">INTELLIGENZ</span>
-                            <span class="attr-value" id="attr-int">10</span>
+                        <div class="attr-card">
+                            <div class="attr-icon">🧠</div>
+                            <div class="attr-content">
+                                <div class="attr-label">INTELLIGENZ</div>
+                                <div class="attr-value" id="attr-int">10</div>
+                            </div>
                         </div>
-                        <div class="attr-row">
-                            <span class="attr-label">WAHRNEHMUNG</span>
-                            <span class="attr-value" id="attr-per">10</span>
+                        <div class="attr-card">
+                            <div class="attr-icon">👁️</div>
+                            <div class="attr-content">
+                                <div class="attr-label">WAHRNEHMUNG</div>
+                                <div class="attr-value" id="attr-per">10</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -226,35 +298,56 @@
 
             <!-- SKILLS PANEL -->
             <div class="panel" id="panel-skills">
-                <div class="panel-header">
-                    <h1 class="panel-title">FÄHIGKEITEN</h1>
-                </div>
-
-                <div class="skills-equipped">
-                    <h2 class="section-title">AKTIVE FÄHIGKEITEN <span id="skill-count">(0/4)</span></h2>
-                    <div class="skill-slots">
+                <!-- Equipped Skills -->
+                <div class="skills-equipped-section">
+                    <div class="section-header">
+                        <span class="section-icon">⚡</span>
+                        <span class="section-title">AUSGERÜSTETE FÄHIGKEITEN</span>
+                        <span class="skill-count" id="skill-count">(0/4)</span>
+                    </div>
+                    <div class="skill-slots-grid">
                         <div class="skill-slot empty" data-slot="1">
+                            <div class="slot-bg"></div>
                             <div class="slot-number">1</div>
-                            <div class="slot-label">LEER</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
                         </div>
                         <div class="skill-slot empty" data-slot="2">
+                            <div class="slot-bg"></div>
                             <div class="slot-number">2</div>
-                            <div class="slot-label">LEER</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
                         </div>
                         <div class="skill-slot empty" data-slot="3">
+                            <div class="slot-bg"></div>
                             <div class="slot-number">3</div>
-                            <div class="slot-label">LEER</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
                         </div>
                         <div class="skill-slot empty" data-slot="4">
+                            <div class="slot-bg"></div>
                             <div class="slot-number">4</div>
-                            <div class="slot-label">LEER</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="skills-library">
-                    <h2 class="section-title">VERFÜGBARE FÄHIGKEITEN</h2>
-                    <div class="skill-list" id="skill-list">
+                <!-- Available Skills -->
+                <div class="skills-library-section">
+                    <div class="section-header">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">VERFÜGBARE FÄHIGKEITEN</span>
+                    </div>
+                    <div class="skill-library" id="skill-list">
                         <!-- Dynamically populated -->
                     </div>
                 </div>
@@ -262,82 +355,120 @@
 
             <!-- COMBAT PANEL -->
             <div class="panel" id="panel-combat">
-                <div class="panel-header">
-                    <h1 class="panel-title">KAMPFSYSTEM</h1>
+                <!-- Combat Header -->
+                <div class="combat-header-section">
+                    <div class="role-selector-container">
+                        <label class="role-label">⚔️ KAMPFROLLE</label>
+                        <select id="role-select" class="role-select">
+                            <option value="waechter">🛡️ WÄCHTER</option>
+                            <option value="assassine" selected>🗡️ ASSASSINE</option>
+                            <option value="magier">🔮 MAGIER</option>
+                            <option value="scharfschuetze">🎯 SCHARFSCHÜTZE</option>
+                            <option value="heiler">✨ HEILER</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="combat-container">
-                    <div class="combat-header">
-                        <div class="role-selector-group">
-                            <label class="combat-label">ROLLE</label>
-                            <select id="role-select" class="system-select">
-                                <option value="waechter">WÄCHTER</option>
-                                <option value="assassine" selected>ASSASSINE</option>
-                                <option value="magier">MAGIER</option>
-                                <option value="scharfschuetze">SCHARFSCHÜTZE</option>
-                                <option value="heiler">HEILER</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="combat-display">
-                        <div class="combat-entity player">
-                            <div class="entity-name" id="player-name">JÄGER</div>
-                            <div class="entity-bars">
-                                <div class="entity-bar-group">
-                                    <div class="entity-bar-track">
-                                        <div class="entity-bar-fill hp" id="combat-player-hp" style="width: 100%"></div>
+                <!-- Combat Display -->
+                <div class="combat-arena">
+                    <div class="combat-fighter player-fighter">
+                        <div class="fighter-card">
+                            <div class="fighter-avatar">👤</div>
+                            <div class="fighter-info">
+                                <div class="fighter-name" id="player-name">JÄGER</div>
+                                <div class="fighter-bars">
+                                    <div class="fighter-bar-group">
+                                        <div class="fighter-bar-label">
+                                            <span>❤️ HP</span>
+                                            <span id="combat-player-hp-text">85/85</span>
+                                        </div>
+                                        <div class="fighter-bar-track">
+                                            <div class="fighter-bar-fill hp" id="combat-player-hp" style="width: 100%"></div>
+                                        </div>
                                     </div>
-                                    <div class="entity-bar-label" id="combat-player-hp-text">85/85</div>
-                                </div>
-                                <div class="entity-bar-group">
-                                    <div class="entity-bar-track">
-                                        <div class="entity-bar-fill mp" id="combat-player-mp" style="width: 100%"></div>
+                                    <div class="fighter-bar-group">
+                                        <div class="fighter-bar-label">
+                                            <span>💠 MP</span>
+                                            <span id="combat-player-mp-text">60/60</span>
+                                        </div>
+                                        <div class="fighter-bar-track">
+                                            <div class="fighter-bar-fill mp" id="combat-player-mp" style="width: 100%"></div>
+                                        </div>
                                     </div>
-                                    <div class="entity-bar-label" id="combat-player-mp-text">60/60</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="combat-vs">VS</div>
-
-                        <div class="combat-entity enemy">
-                            <div class="entity-name" id="enemy-name">GEGNER</div>
-                            <div class="entity-bars">
-                                <div class="entity-bar-group">
-                                    <div class="entity-bar-track">
-                                        <div class="entity-bar-fill hp" id="combat-enemy-hp" style="width: 100%"></div>
-                                    </div>
-                                    <div class="entity-bar-label" id="combat-enemy-hp-text">80/80</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="combat-controls">
-                        <button id="btn-start-combat" class="system-btn primary">KAMPF STARTEN</button>
-                        <button id="btn-stop-combat" class="system-btn danger" style="display: none;">KAMPF BEENDEN</button>
-                        
-                        <div class="skill-buttons" id="skill-buttons" style="display: none;">
-                            <button id="btn-skill-1" class="skill-btn" disabled>
+                    <div class="combat-vs-divider">
+                        <div class="vs-text">VS</div>
+                        <div class="vs-line"></div>
+                    </div>
+
+                    <div class="combat-fighter enemy-fighter">
+                        <div class="fighter-card">
+                            <div class="fighter-avatar enemy">👹</div>
+                            <div class="fighter-info">
+                                <div class="fighter-name" id="enemy-name">GEGNER</div>
+                                <div class="fighter-bars">
+                                    <div class="fighter-bar-group">
+                                        <div class="fighter-bar-label">
+                                            <span>❤️ HP</span>
+                                            <span id="combat-enemy-hp-text">80/80</span>
+                                        </div>
+                                        <div class="fighter-bar-track">
+                                            <div class="fighter-bar-fill hp" id="combat-enemy-hp" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Combat Controls -->
+                <div class="combat-control-section">
+                    <button id="btn-start-combat" class="combat-btn primary">⚔️ KAMPF STARTEN</button>
+                    <button id="btn-stop-combat" class="combat-btn danger" style="display: none;">🛑 KAMPF BEENDEN</button>
+                    
+                    <div class="skill-buttons-grid" id="skill-buttons" style="display: none;">
+                        <button id="btn-skill-1" class="combat-skill-btn" disabled>
+                            <span class="skill-number">1</span>
+                            <div class="skill-info">
                                 <span class="skill-name">SKILL 1</span>
                                 <span class="skill-cost">0 MP</span>
-                            </button>
-                            <button id="btn-skill-2" class="skill-btn" disabled>
+                            </div>
+                        </button>
+                        <button id="btn-skill-2" class="combat-skill-btn" disabled>
+                            <span class="skill-number">2</span>
+                            <div class="skill-info">
                                 <span class="skill-name">SKILL 2</span>
                                 <span class="skill-cost">0 MP</span>
-                            </button>
-                            <button id="btn-skill-3" class="skill-btn" disabled>
+                            </div>
+                        </button>
+                        <button id="btn-skill-3" class="combat-skill-btn" disabled>
+                            <span class="skill-number">3</span>
+                            <div class="skill-info">
                                 <span class="skill-name">SKILL 3</span>
                                 <span class="skill-cost">0 MP</span>
-                            </button>
-                            <button id="btn-interrupt" class="skill-btn interrupt" disabled>
+                            </div>
+                        </button>
+                        <button id="btn-interrupt" class="combat-skill-btn interrupt" disabled>
+                            <span class="skill-number">⛔</span>
+                            <div class="skill-info">
                                 <span class="skill-name">UNTERBRECHEN</span>
-                            </button>
-                        </div>
+                            </div>
+                        </button>
                     </div>
+                </div>
 
-                    <div class="combat-log" id="combat-log">
+                <!-- Combat Log -->
+                <div class="combat-log-section">
+                    <div class="section-header">
+                        <span class="section-icon">📜</span>
+                        <span class="section-title">KAMPFPROTOKOLL</span>
+                    </div>
+                    <div class="combat-log-content" id="combat-log">
                         <div class="log-entry system">System bereit</div>
                     </div>
                 </div>
@@ -345,48 +476,93 @@
 
             <!-- GATES PANEL -->
             <div class="panel" id="panel-gates">
-                <div class="panel-header">
-                    <h1 class="panel-title">GATE-SYSTEM</h1>
-                </div>
-
-                <div class="gates-content">
-                    <h2 class="section-title">GATE-RÄNGE</h2>
-                    <div class="gate-ranks">
-                        <button class="gate-rank-btn rank-d" data-rank="D">
-                            <span class="rank-letter">D</span>
-                            <span class="rank-mult">×1.0</span>
+                <!-- Gate Ranks Selection -->
+                <div class="gates-ranks-section">
+                    <div class="section-header">
+                        <span class="section-icon">🌌</span>
+                        <span class="section-title">GATE-RÄNGE</span>
+                    </div>
+                    <div class="gate-ranks-grid">
+                        <button class="gate-rank-card rank-d" data-rank="D">
+                            <div class="rank-glow"></div>
+                            <div class="rank-content">
+                                <div class="rank-letter">D</div>
+                                <div class="rank-info">
+                                    <div class="rank-mult">×1.0</div>
+                                    <div class="rank-desc">ANFÄNGER</div>
+                                </div>
+                            </div>
                         </button>
-                        <button class="gate-rank-btn rank-c" data-rank="C">
-                            <span class="rank-letter">C</span>
-                            <span class="rank-mult">×1.2</span>
+                        <button class="gate-rank-card rank-c" data-rank="C">
+                            <div class="rank-glow"></div>
+                            <div class="rank-content">
+                                <div class="rank-letter">C</div>
+                                <div class="rank-info">
+                                    <div class="rank-mult">×1.2</div>
+                                    <div class="rank-desc">FORTGESCHRITTEN</div>
+                                </div>
+                            </div>
                         </button>
-                        <button class="gate-rank-btn rank-b" data-rank="B">
-                            <span class="rank-letter">B</span>
-                            <span class="rank-mult">×1.5</span>
+                        <button class="gate-rank-card rank-b" data-rank="B">
+                            <div class="rank-glow"></div>
+                            <div class="rank-content">
+                                <div class="rank-letter">B</div>
+                                <div class="rank-info">
+                                    <div class="rank-mult">×1.5</div>
+                                    <div class="rank-desc">ERFAHREN</div>
+                                </div>
+                            </div>
                         </button>
-                        <button class="gate-rank-btn rank-a" data-rank="A">
-                            <span class="rank-letter">A</span>
-                            <span class="rank-mult">×2.0</span>
+                        <button class="gate-rank-card rank-a" data-rank="A">
+                            <div class="rank-glow"></div>
+                            <div class="rank-content">
+                                <div class="rank-letter">A</div>
+                                <div class="rank-info">
+                                    <div class="rank-mult">×2.0</div>
+                                    <div class="rank-desc">ELITE</div>
+                                </div>
+                            </div>
                         </button>
-                        <button class="gate-rank-btn rank-s" data-rank="S">
-                            <span class="rank-letter">S</span>
-                            <span class="rank-mult">×3.0</span>
+                        <button class="gate-rank-card rank-s" data-rank="S">
+                            <div class="rank-glow"></div>
+                            <div class="rank-content">
+                                <div class="rank-letter">S</div>
+                                <div class="rank-info">
+                                    <div class="rank-mult">×3.0</div>
+                                    <div class="rank-desc">MEISTER</div>
+                                </div>
+                            </div>
                         </button>
-                        <button class="gate-rank-btn rank-ss" data-rank="SS">
-                            <span class="rank-letter">SS</span>
-                            <span class="rank-mult">×5.0</span>
+                        <button class="gate-rank-card rank-ss" data-rank="SS">
+                            <div class="rank-glow"></div>
+                            <div class="rank-content">
+                                <div class="rank-letter">SS</div>
+                                <div class="rank-info">
+                                    <div class="rank-mult">×5.0</div>
+                                    <div class="rank-desc">LEGENDE</div>
+                                </div>
+                            </div>
                         </button>
                     </div>
+                </div>
 
-                    <div class="dungeon-selection" style="display: none;">
-                        <h2 class="section-title">VERFÜGBARE DUNGEONS</h2>
-                        <div class="dungeon-list" id="dungeon-list">
-                            <div class="dungeon-card">
+                <!-- Dungeon Selection -->
+                <div class="dungeon-selection-section" style="display: none;">
+                    <div class="section-header">
+                        <span class="section-icon">🏰</span>
+                        <span class="section-title">VERFÜGBARE DUNGEONS</span>
+                    </div>
+                    <div class="dungeon-grid" id="dungeon-list">
+                        <div class="dungeon-card-modern">
+                            <div class="dungeon-bg"></div>
+                            <div class="dungeon-content">
+                                <div class="dungeon-icon">🏚️</div>
                                 <div class="dungeon-name">VERLASSENER DUNGEON</div>
-                                <div class="dungeon-info">
-                                    <span class="dungeon-rank">GATE-RANG: D</span>
-                                </div>
-                                <button class="system-btn primary" id="btn-start-dungeon">STARTEN</button>
+                                <div class="dungeon-rank-badge">RANG D</div>
+                                <button class="dungeon-start-btn" id="btn-start-dungeon">
+                                    <span>BETRETEN</span>
+                                    <span>→</span>
+                                </button>
                             </div>
                         </div>
                     </div>
