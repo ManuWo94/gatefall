@@ -1,6 +1,6 @@
 /**
- * Gates UI Manager
- * Verwaltet die Gate-Auswahl und Anzeige
+ * Gates UI Manager - Galactic Universe Style
+ * Verwaltet die Gate-Auswahl im Universums-Grid
  */
 import { GateRank } from './combat/types.js';
 export declare class GatesUIManager {
@@ -10,6 +10,9 @@ export declare class GatesUIManager {
     private playerLevel;
     private playerRank;
     private completedGates;
+    private currentGalaxy;
+    private currentSystem;
+    private gatesPerPage;
     constructor();
     /**
      * Initialisiert das Gates-System
@@ -24,29 +27,53 @@ export declare class GatesUIManager {
      */
     private saveCompletedGate;
     /**
-     * Event-Listener für Filter-Buttons
+     * Event-Listener für Navigation und Filter
      */
     private setupEventListeners;
+    /**
+     * Wechselt Galaxie
+     */
+    private changeGalaxy;
+    /**
+     * Wechselt System
+     */
+    private changeSystem;
+    /**
+     * Aktualisiert Galaxie/System-Anzeige
+     */
+    private updateGalaxyDisplay;
     /**
      * Setzt Filter für Gates
      */
     private setFilter;
     /**
-     * Rendert die Gates-Kacheln
+     * Suche nach Gates
+     */
+    private searchGates;
+    /**
+     * Rendert die Gates im 5x3 Grid
      */
     private renderGates;
     /**
-     * Erstellt eine Gate-Kachel
+     * Erstellt eine Gate-Planetenkarte im Galactic Style
      */
-    private createGateCard;
+    private createGatePlanetCard;
     /**
-     * Gibt Rang-Icon zurück
+     * Erstellt einen leeren Slot
      */
-    private getRankIcon;
+    private createEmptySlot;
     /**
-     * Generiert Schwierigkeits-Dots
+     * Gibt Planeten-Icon basierend auf Rang zurück
      */
-    private getDifficultyDots;
+    private getPlanetIcon;
+    /**
+     * Zeigt Gate-Informationen
+     */
+    private showGateInfo;
+    /**
+     * Aktualisiert Counter-Anzeigen
+     */
+    private updateCounters;
     /**
      * Betretet ein Gate
      */
@@ -56,20 +83,8 @@ export declare class GatesUIManager {
      */
     private startGateCombat;
     /**
-     * Markiert ein Gate als abgeschlossen
+     * Markiert Gate als abgeschlossen
      */
-    completeGate(gateId: string): Promise<void>;
-    /**
-     * Aktualisiert Zähler
-     */
-    private updateCounters;
-    /**
-     * Startet den Reset-Timer (täglicher Reset)
-     */
-    private startResetTimer;
-    /**
-     * Setzt Gates zurück (täglicher Reset)
-     */
-    resetGates(): void;
+    completeGate(gateId: string): void;
 }
 //# sourceMappingURL=gates-ui.d.ts.map

@@ -6,6 +6,7 @@
     <title>SYSTEM - Gatefall</title>
     <link rel="icon" href="favicon.ico" type="image/svg+xml">
     <link rel="stylesheet" href="system-ui.css">
+    <link rel="stylesheet" href="galaxy-ui.css">
 </head>
 <body>
     <!-- ==================== AUTH SCREEN ==================== -->
@@ -368,15 +369,9 @@
             <div class="panel" id="panel-combat">
                 <!-- Combat Header -->
                 <div class="combat-header-section">
-                    <div class="role-selector-container">
-                        <label class="role-label">⚔️ KAMPFROLLE</label>
-                        <select id="role-select" class="role-select">
-                            <option value="waechter">🛡️ WÄCHTER</option>
-                            <option value="assassine" selected>🗡️ ASSASSINE</option>
-                            <option value="magier">🔮 MAGIER</option>
-                            <option value="scharfschuetze">🎯 SCHARFSCHÜTZE</option>
-                            <option value="heiler">✨ HEILER</option>
-                        </select>
+                    <div class="combat-title-display">
+                        <span class="combat-icon">⚔️</span>
+                        <span class="combat-title-text">KAMPFSYSTEM</span>
                     </div>
                 </div>
 
@@ -487,51 +482,61 @@
 
             <!-- GATES PANEL -->
             <div class="panel" id="panel-gates">
-                <!-- Gates Header -->
-                <div class="gates-header">
-                    <div class="gates-header-left">
-                        <span class="gates-icon">🌌</span>
-                        <span class="gates-title">VERFÜGBARE GATES</span>
-                    </div>
-                    <div class="gates-header-right">
-                        <div class="gates-info-item">
-                            <span>📊</span>
-                            <span id="gates-count">0/60 Gates</span>
-                        </div>
-                        <div class="gates-info-item">
-                            <span>🔄</span>
-                            <span id="gates-reset-timer">Reset in: --:--:--</span>
-                        </div>
-                    </div>
+                <!-- Gates Universe Header -->
+                <div class="universe-header">
+                    <div class="universe-icon">🌌</div>
+                    <div class="universe-title">GATE-UNIVERSUM</div>
                 </div>
 
-                <!-- Filter Buttons -->
-                <div class="gates-filter-bar">
-                    <button class="gate-filter-btn active" data-filter="all">
-                        ALLE <span class="filter-count" id="filter-count-all">60</span>
-                    </button>
-                    <button class="gate-filter-btn" data-filter="D">
-                        🟤 D <span class="filter-count" id="filter-count-d">15</span>
-                    </button>
-                    <button class="gate-filter-btn" data-filter="C">
-                        🔵 C <span class="filter-count" id="filter-count-c">15</span>
-                    </button>
-                    <button class="gate-filter-btn" data-filter="B">
-                        🟢 B <span class="filter-count" id="filter-count-b">12</span>
-                    </button>
-                    <button class="gate-filter-btn" data-filter="A">
-                        🟡 A <span class="filter-count" id="filter-count-a">10</span>
-                    </button>
-                    <button class="gate-filter-btn" data-filter="S">
-                        🔴 S <span class="filter-count" id="filter-count-s">6</span>
-                    </button>
-                    <button class="gate-filter-btn" data-filter="SS">
-                        ⚫ SS <span class="filter-count" id="filter-count-ss">2</span>
+                <!-- Galaxy Navigation -->
+                <div class="galaxy-nav">
+                    <button class="galaxy-btn" id="btn-prev-galaxy">◀</button>
+                    <div class="galaxy-display">
+                        <span class="galaxy-label">GALAXIE</span>
+                        <span class="galaxy-number" id="current-galaxy">1</span>
+                    </div>
+                    <button class="galaxy-btn" id="btn-next-galaxy">▶</button>
+                    
+                    <button class="galaxy-btn" id="btn-prev-system">◀</button>
+                    <div class="galaxy-display">
+                        <span class="galaxy-label">SYSTEM</span>
+                        <span class="galaxy-number" id="current-system">1</span>
+                    </div>
+                    <button class="galaxy-btn" id="btn-next-system">▶</button>
+                    
+                    <button class="deploy-btn">
+                        <span class="deploy-icon">🔍</span>
+                        <span>DISPLAY</span>
                     </button>
                 </div>
 
-                <!-- Gates Grid (Kachelsystem) -->
-                <div class="gates-grid" id="gates-grid">
+                <!-- Filter Bar -->
+                <div class="gate-filter-control">
+                    <button class="filter-icon-btn active" data-filter="all" title="Alle Planeten">
+                        🌍 ALL PLANETS
+                    </button>
+                    <button class="filter-icon-btn" data-filter="owned" title="Nur eigene">
+                        👤 ONLY PLAYER
+                    </button>
+                    <button class="filter-icon-btn" data-filter="unowned" title="Leere Gates">
+                        ⭕ EMPTY SLOTS
+                    </button>
+                    <button class="filter-icon-btn" data-filter="alliance" title="Allianz">
+                        ⚔️ ALLIANCE
+                    </button>
+                    <button class="filter-icon-btn" data-filter="active" title="Aktiv">
+                        ✅ ACTIVE
+                    </button>
+                    
+                    <input type="text" class="gate-search-box" placeholder="Search player or planet..." id="gate-search">
+                    <div class="gate-counter">Showing: <span id="showing-count">15</span> / <span id="total-count">15</span></div>
+                </div>
+
+                <!-- System Display -->
+                <div class="system-label">SYSTEM 1.1</div>
+
+                <!-- Gates Grid - 5x3 Grid wie im Screenshot -->
+                <div class="gates-universe-grid" id="gates-grid">
                     <!-- Gates werden hier dynamisch generiert -->
                 </div>
             </div>
