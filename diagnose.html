@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Diagnose</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #16213e;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        h1 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .test-result {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .success {
+            color: #00ff88;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .warning {
+            color: #ffaa00;
+        }
+        .info {
+            color: #00d4ff;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Gatefall Server Diagnose</h1>
+        
+        <button onclick="runDiagnostics()" id="diagBtn">
+            Diagnose starten
+        </button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function runDiagnostics() {
+            const btn = document.getElementById('diagBtn');
+            const results = document.getElementById('results');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Läuft...';
+            results.innerHTML = '';
+
+            // Test 1: Server erreichbar?
+            await testServer();
+            
+            // Test 2: API-Routen verfügbar?
+            await testAPIRoutes();
+            
+            // Test 3: Registrierung testen
+            await testRegistration();
+            
+            // Test 4: Dateien vorhanden?
+            await testFiles();
+
+            btn.disabled = false;
+            btn.innerHTML = 'Diagnose erneut starten';
+        }
+
+        async function testServer() {
+            addSection('Server Erreichbarkeit');
+            
+            try {
+                const response = await fetch('/');
+                if (response.ok) {
+                    addResult('✅ Server ist erreichbar', 'success');
+                    addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+                } else {
+                    addResult(`⚠️ Server antwortet mit: ${response.status}`, 'warning');
+                }
+            } catch (error) {
+                addResult(`❌ Server nicht erreichbar: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPIRoutes() {
+            addSection('API-Routen Test');
+            
+            const routes = [
+                { path: '/api/profile', method: 'GET', expected: 401 },
+                { path: '/api/auth/register', method: 'POST', expected: 400 }
+            ];
+
+            for (const route of routes) {
+                try {
+                    const response = await fetch(route.path, {
+                        method: route.method,
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: route.method === 'POST' ? JSON.stringify({}) : undefined
+                    });
+
+                    const status = response.status;
+                    
+                    if (status === 404) {
+                        addResult(`❌ ${route.path} - 404 Not Found (Server läuft nicht richtig!)`, 'error');
+                    } else if (status === route.expected) {
+                        addResult(`✅ ${route.path} - ${status} (Erwartet)`, 'success');
+                    } else {
+                        addResult(`⚠️ ${route.path} - ${status} (Unerwartet)`, 'warning');
+                    }
+
+                    const text = await response.text();
+                    if (text) {
+                        addResult(`   Antwort: ${text.substring(0, 200)}`, 'info');
+                    }
+                } catch (error) {
+                    addResult(`❌ ${route.path} - ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function testRegistration() {
+            addSection('Registrierungs-Test');
+            
+            const testData = {
+                email: `test${Date.now()}@diagnose.de`,
+                password: '12345678',
+                displayName: 'Diagnose Test',
+                role: 'waechter'
+            };
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult(`✅ Registrierung erfolgreich!`, 'success');
+                    addResult(`   User: ${data.user?.displayName}`, 'info');
+                } else {
+                    addResult(`❌ Registrierung fehlgeschlagen: ${response.status}`, 'error');
+                    addResult(`   Fehler: ${data.error || 'Unbekannt'}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Registrierung Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFiles() {
+            addSection('Datei-Verfügbarkeit');
+            
+            const files = [
+                '/dist/main.js',
+                '/dist/combat/engine.js',
+                '/dist/gates-ui.js',
+                '/server/index.js',
+                '/app.js'
+            ];
+
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    if (response.ok) {
+                        addResult(`✅ ${file} vorhanden`, 'success');
+                    } else if (response.status === 404) {
+                        addResult(`❌ ${file} fehlt (404)`, 'error');
+                    } else {
+                        addResult(`⚠️ ${file} - Status ${response.status}`, 'warning');
+                    }
+                } catch (error) {
+                    addResult(`❌ ${file} - ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function addSection(title) {
+            const results = document.getElementById('results');
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = `<h2>${title}</h2><div class="section-results"></div>`;
+            results.appendChild(section);
+        }
+
+        function addResult(text, type = 'info') {
+            const sections = document.querySelectorAll('.test-section');
+            const lastSection = sections[sections.length - 1];
+            const resultsDiv = lastSection.querySelector('.section-results');
+            
+            const result = document.createElement('div');
+            result.className = `test-result ${type}`;
+            result.textContent = text;
+            resultsDiv.appendChild(result);
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(runDiagnostics, 500);
+        });
+    </script>
+</body>
+</html>
