@@ -7,7 +7,8 @@
     "watch": "tsc --watch",
     "server": "node server/index.js",
     "dev": "npm run build && npm run server",
-    "deploy": "node deploy.js"
+    "deploy": "node deploy.js",
+    "plesk-test": "node plesk-test.js"
   },
   "devDependencies": {
     "http-server": "^14.1.1",
