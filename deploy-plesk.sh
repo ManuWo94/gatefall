@@ -16,13 +16,17 @@ git pull origin main
 echo "📦 Installing dependencies..."
 npm install
 
+# Compile TypeScript
+echo "🔨 Compiling TypeScript..."
+npx tsc
+
 # Create/Update test account
 echo "👤 Creating test account..."
 node create-test-user.js
 
 # Restart Node.js app
 echo "🔄 Restarting app..."
-pm2 restart gatefall || node app.js &
+pm2 restart gatefall || pm2 start app.js --name gatefall
 
 echo "✅ Deployment complete!"
 echo ""
