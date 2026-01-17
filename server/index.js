@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-const cors = require('cors');
 const path = require('path');
 require('dotenv').config(); // .env-Datei laden
 const passport = require('./passport');
@@ -11,30 +10,45 @@ const profileRoutes = require('./routes/profile');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Logging für Debugging
+console.log('🔧 Environment:', process.env.NODE_ENV);
+console.log('🔧 SESSION_SECRET gesetzt:', !!process.env.SESSION_SECRET);
+
 // Middleware
 app.use(express.json());
 
 // CORS nur für Development (Codespace)
 if (process.env.NODE_ENV !== 'production') {
   const cors = require('cors');
+  console.log('🔧 CORS aktiviert (Development)');
   app.use(cors({
     origin: true,
     credentials: true
   }));
+} else {
+  console.log('🔧 CORS deaktiviert (Production)');
 }
 
 // Session-Konfiguration
-app.use(session({
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'gatefall-dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // HTTPS in Produktion
-    sameSite: 'lax', // lax auch in Produktion, da gleiche Domain
+    sameSite: 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 Tage
   }
-}));
+};
+
+console.log('🔧 Session Cookie Config:', {
+  httpOnly: sessionConfig.cookie.httpOnly,
+  secure: sessionConfig.cookie.secure,
+  sameSite: sessionConfig.cookie.sameSite
+});
+
+app.use(session(sessionConfig));
 
 // Passport initialisieren
 app.use(passport.initialize());

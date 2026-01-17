@@ -5,14 +5,23 @@ const router = express.Router();
 
 // Middleware: Prüft ob User eingeloggt ist
 function requireAuth(req, res, next) {
+  console.log('🔒 requireAuth - Session ID:', req.sessionID);
+  console.log('🔒 requireAuth - userId in Session:', req.session.userId);
+  console.log('🔒 requireAuth - Cookies:', req.headers.cookie);
+  
   if (!req.session.userId) {
+    console.log('❌ Keine userId in Session - 401 Unauthorized');
     return res.status(401).json({ error: 'Nicht authentifiziert' });
   }
+  
+  console.log('✅ requireAuth erfolgreich für User:', req.session.userId);
   next();
 }
 
 // GET /api/profile
 router.get('/', requireAuth, (req, res) => {
+  console.log('📊 Profile Request für User:', req.session.userId);
+  
   try {
     const userId = req.session.userId;
 

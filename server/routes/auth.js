@@ -123,6 +123,8 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
+  console.log('🔐 Login-Versuch:', email);
+
   if (!email || !password) {
     return res.status(400).json({ error: 'E-Mail und Passwort erforderlich' });
   }
@@ -136,36 +138,52 @@ router.post('/login', async (req, res) => {
       [normalizedEmail],
       async (err, user) => {
         if (err) {
-          console.error('Database error:', err);
+          console.error('❌ Database error:', err);
           return res.status(500).json({ error: 'Serverfehler beim Login' });
         }
 
         if (!user) {
+          console.log('❌ User nicht gefunden:', normalizedEmail);
           return res.status(401).json({ error: 'Ungültige E-Mail oder Passwort' });
         }
 
         // Passwort prüfen
         const validPassword = await bcrypt.compare(password, user.password_hash);
         if (!validPassword) {
+          console.log('❌ Falsches Passwort für:', normalizedEmail);
           return res.status(401).json({ error: 'Ungültige E-Mail oder Passwort' });
         }
+
+        console.log('✅ Login erfolgreich:', user.display_name);
+        console.log('🔧 Session vor save:', req.sessionID);
 
         // Session erstellen
         req.session.userId = user.id;
         req.session.email = user.email;
         req.session.displayName = user.display_name;
 
-        res.json({
-          success: true,
-          user: {
-            email: user.email,
-            displayName: user.display_name
+        // Session explizit speichern
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('❌ Session save error:', saveErr);
+            return res.status(500).json({ error: 'Session konnte nicht gespeichert werden' });
           }
+
+          console.log('✅ Session gespeichert:', req.sessionID);
+          console.log('🍪 Set-Cookie header wird gesendet');
+
+          res.json({
+            success: true,
+            user: {
+              email: user.email,
+              displayName: user.display_name
+            }
+          });
         });
       }
     );
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ Login error:', error);
     res.status(500).json({ error: 'Serverfehler beim Login' });
   }
 });
