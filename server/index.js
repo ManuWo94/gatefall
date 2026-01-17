@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const path = require('path');
 require('dotenv').config(); // .env-Datei laden
 const passport = require('./passport');
@@ -29,23 +30,32 @@ if (process.env.NODE_ENV !== 'production') {
   console.log('🔧 CORS deaktiviert (Production)');
 }
 
-// Session-Konfiguration
+// Session-Konfiguration mit FileStore für Persistenz
 const sessionConfig = {
+  store: new FileStore({
+    path: path.join(__dirname, 'sessions'),
+    ttl: 86400 * 7, // 7 Tage in Sekunden
+    retries: 0
+  }),
   secret: process.env.SESSION_SECRET || 'gatefall-dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
+  name: 'gatefall.sid', // Custom cookie name
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // HTTPS in Produktion
     sameSite: 'lax',
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 Tage
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 Tage
+    path: '/'
   }
 };
 
 console.log('🔧 Session Cookie Config:', {
+  name: sessionConfig.name,
   httpOnly: sessionConfig.cookie.httpOnly,
   secure: sessionConfig.cookie.secure,
-  sameSite: sessionConfig.cookie.sameSite
+  sameSite: sessionConfig.cookie.sameSite,
+  path: sessionConfig.cookie.path
 });
 
 app.use(session(sessionConfig));
