@@ -360,7 +360,14 @@ export class CombatEngine {
                     const baseGold = 30;
                     const gateMultiplier = this.getGateRankMultiplier(dungeon.gateRank);
                     const earnedXp = Math.floor(baseXp * gateMultiplier);
-                    const earnedGold = Math.floor(baseGold * gateMultiplier);
+                    let earnedGold = Math.floor(baseGold * gateMultiplier);
+                    // Apply guild gold bonus if present
+                    const guildBonus = this.state.progression.guildGoldBonus || 0;
+                    if (guildBonus > 0) {
+                        const bonusGold = Math.floor(earnedGold * guildBonus);
+                        earnedGold += bonusGold;
+                        this.emitEvent(CombatEventType.INFO, `🏰 Vereinigungs-Bonus: +${bonusGold} Gold (+${Math.floor(guildBonus * 100)}%)`);
+                    }
                     this.state.progression.xp += earnedXp;
                     this.state.progression.gold += earnedGold;
                     // Check for level up (simple: 100 XP per level)

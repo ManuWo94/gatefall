@@ -86,6 +86,7 @@ export interface Progression {
     level: number;
     xp: number;
     gold: number;
+    guildGoldBonus?: number; // Gold-Bonus der Gilde (0.10 = +10%)
 }
 
 export interface BossState {

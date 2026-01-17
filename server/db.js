@@ -122,7 +122,37 @@ db.serialize(() => {
     )
   `);
 
+  // Player-owned Guilds
+  db.run(`
+    CREATE TABLE IF NOT EXISTS player_guilds (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      owner_id INTEGER NOT NULL,
+      minimum_hunter_rank TEXT NOT NULL DEFAULT 'D',
+      gold_bonus REAL NOT NULL DEFAULT 0.10,
+      reputation INTEGER NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Guild join applications
+  db.run(`
+    CREATE TABLE IF NOT EXISTS guild_applications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      guild_id TEXT NOT NULL,
+      user_id INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      decided_at DATETIME,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(guild_id, user_id)
+    )
+  `);
+
   db.run(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_guild_applications ON guild_applications(guild_id, status)`);
 
   console.log('✓ Datenbank initialisiert:', dbPath);
 });

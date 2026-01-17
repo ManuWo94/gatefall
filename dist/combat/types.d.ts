@@ -74,6 +74,7 @@ export interface Progression {
     level: number;
     xp: number;
     gold: number;
+    guildGoldBonus?: number;
 }
 export interface BossState {
     isFightingBoss: boolean;

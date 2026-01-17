@@ -79,10 +79,78 @@ function canJoinGuild(hunterRank, guildId) {
   return playerRankLevel >= guildRankLevel;
 }
 
+/**
+ * AI-basierte Beitritts-Entscheidung für NPC-Gilden
+ * @param {string} guildId - Die ID der Gilde
+ * @param {string} hunterRank - Hunter-Rang des Spielers
+ * @param {number} level - Level des Spielers
+ * @param {number} reputation - Reputation des Spielers (optional, default 0)
+ * @returns {{accepted: boolean, reason: string}}
+ */
+function aiGuildDecision(guildId, hunterRank, level, reputation = 0) {
+  const guild = getGuildById(guildId);
+  if (!guild) {
+    return { accepted: false, reason: 'Vereinigung nicht gefunden' };
+  }
+
+  // Mindestrang prüfen
+  if (!canJoinGuild(hunterRank, guildId)) {
+    return { 
+      accepted: false, 
+      reason: `Hunter-Rang ${guild.minimumHunterRank} erforderlich` 
+    };
+  }
+
+  // KI-Entscheidung basierend auf Gilde
+  const playerRankLevel = RANK_HIERARCHY[hunterRank] || 0;
+  const guildRankLevel = RANK_HIERARCHY[guild.minimumHunterRank] || 0;
+  
+  // Wahrscheinlichkeit basierend auf Rangunterschied
+  // Je höher der Rang über Minimum, desto höher die Chance
+  const rankDifference = playerRankLevel - guildRankLevel;
+  
+  let baseChance = 0.60; // 60% Basiswahrscheinlichkeit
+  
+  // Rang-Bonus: +10% pro Rang über Minimum
+  const rankBonus = rankDifference * 0.10;
+  
+  // Level-Bonus: +1% pro 5 Level
+  const levelBonus = Math.floor(level / 5) * 0.01;
+  
+  // Reputation-Bonus: +5% pro 100 Reputation
+  const repBonus = Math.floor(reputation / 100) * 0.05;
+  
+  const totalChance = Math.min(0.95, baseChance + rankBonus + levelBonus + repBonus);
+  
+  const random = Math.random();
+  const accepted = random < totalChance;
+  
+  console.log(`🎲 KI-Entscheidung für ${guild.name}: ${(totalChance * 100).toFixed(1)}% Chance, Würfel: ${(random * 100).toFixed(1)}% → ${accepted ? 'AKZEPTIERT' : 'ABGELEHNT'}`);
+  
+  if (accepted) {
+    return {
+      accepted: true,
+      reason: `Willkommen bei ${guild.name}! Deine Bewerbung wurde akzeptiert.`
+    };
+  } else {
+    const reasons = [
+      'Deine Fähigkeiten entsprechen noch nicht unseren Anforderungen.',
+      'Wir suchen derzeit nach erfahreneren Huntern.',
+      'Deine Bewerbung wurde geprüft, aber abgelehnt.',
+      'Sammle mehr Erfahrung und bewirb dich erneut.'
+    ];
+    return {
+      accepted: false,
+      reason: reasons[Math.floor(Math.random() * reasons.length)]
+    };
+  }
+}
+
 module.exports = {
   GUILDS,
   RANK_HIERARCHY,
   getGuildById,
   getAvailableGuilds,
-  canJoinGuild
+  canJoinGuild,
+  aiGuildDecision
 };

@@ -1471,3 +1471,65 @@ h3 {
     background: linear-gradient(135deg, #6b5b22 0%, #4b3b12 100%);
     color: #ffd700;
 }
+
+/* Guild Create Button */
+.guild-create-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(60, 60, 100, 0.3);
+    border-radius: 6px;
+}
+
+.guild-create-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #4169e1 0%, #2a4a9a 100%);
+    border: 1px solid #5179f1;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.guild-create-btn:hover {
+    background: linear-gradient(135deg, #5179f1 0%, #3a5aaa 100%);
+}
+
+/* Guild Apply Button */
+.guild-apply-btn {
+    background: linear-gradient(135deg, #9932cc 0%, #7a28a8 100%);
+    border: 1px solid #aa42dc;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.guild-apply-btn:hover {
+    background: linear-gradient(135deg, #aa42dc 0%, #8a38b8 100%);
+}
+
+/* Player Guild Card */
+.guild-card.guild-player {
+    border-color: #66ccff;
+}
+
+.guild-card-owner {
+    color: #ffd700;
+    font-size: 0.85em;
+    margin-bottom: 5px;
+}
+
+/* Guild Locked Badge */
+.guild-locked-badge {
+    color: #888;
+    font-size: 0.9em;
+}
+
+/* Guild Current Badge */
+.guild-current-badge {
+    color: #ffd700;
+    font-weight: bold;
+}

@@ -111,6 +111,34 @@ class AuthAPI {
     return response.json();
   }
 
+  static async applyGuild(guildId: string) {
+    const response = await fetch(`${this.baseUrl}/profile/guild/apply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ guildId })
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Bewerbung fehlgeschlagen');
+    }
+    return response.json();
+  }
+
+  static async createGuild(name: string, description: string, minimumHunterRank: string) {
+    const response = await fetch(`${this.baseUrl}/profile/guild/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name, description, minimumHunterRank })
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Erstellen fehlgeschlagen');
+    }
+    return response.json();
+  }
+
   static async leaveGuild() {
     const response = await fetch(`${this.baseUrl}/profile/guild/leave`, {
       method: 'POST',
@@ -397,10 +425,26 @@ class AuthUI {
     this.currentProfile = profile;
     const displayNameEl = document.getElementById('user-display-name');
     if (displayNameEl) displayNameEl.textContent = profile.displayName;
+    
+    // Update game state with progression and guild bonus
     if ((window as any).gameState) {
       (window as any).gameState.level = profile.progression.level;
       (window as any).gameState.xp = profile.progression.xp;
       (window as any).gameState.gold = profile.progression.gold;
+      
+      // Load guild bonus if in a guild
+      if (profile.progression.guildId) {
+        const guilds = await AuthAPI.getGuilds();
+        const currentGuild = guilds.npcGuilds?.find((g: any) => g.id === profile.progression.guildId) 
+                          || guilds.playerGuilds?.find((g: any) => g.id === profile.progression.guildId);
+        
+        if (currentGuild) {
+          (window as any).gameState.guildGoldBonus = currentGuild.goldBonus || currentGuild.gold_bonus || 0;
+        }
+      } else {
+        (window as any).gameState.guildGoldBonus = 0;
+      }
+      
       (window as any).gameState.updateUI();
     }
     this.updateVerificationUI();
@@ -620,8 +664,12 @@ class AuthUI {
       const leaveBtn = document.getElementById('btn-leave-guild');
       const guildList = document.getElementById('guild-list');
 
-      // Aktuelle Guild anzeigen
-      const currentGuild = data.guilds.find((g: any) => g.id === this.currentProfile?.progression?.guildId);
+      // Aktuelle Guild anzeigen (NPC oder Player)
+      let currentGuild = data.npcGuilds?.find((g: any) => g.id === this.currentProfile?.progression?.guildId);
+      if (!currentGuild) {
+        currentGuild = data.playerGuilds?.find((g: any) => g.id === this.currentProfile?.progression?.guildId);
+      }
+      
       if (currentGuildName) {
         currentGuildName.textContent = currentGuild ? currentGuild.name : 'Keine Vereinigung';
       }
@@ -632,11 +680,32 @@ class AuthUI {
       // Guild-Liste rendern
       if (guildList) {
         guildList.innerHTML = '';
-        data.guilds.forEach((guild: any) => {
+        
+        // "Vereinigung erstellen" Button
+        if (!this.currentProfile?.progression?.guildId) {
+          const createDiv = document.createElement('div');
+          createDiv.className = 'guild-create-section';
+          createDiv.innerHTML = `
+            <button class="guild-create-btn" id="btn-create-guild">➕ Eigene Vereinigung gründen</button>
+          `;
+          guildList.appendChild(createDiv);
+          
+          const createBtn = createDiv.querySelector('#btn-create-guild');
+          createBtn?.addEventListener('click', () => this.showCreateGuildDialog());
+        }
+        
+        // NPC-Guilds Sektion
+        const npcHeader = document.createElement('h4');
+        npcHeader.textContent = '🏛️ Offizielle Hunter-Vereinigungen';
+        npcHeader.style.color = '#ffd700';
+        npcHeader.style.marginTop = '20px';
+        guildList.appendChild(npcHeader);
+        
+        data.npcGuilds?.forEach((guild: any) => {
           const card = document.createElement('div');
           card.className = 'guild-card';
           
-          const isAvailable = data.availableGuilds.includes(guild.id);
+          const isAvailable = data.availableNpcGuilds?.includes(guild.id);
           const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
           
           if (!isAvailable) card.classList.add('guild-locked');
@@ -649,7 +718,7 @@ class AuthUI {
             </div>
             <div class="guild-card-desc">${guild.description}</div>
             <div class="guild-card-bonus">+${Math.round(guild.goldBonus * 100)}% Gold</div>
-            ${!isCurrent && isAvailable ? `<button class="guild-join-btn" data-guild-id="${guild.id}">Beitreten</button>` : ''}
+            ${!isCurrent && isAvailable ? `<button class="guild-apply-btn" data-guild-id="${guild.id}">🎲 Bewerben</button>` : ''}
             ${isCurrent ? '<span class="guild-current-badge">Aktuelle Vereinigung</span>' : ''}
             ${!isAvailable ? '<span class="guild-locked-badge">🔒 Gesperrt</span>' : ''}
           `;
@@ -657,7 +726,60 @@ class AuthUI {
           guildList.appendChild(card);
         });
 
-        // Join-Buttons
+        // Player-Guilds Sektion
+        if (data.playerGuilds && data.playerGuilds.length > 0) {
+          const playerHeader = document.createElement('h4');
+          playerHeader.textContent = '👥 Spieler-Vereinigungen';
+          playerHeader.style.color = '#66ccff';
+          playerHeader.style.marginTop = '20px';
+          guildList.appendChild(playerHeader);
+          
+          data.playerGuilds.forEach((guild: any) => {
+            const card = document.createElement('div');
+            card.className = 'guild-card guild-player';
+            
+            const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
+            if (isCurrent) card.classList.add('guild-current');
+
+            const goldBonus = guild.gold_bonus || 0.10;
+            card.innerHTML = `
+              <div class="guild-card-header">
+                <span class="guild-card-name">${guild.name}</span>
+                <span class="guild-card-rank">Min. ${guild.minimum_hunter_rank}</span>
+              </div>
+              <div class="guild-card-desc">${guild.description}</div>
+              <div class="guild-card-owner">👑 Gründer: ${guild.owner_name}</div>
+              <div class="guild-card-bonus">+${Math.round(goldBonus * 100)}% Gold</div>
+              ${!isCurrent ? `<button class="guild-join-btn" data-guild-id="${guild.id}">Beitreten</button>` : ''}
+              ${isCurrent ? '<span class="guild-current-badge">Aktuelle Vereinigung</span>' : ''}
+            `;
+
+            guildList.appendChild(card);
+          });
+        }
+
+        // Apply-Buttons für NPC-Guilds (mit KI-Entscheidung)
+        guildList.querySelectorAll('.guild-apply-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const guildId = (e.target as HTMLElement).dataset.guildId;
+            if (!guildId) return;
+
+            try {
+              const result = await AuthAPI.applyGuild(guildId);
+              if (result.accepted) {
+                await this.loadProfile();
+                await this.loadGuilds();
+                alert(`✅ ${result.message}`);
+              } else {
+                alert(`❌ ${result.message}`);
+              }
+            } catch (error: any) {
+              alert(error.message);
+            }
+          });
+        });
+
+        // Join-Buttons für Player-Guilds (sofortiger Beitritt)
         guildList.querySelectorAll('.guild-join-btn').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const guildId = (e.target as HTMLElement).dataset.guildId;
@@ -678,6 +800,36 @@ class AuthUI {
       console.error('Guild load error:', error);
     }
   }
+
+  private showCreateGuildDialog() {
+    const name = prompt('Name der Vereinigung:');
+    if (!name) return;
+
+    const description = prompt('Beschreibung:');
+    if (!description) return;
+
+    const minRank = prompt('Mindest-Hunter-Rang (D/C/B/A/S/SS):', 'D');
+    if (!minRank) return;
+
+    const validRanks = ['D', 'C', 'B', 'A', 'S', 'SS'];
+    if (!validRanks.includes(minRank.toUpperCase())) {
+      alert('Ungültiger Rang! Bitte D, C, B, A, S oder SS eingeben.');
+      return;
+    }
+
+    this.createGuildAsync(name, description, minRank.toUpperCase());
+  }
+
+  private async createGuildAsync(name: string, description: string, minRank: string) {
+    try {
+      const result = await AuthAPI.createGuild(name, description, minRank);
+      await this.loadProfile();
+      await this.loadGuilds();
+      alert(`✅ ${result.message}`);
+    } catch (error: any) {
+      alert(`❌ ${error.message}`);
+    }
+  }
 }
 
 // Initialize combat engine and UI renderer
@@ -695,11 +847,13 @@ const authUI = new AuthUI();
     level: 1,
     xp: 0,
     gold: 0,
+    guildGoldBonus: 0,
     updateUI: () => {
         const state = engine.getState();
         state.progression.level = (window as any).gameState.level;
         state.progression.xp = (window as any).gameState.xp;
         state.progression.gold = (window as any).gameState.gold;
+        state.progression.guildGoldBonus = (window as any).gameState.guildGoldBonus;
         ui.updateUI(state);
     }
 };
