@@ -64,4 +64,4 @@ export declare class GatesUIManager {
      */
     completeGate(gateId: string): void;
 }
-//# sourceMappingURL=gates-ui.d.ts.map
+//# sourceMappingURL=gates-ui-fixed.d.ts.map

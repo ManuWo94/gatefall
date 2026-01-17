@@ -1,0 +1,450 @@
+/* ============================================
+   PORTAL GATES UI - Animierte Portal-Visuals
+   ============================================ */
+
+/* Universe Header */
+.universe-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.95) 0%, rgba(5, 15, 30, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 200, 255, 0.2);
+}
+
+.universe-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.9));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.universe-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.8);
+    letter-spacing: 0.2em;
+}
+
+/* Filter Control Bar */
+.gate-filter-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-icon-btn {
+    background: linear-gradient(135deg, rgba(20, 40, 70, 0.9) 0%, rgba(10, 25, 45, 0.9) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+}
+
+.filter-icon-btn:hover {
+    background: linear-gradient(135deg, rgba(30, 50, 80, 0.95) 0%, rgba(15, 30, 50, 0.95) 100%);
+    border-color: #00d4ff;
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.filter-icon-btn.active {
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border-color: #00d4ff;
+    color: white;
+    box-shadow: 0 0 20px rgba(0, 120, 255, 0.6);
+}
+
+.gate-search-box {
+    background: rgba(10, 20, 35, 0.9);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.gate-search-box:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
+}
+
+.gate-counter {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.gate-counter span {
+    color: #00d4ff;
+    font-weight: 700;
+}
+
+/* Gates Grid */
+.gates-universe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(5, 15, 30, 0.6) 0%, rgba(10, 20, 40, 0.6) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    min-height: 500px;
+}
+
+/* Portal Card */
+.gate-portal-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.gate-portal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(0, 200, 255, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.gate-portal-card:hover::before {
+    opacity: 1;
+}
+
+.gate-portal-card:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.6);
+    transform: translateY(-8px);
+}
+
+/* Info Button */
+.gate-info-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 150, 255, 0.9);
+    border: 2px solid #00d4ff;
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.gate-info-btn:hover {
+    background: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.9);
+    transform: scale(1.15);
+}
+
+/* Rank Badge */
+.gate-rank-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, rgba(0, 100, 200, 0.9) 0%, rgba(0, 50, 150, 0.9) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.6);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.6);
+}
+
+.gate-rank-badge.rank-d { 
+    background: linear-gradient(135deg, #6b8cae 0%, #4a5f7a 100%); 
+    border-color: #8ba8c4; 
+}
+.gate-rank-badge.rank-c { 
+    background: linear-gradient(135deg, #4169e1 0%, #1e3a8a 100%); 
+    border-color: #6495ed; 
+}
+.gate-rank-badge.rank-b { 
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); 
+    border-color: #c084fc; 
+}
+.gate-rank-badge.rank-a { 
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+    border-color: #f87171; 
+}
+.gate-rank-badge.rank-s { 
+    background: linear-gradient(135deg, #1e40af 0%, #0f172a 100%); 
+    border-color: #3b82f6; 
+}
+.gate-rank-badge.rank-ss { 
+    background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%); 
+    border-color: #4a4a6a; 
+}
+
+/* Portal Container */
+.portal-container {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animated Portal */
+.portal {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 50%;
+}
+
+.portal-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid;
+    animation: rotate-ring 8s linear infinite;
+}
+
+.portal-ring.ring-1 {
+    width: 100%;
+    height: 100%;
+    animation-duration: 8s;
+}
+
+.portal-ring.ring-2 {
+    width: 70%;
+    height: 70%;
+    animation-duration: 6s;
+    animation-direction: reverse;
+}
+
+.portal-ring.ring-3 {
+    width: 40%;
+    height: 40%;
+    animation-duration: 4s;
+}
+
+.portal-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    animation: pulse-core 2s ease-in-out infinite;
+}
+
+@keyframes rotate-ring {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes pulse-core {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.2); 
+        opacity: 1;
+    }
+}
+
+/* Portal Types (basierend auf den Bildern) */
+
+/* D-Rang: Hellblau (Bild 1) */
+.portal-blue .portal-ring {
+    border-color: rgba(100, 200, 255, 0.8);
+    box-shadow: 0 0 15px rgba(100, 200, 255, 0.6);
+}
+.portal-blue .portal-core {
+    background: radial-gradient(circle, rgba(200, 240, 255, 0.9) 0%, rgba(100, 200, 255, 0.4) 100%);
+    box-shadow: 0 0 25px rgba(100, 200, 255, 0.8);
+}
+
+/* C-Rang: Cyan */
+.portal-cyan .portal-ring {
+    border-color: rgba(0, 255, 200, 0.8);
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.6);
+}
+.portal-cyan .portal-core {
+    background: radial-gradient(circle, rgba(150, 255, 240, 0.9) 0%, rgba(0, 255, 200, 0.4) 100%);
+    box-shadow: 0 0 25px rgba(0, 255, 200, 0.8);
+}
+
+/* B-Rang: Lila (Bild 2) */
+.portal-purple .portal-ring {
+    border-color: rgba(200, 100, 255, 0.8);
+    box-shadow: 0 0 15px rgba(200, 100, 255, 0.6);
+}
+.portal-purple .portal-core {
+    background: radial-gradient(circle, rgba(255, 200, 255, 0.9) 0%, rgba(150, 50, 200, 0.5) 100%);
+    box-shadow: 0 0 30px rgba(200, 100, 255, 0.9);
+}
+
+/* A-Rang: Rot (Bild 4) */
+.portal-red .portal-ring {
+    border-color: rgba(255, 100, 100, 0.9);
+    box-shadow: 0 0 20px rgba(255, 50, 50, 0.7);
+}
+.portal-red .portal-core {
+    background: radial-gradient(circle, rgba(255, 200, 200, 0.95) 0%, rgba(200, 50, 50, 0.6) 100%);
+    box-shadow: 0 0 35px rgba(255, 100, 100, 1);
+}
+
+/* S-Rang: Dunkelblau mit Blitzen (Bild 3) */
+.portal-dark .portal-ring {
+    border-color: rgba(100, 150, 255, 0.9);
+    box-shadow: 0 0 25px rgba(100, 150, 255, 0.8);
+}
+.portal-dark .portal-core {
+    background: radial-gradient(circle, rgba(50, 100, 200, 0.95) 0%, rgba(10, 20, 60, 0.9) 100%);
+    box-shadow: 0 0 40px rgba(100, 150, 255, 1);
+}
+
+/* SS-Rang: Schwarz */
+.portal-black .portal-ring {
+    border-color: rgba(150, 150, 200, 0.9);
+    box-shadow: 0 0 30px rgba(100, 100, 150, 0.9);
+}
+.portal-black .portal-core {
+    background: radial-gradient(circle, rgba(80, 80, 120, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
+    box-shadow: 0 0 50px rgba(150, 150, 200, 1);
+}
+
+/* Gate Name */
+.gate-name {
+    color: #00d4ff;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+    letter-spacing: 0.05em;
+}
+
+/* Boss Label */
+.gate-boss-label {
+    background: rgba(0, 100, 150, 0.3);
+    border: 1px solid rgba(0, 200, 255, 0.4);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Completed Gates */
+.gate-portal-card.completed {
+    border-color: rgba(0, 255, 100, 0.6);
+    background: linear-gradient(135deg, rgba(0, 60, 30, 0.6) 0%, rgba(0, 40, 20, 0.6) 100%);
+}
+
+.gate-portal-card.completed::after {
+    content: '✓';
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 255, 100, 0.95);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.8);
+}
+
+/* Combat Title */
+.combat-title-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(150, 50, 50, 0.3) 0%, rgba(100, 30, 30, 0.3) 100%);
+    border: 2px solid rgba(200, 50, 50, 0.5);
+    border-radius: 8px;
+}
+
+.combat-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 12px rgba(255, 100, 100, 0.7));
+}
+
+.combat-title-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff6666;
+    text-shadow: 0 0 12px rgba(255, 100, 100, 0.7);
+    letter-spacing: 0.15em;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .gates-universe-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .gates-universe-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .gate-filter-control {
+        flex-wrap: wrap;
+    }
+}

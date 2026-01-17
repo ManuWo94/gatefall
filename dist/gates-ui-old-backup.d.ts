@@ -1,6 +1,6 @@
 /**
- * Gates UI Manager - Fixed Version
- * Verwaltet die Gate-Auswahl mit funktionierenden Filtern
+ * Gates UI Manager - Galactic Universe Style
+ * Verwaltet die Gate-Auswahl im Universums-Grid
  */
 import { GateRank } from './combat/types.js';
 export declare class GatesUIManager {
@@ -10,6 +10,9 @@ export declare class GatesUIManager {
     private playerLevel;
     private playerRank;
     private completedGates;
+    private currentGalaxy;
+    private currentSystem;
+    private gatesPerPage;
     constructor();
     /**
      * Initialisiert das Gates-System
@@ -24,9 +27,21 @@ export declare class GatesUIManager {
      */
     private saveCompletedGate;
     /**
-     * Event-Listener für Filter
+     * Event-Listener für Navigation und Filter
      */
     private setupEventListeners;
+    /**
+     * Wechselt Galaxie
+     */
+    private changeGalaxy;
+    /**
+     * Wechselt System
+     */
+    private changeSystem;
+    /**
+     * Aktualisiert Galaxie/System-Anzeige
+     */
+    private updateGalaxyDisplay;
     /**
      * Setzt Filter für Gates
      */
@@ -36,17 +51,21 @@ export declare class GatesUIManager {
      */
     private searchGates;
     /**
-     * Rendert die Gates im Grid
+     * Rendert die Gates im 5x3 Grid
      */
     private renderGates;
     /**
-     * Erstellt eine Gate-Karte mit animiertem Portal
+     * Erstellt eine Gate-Planetenkarte im Galactic Style
      */
-    private createGateCard;
+    private createGatePlanetCard;
     /**
-     * Gibt Portal-Klasse basierend auf Rang zurück
+     * Erstellt einen leeren Slot
      */
-    private getPortalClass;
+    private createEmptySlot;
+    /**
+     * Gibt Planeten-Icon basierend auf Rang zurück
+     */
+    private getPlanetIcon;
     /**
      * Zeigt Gate-Informationen
      */
@@ -60,8 +79,12 @@ export declare class GatesUIManager {
      */
     private enterGate;
     /**
+     * Startet Combat für ein Gate
+     */
+    private startGateCombat;
+    /**
      * Markiert Gate als abgeschlossen
      */
     completeGate(gateId: string): void;
 }
-//# sourceMappingURL=gates-ui.d.ts.map
+//# sourceMappingURL=gates-ui-old-backup.d.ts.map

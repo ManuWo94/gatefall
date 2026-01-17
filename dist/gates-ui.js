@@ -1,6 +1,6 @@
 /**
- * Gates UI Manager - Galactic Universe Style
- * Verwaltet die Gate-Auswahl im Universums-Grid
+ * Gates UI Manager - Fixed Version
+ * Verwaltet die Gate-Auswahl mit funktionierenden Filtern
  */
 import { GateGenerator } from './combat/gates.js';
 export class GatesUIManager {
@@ -11,10 +11,7 @@ export class GatesUIManager {
         this.playerLevel = 1;
         this.playerRank = 'D';
         this.completedGates = new Set();
-        this.currentGalaxy = 1;
-        this.currentSystem = 1;
-        this.gatesPerPage = 15; // 5x3 Grid
-        this.setupEventListeners();
+        // Event Listener werden nach DOM-Load gesetzt
     }
     /**
      * Initialisiert das Gates-System
@@ -29,6 +26,7 @@ export class GatesUIManager {
         await this.loadCompletedGates();
         this.renderGates();
         this.updateCounters();
+        this.setupEventListeners();
     }
     /**
      * Lädt abgeschlossene Gates vom Server
@@ -67,23 +65,18 @@ export class GatesUIManager {
         }
     }
     /**
-     * Event-Listener für Navigation und Filter
+     * Event-Listener für Filter
      */
     setupEventListeners() {
-        // Galaxy Navigation
-        const btnPrevGalaxy = document.getElementById('btn-prev-galaxy');
-        const btnNextGalaxy = document.getElementById('btn-next-galaxy');
-        const btnPrevSystem = document.getElementById('btn-prev-system');
-        const btnNextSystem = document.getElementById('btn-next-system');
-        btnPrevGalaxy?.addEventListener('click', () => this.changeGalaxy(-1));
-        btnNextGalaxy?.addEventListener('click', () => this.changeGalaxy(1));
-        btnPrevSystem?.addEventListener('click', () => this.changeSystem(-1));
-        btnNextSystem?.addEventListener('click', () => this.changeSystem(1));
+        console.log('Setting up event listeners for gates UI');
         // Filter Buttons
         const filterButtons = document.querySelectorAll('.filter-icon-btn');
+        console.log('Found filter buttons:', filterButtons.length);
         filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const filter = btn.getAttribute('data-filter');
+                console.log('Filter clicked:', filter);
                 if (filter) {
                     this.setFilter(filter);
                     // Update active state
@@ -99,119 +92,84 @@ export class GatesUIManager {
         });
     }
     /**
-     * Wechselt Galaxie
-     */
-    changeGalaxy(delta) {
-        const maxGalaxy = Math.ceil(this.gates.length / (this.gatesPerPage * 10));
-        this.currentGalaxy = Math.max(1, Math.min(maxGalaxy, this.currentGalaxy + delta));
-        this.currentSystem = 1;
-        this.updateGalaxyDisplay();
-        this.renderGates();
-    }
-    /**
-     * Wechselt System
-     */
-    changeSystem(delta) {
-        const maxSystem = 10;
-        this.currentSystem = Math.max(1, Math.min(maxSystem, this.currentSystem + delta));
-        this.updateGalaxyDisplay();
-        this.renderGates();
-    }
-    /**
-     * Aktualisiert Galaxie/System-Anzeige
-     */
-    updateGalaxyDisplay() {
-        const galaxyEl = document.getElementById('current-galaxy');
-        const systemEl = document.getElementById('current-system');
-        const systemLabelEl = document.querySelector('.system-label');
-        if (galaxyEl)
-            galaxyEl.textContent = this.currentGalaxy.toString();
-        if (systemEl)
-            systemEl.textContent = this.currentSystem.toString();
-        if (systemLabelEl)
-            systemLabelEl.textContent = `SYSTEM ${this.currentGalaxy}.${this.currentSystem}`;
-    }
-    /**
      * Setzt Filter für Gates
      */
     setFilter(filter) {
+        console.log('Setting filter to:', filter);
         this.currentFilter = filter;
-        switch (filter) {
-            case 'all':
-                this.filteredGates = [...this.gates];
-                break;
-            case 'owned':
-                this.filteredGates = this.gates.filter(gate => this.completedGates.has(gate.id));
-                break;
-            case 'unowned':
-                this.filteredGates = this.gates.filter(gate => !this.completedGates.has(gate.id));
-                break;
-            case 'active':
-                // Für zukünftige Implementierung
-                this.filteredGates = [...this.gates];
-                break;
-            default:
-                this.filteredGates = [...this.gates];
+        if (filter === 'all') {
+            this.filteredGates = [...this.gates];
         }
+        else {
+            // Rang-Filter (D, C, B, A, S, SS)
+            this.filteredGates = this.gates.filter(gate => gate.rank === filter);
+        }
+        console.log('Filtered gates:', this.filteredGates.length);
         this.renderGates();
+        this.updateCounters();
     }
     /**
      * Suche nach Gates
      */
     searchGates(query) {
         if (!query.trim()) {
-            this.filteredGates = [...this.gates];
-        }
-        else {
-            const lowerQuery = query.toLowerCase();
-            this.filteredGates = this.gates.filter(gate => gate.name.toLowerCase().includes(lowerQuery) ||
-                gate.boss.name.toLowerCase().includes(lowerQuery));
-        }
-        this.renderGates();
-    }
-    /**
-     * Rendert die Gates im 5x3 Grid
-     */
-    renderGates() {
-        const gridEl = document.getElementById('gates-grid');
-        if (!gridEl)
+            this.setFilter(this.currentFilter);
             return;
-        gridEl.innerHTML = '';
-        // Berechne aktuelle Seite basierend auf Galaxy/System
-        const startIndex = ((this.currentGalaxy - 1) * 10 + (this.currentSystem - 1)) * this.gatesPerPage;
-        const endIndex = startIndex + this.gatesPerPage;
-        const pageGates = this.filteredGates.slice(startIndex, endIndex);
-        // Fülle Grid mit 15 Slots (5x3)
-        for (let i = 0; i < this.gatesPerPage; i++) {
-            const gate = pageGates[i];
-            const card = gate ? this.createGatePlanetCard(gate) : this.createEmptySlot(i);
-            gridEl.appendChild(card);
         }
+        const lowerQuery = query.toLowerCase();
+        this.filteredGates = this.gates.filter(gate => gate.name.toLowerCase().includes(lowerQuery) ||
+            gate.boss.name.toLowerCase().includes(lowerQuery));
+        this.renderGates();
         this.updateCounters();
     }
     /**
-     * Erstellt eine Gate-Planetenkarte im Galactic Style
+     * Rendert die Gates im Grid
      */
-    createGatePlanetCard(gate) {
+    renderGates() {
+        const gridEl = document.getElementById('gates-grid');
+        if (!gridEl) {
+            console.error('Gates grid element not found!');
+            return;
+        }
+        gridEl.innerHTML = '';
+        // Zeige alle gefilterten Gates
+        this.filteredGates.forEach(gate => {
+            const card = this.createGateCard(gate);
+            gridEl.appendChild(card);
+        });
+        console.log('Rendered gates:', this.filteredGates.length);
+    }
+    /**
+     * Erstellt eine Gate-Karte mit animiertem Portal
+     */
+    createGateCard(gate) {
         const card = document.createElement('div');
-        card.className = 'gate-planet-card';
+        card.className = 'gate-portal-card';
         if (this.completedGates.has(gate.id)) {
             card.classList.add('completed');
         }
-        const planetIcon = this.getPlanetIcon(gate.rank);
+        const portalClass = this.getPortalClass(gate.rank);
         card.innerHTML = `
             <div class="gate-info-btn" title="Gate Information">ℹ</div>
             <div class="gate-rank-badge rank-${gate.rank.toLowerCase()}">${gate.rank}</div>
-            <div class="gate-planet-icon">${planetIcon}</div>
-            <div class="gate-planet-name">${gate.name}</div>
-            <div class="gate-owner-badge">
-                <span>👑</span>
-                <span>${gate.boss.name}</span>
+            
+            <div class="portal-container">
+                <div class="portal ${portalClass}">
+                    <div class="portal-ring ring-1"></div>
+                    <div class="portal-ring ring-2"></div>
+                    <div class="portal-ring ring-3"></div>
+                    <div class="portal-core"></div>
+                </div>
+            </div>
+            
+            <div class="gate-name">${gate.name}</div>
+            <div class="gate-boss-label">
+                <span>👑 ${gate.boss.name}</span>
             </div>
         `;
         // Click Event
         card.addEventListener('click', () => this.enterGate(gate));
-        // Info Button Event (verhindert Propagation)
+        // Info Button Event
         const infoBtn = card.querySelector('.gate-info-btn');
         infoBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -220,36 +178,25 @@ export class GatesUIManager {
         return card;
     }
     /**
-     * Erstellt einen leeren Slot
+     * Gibt Portal-Klasse basierend auf Rang zurück
      */
-    createEmptySlot(index) {
-        const card = document.createElement('div');
-        card.className = 'gate-planet-card empty-slot';
-        card.innerHTML = `
-            <div class="gate-planet-icon">⭕</div>
-            <div class="gate-planet-name">Empty Slot ${index + 1}</div>
-        `;
-        return card;
-    }
-    /**
-     * Gibt Planeten-Icon basierend auf Rang zurück
-     */
-    getPlanetIcon(rank) {
-        const planetIcons = {
-            'D': '🟤', // Brauner Planet
-            'C': '🔵', // Blauer Planet
-            'B': '🟢', // Grüner Planet
-            'A': '🟡', // Gelber Planet/Stern
-            'S': '🔴', // Roter Riese
-            'SS': '⚫' // Schwarzes Loch
+    getPortalClass(rank) {
+        const portalClasses = {
+            'D': 'portal-blue', // Hellblau (Bild 1)
+            'C': 'portal-cyan', // Cyan
+            'B': 'portal-purple', // Lila (Bild 2)
+            'A': 'portal-red', // Rot (Bild 4)
+            'S': 'portal-dark', // Dunkelblau (Bild 3)
+            'SS': 'portal-black' // Schwarz
         };
-        return planetIcons[rank];
+        return portalClasses[rank];
     }
     /**
      * Zeigt Gate-Informationen
      */
     showGateInfo(gate) {
-        alert(`GATE: ${gate.name}\n\nRang: ${gate.rank}\nBoss: ${gate.boss.name}\nGegner: ${gate.enemies.length}\nSchwierigkeit: ${gate.difficulty}/10\n\nKlicke auf den Planeten um das Gate zu betreten!`);
+        const bossInfo = `\n👑 BOSS: ${gate.boss.name}\n⚔️ Gegner: ${gate.enemies.length}\n📊 Schwierigkeit: ${gate.difficulty}/10`;
+        alert(`🚪 GATE: ${gate.name}\n\n🏆 Rang: ${gate.rank}${bossInfo}\n\n➡️ Klicke auf das Portal um einzutreten!`);
     }
     /**
      * Aktualisiert Counter-Anzeigen
@@ -268,32 +215,27 @@ export class GatesUIManager {
      * Betretet ein Gate
      */
     enterGate(gate) {
-        console.log('Entering gate:', gate);
-        // TODO: Implementiere Party-Selection-Modal
-        // Für jetzt: Direkt zum Combat wechseln
-        this.startGateCombat(gate);
-    }
-    /**
-     * Startet Combat für ein Gate
-     */
-    startGateCombat(gate) {
-        // Erstelle Dungeon-Objekt aus Gate
+        console.log('Entering gate:', gate.name);
+        // Erstelle Dungeon-Objekt
         const dungeon = {
             name: gate.name,
             enemies: gate.enemies,
             gateRank: gate.rank
         };
-        // Starte Combat mit Gate
+        // Starte Combat
         const engine = window.engine;
         if (engine) {
+            console.log('Starting dungeon combat...');
             engine.startDungeon(dungeon);
             // Wechsle zum Combat-Panel
             const combatNavBtn = document.querySelector('.nav-item[data-panel="combat"]');
             if (combatNavBtn) {
                 combatNavBtn.click();
             }
-            // Markiere Gate als begonnen
-            console.log(`Gate "${gate.name}" wurde betreten!`);
+            console.log(`Gate "${gate.name}" betreten!`);
+        }
+        else {
+            console.error('Combat engine not found!');
         }
     }
     /**
