@@ -1,415 +1,456 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gatefall - Solo Leveling Dungeon</title>
+    <title>SYSTEM - Gatefall</title>
     <link rel="icon" href="favicon.ico" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="system-ui.css">
 </head>
 <body>
-    <!-- Login/Register Screen -->
+    <!-- ==================== AUTH SCREEN ==================== -->
     <div id="auth-screen" class="auth-screen">
         <div class="auth-container">
-            <h1>⚔️ Gatefall</h1>
+            <div class="auth-header">
+                <div class="system-logo">SYSTEM</div>
+                <div class="auth-subtitle">HUNTER AUTHENTICATION</div>
+            </div>
             
             <div class="auth-tabs">
-                <button id="tab-login" class="auth-tab active">Anmelden</button>
-                <button id="tab-register" class="auth-tab">Registrieren</button>
+                <button id="tab-login" class="auth-tab active">ANMELDEN</button>
+                <button id="tab-register" class="auth-tab">REGISTRIEREN</button>
             </div>
 
             <!-- Login Form -->
             <div id="form-login" class="auth-form active">
-                <input type="email" id="login-email" placeholder="E-Mail" required>
-                <input type="password" id="login-password" placeholder="Passwort" required>
-                <button id="btn-login" class="auth-btn">Anmelden</button>
-                <div id="login-error" class="auth-error"></div>
-                
-                <div class="auth-divider">
-                    <span>oder</span>
+                <div class="input-group">
+                    <label>E-MAIL</label>
+                    <input type="email" id="login-email" autocomplete="email">
                 </div>
-                
-                <a href="/api/auth/discord" class="discord-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-                    </svg>
-                    Mit Discord anmelden
-                </a>
+                <div class="input-group">
+                    <label>PASSWORT</label>
+                    <input type="password" id="login-password" autocomplete="current-password">
+                </div>
+                <button id="btn-login" class="system-btn primary">ZUGRIFF ANFORDERN</button>
+                <div id="login-error" class="auth-error"></div>
             </div>
 
             <!-- Register Form -->
             <div id="form-register" class="auth-form">
-                <input type="email" id="register-email" placeholder="E-Mail" required>
-                <input type="password" id="register-password" placeholder="Passwort (min. 8 Zeichen)" required>
-                <input type="text" id="register-displayname" placeholder="Anzeigename (min. 3 Zeichen)" required>
-                <button id="btn-register" class="auth-btn">Registrieren</button>
+                <div class="input-group">
+                    <label>E-MAIL</label>
+                    <input type="email" id="register-email" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORT</label>
+                    <input type="password" id="register-password" autocomplete="new-password">
+                </div>
+                <div class="input-group">
+                    <label>ANZEIGENAME</label>
+                    <input type="text" id="register-displayname" autocomplete="username">
+                </div>
+                <button id="btn-register" class="system-btn primary">REGISTRIEREN</button>
                 <div id="register-error" class="auth-error"></div>
-                
-                <div class="auth-divider">
-                    <span>oder</span>
-                </div>
-                
-                <a href="/api/auth/discord" class="discord-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-                    </svg>
-                    Mit Discord registrieren
-                </a>
+            </div>
+
+            <!-- Email Verification Message -->
+            <div id="email-verification-message" class="verification-message" style="display: none;">
+                <div class="verification-icon">⚠️</div>
+                <p>E-Mail noch nicht verifiziert</p>
+                <button id="btn-resend-verification" class="system-btn secondary">Verifizierung erneut senden</button>
             </div>
         </div>
     </div>
 
-    <!-- Game Screen -->
-    <div id="game-screen" class="container" style="display: none;">
-        <div class="game-header">
-            <h1>⚔️ Gatefall</h1>
-            <div class="user-info">
-                <span id="user-display-name">Jäger</span>
-                <button id="btn-logout" class="logout-btn">Abmelden</button>
-            </div>
-        </div>
-
-        <!-- Email Verification Banner -->
-        <div id="verification-banner" class="verification-banner" style="display: none;">
-            <div class="banner-content">
-                <div class="banner-icon">✉️</div>
-                <div class="banner-text">
-                    <strong>E-Mail nicht bestätigt</strong>
-                    <p>Bitte bestätige deine E-Mail-Adresse, um zu spielen.</p>
-                </div>
-                <button id="btn-resend-verification" class="resend-btn">Bestätigungslink erneut senden</button>
-            </div>
-            <div id="resend-message" class="resend-message"></div>
-        </div>
-
-        <!-- Hunter Guild Panel -->
-        <div id="guild-panel" class="guild-panel" style="display: none;">
-            <div class="guild-header">
-                <h3>🏰 Hunter-Vereinigung</h3>
-                <button id="guild-close-btn" class="guild-close-btn">✕</button>
-            </div>
-            <div class="guild-content">
-                <div class="current-guild-section">
-                    <div class="current-guild-label">Aktuelle Vereinigung:</div>
-                    <div id="current-guild-name" class="current-guild-name">Keine Vereinigung</div>
-                    <button id="btn-leave-guild" class="guild-action-btn guild-leave-btn" style="display: none;">Vereinigung verlassen</button>
-                </div>
-                
-                <div class="guild-list-section">
-                    <h4>Verfügbare Vereinigungen</h4>
-                    <div id="guild-list" class="guild-list">
-                        <!-- Wird dynamisch gefüllt -->
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- ==================== SYSTEM INTERFACE ==================== -->
+    <div id="system-interface" class="system-interface" style="display: none;">
         
-        <div class="main-grid">
-            <!-- Left Column: Player & Enemy -->
-            <div class="left-column">
-                <!-- Player Panel -->
-                <div class="panel player-panel">
-            <h2>Spieler</h2>
-            <div class="character-info">
-                <div class="role-selector">
-                    <label for="role-select">Rolle:</label>
-                    <select id="role-select">
-                        <option value="waechter">Wächter</option>
-                        <option value="assassine" selected>Assassine</option>
-                        <option value="magier">Magier</option>
-                        <option value="scharfschuetze">Scharfschütze</option>
-                        <option value="heiler">Heiler</option>
-                    </select>
-                </div>
-                <div class="name" id="player-name">Jäger</div>
-                <div class="stat-bar">
-                    <label>LP:</label>
-                    <div class="bar-container">
-                        <div class="bar hp-bar" id="player-hp-bar"></div>
-                    </div>
-                    <span class="stat-text" id="player-hp-text">100/100</span>
-                </div>
-                <div class="stat-bar">
-                    <label>MP:</label>
-                    <div class="bar-container">
-                        <div class="bar mp-bar" id="player-mp-bar"></div>
-                    </div>
-                    <span class="stat-text" id="player-mp-text">50/50</span>
-                </div>
+        <!-- LEFT: Navigation -->
+        <nav class="system-nav">
+            <div class="nav-header">
+                <div class="system-logo-small">SYSTEM</div>
+                <div class="user-id" id="user-display-name">HUNTER</div>
             </div>
-        </div>
 
-        <!-- Enemy Panel -->
-        <div class="panel enemy-panel">
-            <h2>Gegner</h2>
-            <div class="character-info">
-                <div class="dungeon-info" id="dungeon-info" style="display: none;">
-                    <div class="dungeon-name" id="dungeon-name"></div>
-                    <div class="dungeon-progress" id="dungeon-progress"></div>
-                </div>
-                <div class="name" id="enemy-name">Goblin</div>
-                <div class="stat-bar">
-                    <label>LP:</label>
-                    <div class="bar-container">
-                        <div class="bar hp-bar" id="enemy-hp-bar"></div>
-                    </div>
-                    <span class="stat-text" id="enemy-hp-text">80/80</span>
-                </div>
+            <div class="nav-items">
+                <button class="nav-item active" data-panel="dashboard">
+                    <span class="nav-label">DASHBOARD</span>
+                </button>
+                <button class="nav-item" data-panel="status">
+                    <span class="nav-label">STATUS</span>
+                </button>
+                <button class="nav-item" data-panel="skills">
+                    <span class="nav-label">FÄHIGKEITEN</span>
+                </button>
+                <button class="nav-item" data-panel="combat">
+                    <span class="nav-label">KAMPF</span>
+                </button>
+                <button class="nav-item" data-panel="gates">
+                    <span class="nav-label">GATES</span>
+                </button>
+                <button class="nav-item" data-panel="vereinigung">
+                    <span class="nav-label">VEREINIGUNG</span>
+                </button>
             </div>
-        </div>
+
+            <div class="nav-footer">
+                <button class="nav-item logout" id="btn-logout">
+                    <span class="nav-label">LOGOUT</span>
+                </button>
             </div>
+        </nav>
+
+        <!-- RIGHT: Content Panels -->
+        <main class="system-content">
             
-            <!-- Right Column: Skills & Dungeon Enemies -->
-            <div class="right-column">
-                <!-- Dungeon Enemies List -->
-                <div class="panel dungeon-enemies-panel" id="dungeon-enemies-panel" style="display: none;">
-                    <h2>🏰 Dungeon Gegner</h2>
-                    <p class="dungeon-hint">Wähle einen Gegner zum Angreifen:</p>
-                    <div id="dungeon-enemies-list" class="dungeon-enemies-list"></div>
+            <!-- DASHBOARD PANEL -->
+            <div class="panel active" id="panel-dashboard">
+                <div class="panel-header">
+                    <h1 class="panel-title">SYSTEM STATUS</h1>
                 </div>
 
-                <!-- Skills -->
-                <div class="skills-panel">
-                    <h3>Fähigkeiten</h3>
-                    <div class="skills-container">
-                        <button class="skill-button" id="skill-1">Fähigkeit 1</button>
-                        <button class="skill-button" id="skill-2">Fähigkeit 2</button>
-                        <button class="skill-button" id="skill-3">Fähigkeit 3</button>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">HUNTER-RANG</div>
+                        <div class="stat-value large" id="dash-hunter-rank">D</div>
                     </div>
-                    <div class="interrupt-container">
-                        <button class="interrupt-button" id="interrupt-btn" style="display: none;">Unterbrechen</button>
+                    <div class="stat-card">
+                        <div class="stat-label">LEVEL</div>
+                        <div class="stat-value large" id="dash-level">1</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">TITEL</div>
+                        <div class="stat-value" id="dash-title">HUNTER</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">VEREINIGUNG</div>
+                        <div class="stat-value" id="dash-guild">KEINE</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">SCHNELLAKTIONEN</h2>
+                    <div class="action-grid">
+                        <button class="action-btn" data-action="enter-gate">
+                            <span class="action-label">GATE BETRETEN</span>
+                        </button>
+                        <button class="action-btn" data-action="start-dungeon">
+                            <span class="action-label">DUNGEON STARTEN</span>
+                        </button>
+                        <button class="action-btn" data-action="manage-skills">
+                            <span class="action-label">FÄHIGKEITEN</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">SYSTEMMELDUNGEN</h2>
+                    <div class="system-log" id="dashboard-log">
+                        <div class="log-entry">System bereit</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Control Buttons -->
-        <div class="controls">
-            <button class="control-button" id="start-combat">Kampf starten</button>
-            <button class="control-button dungeon-button" id="start-dungeon">🏰 Dungeon starten</button>
-            <button class="control-button" id="reset">Zurücksetzen</button>
-            <button class="control-button glossar-button" id="glossar">Glossar</button>
-            <button class="control-button guild-button" id="btn-open-guild">🏰 Vereinigung</button>
-        </div>
+            <!-- STATUS PANEL -->
+            <div class="panel" id="panel-status">
+                <div class="panel-header">
+                    <h1 class="panel-title">STATUS</h1>
+                </div>
 
-        <!-- Combat Log -->
-        <div class="combat-log-panel">
-            <h3>Kampfprotokoll</h3>
-            <div class="combat-log" id="combat-log">
-                <div class="log-entry">Bereit zum Kampf...</div>
+                <div class="status-main">
+                    <div class="status-level">
+                        <div class="level-label">LEVEL</div>
+                        <div class="level-number" id="status-level">1</div>
+                    </div>
+
+                    <div class="status-info">
+                        <div class="info-row">
+                            <span class="info-label">TITEL</span>
+                            <span class="info-value" id="status-title">HUNTER</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">HUNTER-RANG</span>
+                            <span class="info-value" id="status-rank">D</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">ROLLE</span>
+                            <span class="info-value" id="status-role">ASSASSINE</span>
+                        </div>
+                    </div>
+
+                    <div class="status-bars">
+                        <div class="bar-group">
+                            <div class="bar-header">
+                                <span class="bar-label">HP</span>
+                                <span class="bar-value" id="status-hp">85 / 85</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill hp" id="status-hp-bar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-header">
+                                <span class="bar-label">MP</span>
+                                <span class="bar-value" id="status-mp">60 / 60</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill mp" id="status-mp-bar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-attributes">
+                        <div class="attr-row">
+                            <span class="attr-label">STÄRKE</span>
+                            <span class="attr-value" id="attr-str">10</span>
+                        </div>
+                        <div class="attr-row">
+                            <span class="attr-label">VITALITÄT</span>
+                            <span class="attr-value" id="attr-vit">10</span>
+                        </div>
+                        <div class="attr-row">
+                            <span class="attr-label">BEWEGLICHKEIT</span>
+                            <span class="attr-value" id="attr-agi">10</span>
+                        </div>
+                        <div class="attr-row">
+                            <span class="attr-label">INTELLIGENZ</span>
+                            <span class="attr-value" id="attr-int">10</span>
+                        </div>
+                        <div class="attr-row">
+                            <span class="attr-label">WAHRNEHMUNG</span>
+                            <span class="attr-value" id="attr-per">10</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- SKILLS PANEL -->
+            <div class="panel" id="panel-skills">
+                <div class="panel-header">
+                    <h1 class="panel-title">FÄHIGKEITEN</h1>
+                </div>
+
+                <div class="skills-equipped">
+                    <h2 class="section-title">AKTIVE FÄHIGKEITEN <span id="skill-count">(0/4)</span></h2>
+                    <div class="skill-slots">
+                        <div class="skill-slot empty" data-slot="1">
+                            <div class="slot-number">1</div>
+                            <div class="slot-label">LEER</div>
+                        </div>
+                        <div class="skill-slot empty" data-slot="2">
+                            <div class="slot-number">2</div>
+                            <div class="slot-label">LEER</div>
+                        </div>
+                        <div class="skill-slot empty" data-slot="3">
+                            <div class="slot-number">3</div>
+                            <div class="slot-label">LEER</div>
+                        </div>
+                        <div class="skill-slot empty" data-slot="4">
+                            <div class="slot-number">4</div>
+                            <div class="slot-label">LEER</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-library">
+                    <h2 class="section-title">VERFÜGBARE FÄHIGKEITEN</h2>
+                    <div class="skill-list" id="skill-list">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMBAT PANEL -->
+            <div class="panel" id="panel-combat">
+                <div class="panel-header">
+                    <h1 class="panel-title">KAMPFSYSTEM</h1>
+                </div>
+
+                <div class="combat-container">
+                    <div class="combat-header">
+                        <div class="role-selector-group">
+                            <label class="combat-label">ROLLE</label>
+                            <select id="role-select" class="system-select">
+                                <option value="waechter">WÄCHTER</option>
+                                <option value="assassine" selected>ASSASSINE</option>
+                                <option value="magier">MAGIER</option>
+                                <option value="scharfschuetze">SCHARFSCHÜTZE</option>
+                                <option value="heiler">HEILER</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="combat-display">
+                        <div class="combat-entity player">
+                            <div class="entity-name" id="player-name">JÄGER</div>
+                            <div class="entity-bars">
+                                <div class="entity-bar-group">
+                                    <div class="entity-bar-track">
+                                        <div class="entity-bar-fill hp" id="combat-player-hp" style="width: 100%"></div>
+                                    </div>
+                                    <div class="entity-bar-label" id="combat-player-hp-text">85/85</div>
+                                </div>
+                                <div class="entity-bar-group">
+                                    <div class="entity-bar-track">
+                                        <div class="entity-bar-fill mp" id="combat-player-mp" style="width: 100%"></div>
+                                    </div>
+                                    <div class="entity-bar-label" id="combat-player-mp-text">60/60</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="combat-vs">VS</div>
+
+                        <div class="combat-entity enemy">
+                            <div class="entity-name" id="enemy-name">GEGNER</div>
+                            <div class="entity-bars">
+                                <div class="entity-bar-group">
+                                    <div class="entity-bar-track">
+                                        <div class="entity-bar-fill hp" id="combat-enemy-hp" style="width: 100%"></div>
+                                    </div>
+                                    <div class="entity-bar-label" id="combat-enemy-hp-text">80/80</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="combat-controls">
+                        <button id="btn-start-combat" class="system-btn primary">KAMPF STARTEN</button>
+                        <button id="btn-stop-combat" class="system-btn danger" style="display: none;">KAMPF BEENDEN</button>
+                        
+                        <div class="skill-buttons" id="skill-buttons" style="display: none;">
+                            <button id="btn-skill-1" class="skill-btn" disabled>
+                                <span class="skill-name">SKILL 1</span>
+                                <span class="skill-cost">0 MP</span>
+                            </button>
+                            <button id="btn-skill-2" class="skill-btn" disabled>
+                                <span class="skill-name">SKILL 2</span>
+                                <span class="skill-cost">0 MP</span>
+                            </button>
+                            <button id="btn-skill-3" class="skill-btn" disabled>
+                                <span class="skill-name">SKILL 3</span>
+                                <span class="skill-cost">0 MP</span>
+                            </button>
+                            <button id="btn-interrupt" class="skill-btn interrupt" disabled>
+                                <span class="skill-name">UNTERBRECHEN</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="combat-log" id="combat-log">
+                        <div class="log-entry system">System bereit</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GATES PANEL -->
+            <div class="panel" id="panel-gates">
+                <div class="panel-header">
+                    <h1 class="panel-title">GATE-SYSTEM</h1>
+                </div>
+
+                <div class="gates-content">
+                    <h2 class="section-title">GATE-RÄNGE</h2>
+                    <div class="gate-ranks">
+                        <button class="gate-rank-btn rank-d" data-rank="D">
+                            <span class="rank-letter">D</span>
+                            <span class="rank-mult">×1.0</span>
+                        </button>
+                        <button class="gate-rank-btn rank-c" data-rank="C">
+                            <span class="rank-letter">C</span>
+                            <span class="rank-mult">×1.2</span>
+                        </button>
+                        <button class="gate-rank-btn rank-b" data-rank="B">
+                            <span class="rank-letter">B</span>
+                            <span class="rank-mult">×1.5</span>
+                        </button>
+                        <button class="gate-rank-btn rank-a" data-rank="A">
+                            <span class="rank-letter">A</span>
+                            <span class="rank-mult">×2.0</span>
+                        </button>
+                        <button class="gate-rank-btn rank-s" data-rank="S">
+                            <span class="rank-letter">S</span>
+                            <span class="rank-mult">×3.0</span>
+                        </button>
+                        <button class="gate-rank-btn rank-ss" data-rank="SS">
+                            <span class="rank-letter">SS</span>
+                            <span class="rank-mult">×5.0</span>
+                        </button>
+                    </div>
+
+                    <div class="dungeon-selection" style="display: none;">
+                        <h2 class="section-title">VERFÜGBARE DUNGEONS</h2>
+                        <div class="dungeon-list" id="dungeon-list">
+                            <div class="dungeon-card">
+                                <div class="dungeon-name">VERLASSENER DUNGEON</div>
+                                <div class="dungeon-info">
+                                    <span class="dungeon-rank">GATE-RANG: D</span>
+                                </div>
+                                <button class="system-btn primary" id="btn-start-dungeon">STARTEN</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VEREINIGUNG PANEL -->
+            <div class="panel" id="panel-vereinigung">
+                <div class="panel-header">
+                    <h1 class="panel-title">VEREINIGUNG</h1>
+                </div>
+
+                <div class="guild-current">
+                    <h2 class="section-title">AKTUELLE VEREINIGUNG</h2>
+                    <div class="guild-current-card">
+                        <div class="guild-current-name" id="current-guild-name">KEINE VEREINIGUNG</div>
+                        <button id="btn-leave-guild" class="system-btn danger" style="display: none;">VERLASSEN</button>
+                    </div>
+                </div>
+
+                <div class="guild-actions" id="guild-create-section">
+                    <button class="system-btn primary" id="btn-create-guild">VEREINIGUNG GRÜNDEN</button>
+                </div>
+
+                <div class="guild-lists">
+                    <div class="guild-section">
+                        <h2 class="section-title">OFFIZIELLE HUNTER-VEREINIGUNGEN</h2>
+                        <div class="guild-list" id="npc-guild-list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <div class="guild-section">
+                        <h2 class="section-title">SPIELER-VEREINIGUNGEN</h2>
+                        <div class="guild-list" id="player-guild-list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <!-- Glossar Modal -->
-    <div id="glossar-modal" class="modal">
+    <!-- AWAKENING MODAL (System Popup) -->
+    <div id="awakening-modal" class="system-modal" style="display: none;">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h1>📖 Gatefall – Glossar</h1>
-            
-            <div class="glossar-section">
-                <h2>🧍‍♂️ Spieler & Grundlagen</h2>
-                <table class="glossar-table">
-                    <tr><td><strong>Jäger</strong></td><td>Spielercharakter</td></tr>
-                    <tr><td><strong>Rolle</strong></td><td>Kampfstil eines Jägers</td></tr>
-                    <tr><td><strong>Dungeon</strong></td><td>Instanzierter Kampfbereich</td></tr>
-                    <tr><td><strong>Durchlauf</strong></td><td>Ein kompletter Dungeon-Run</td></tr>
-                    <tr><td><strong>Kampftick</strong></td><td>Fester Kampfschritt (alle 350 ms)</td></tr>
-                    <tr><td><strong>Automatischer Angriff</strong></td><td>Regelmäßiger Grundangriff ohne Skill</td></tr>
-                    <tr><td><strong>Kampflog</strong></td><td>Textausgabe aller Kampfereignisse</td></tr>
-                </table>
+            <div class="modal-header">
+                <h2 class="modal-title">SYSTEM-BENACHRICHTIGUNG</h2>
             </div>
-
-            <div class="glossar-section">
-                <h2>🎭 Rollen (Spielbar)</h2>
-                
-                <h3>🛡 Wächter</h3>
-                <p><strong>Identität:</strong> Schutz & Überleben<br>
-                <strong>Aufgabe:</strong> Schaden abfangen, Stabilität sichern</p>
-                
-                <h3>⚔ Assassine</h3>
-                <p><strong>Identität:</strong> Burst & Risiko<br>
-                <strong>Aufgabe:</strong> Gegner schnell ausschalten</p>
-                
-                <h3>🧙 Magier</h3>
-                <p><strong>Identität:</strong> Magieschaden & Kontrolle<br>
-                <strong>Aufgabe:</strong> Schaden über Effekte und Ressourcen</p>
-                
-                <h3>🏹 Scharfschütze</h3>
-                <p><strong>Identität:</strong> Konstanter Schaden<br>
-                <strong>Aufgabe:</strong> Dauer-DPS & Schwächen ausnutzen</p>
-                
-                <h3>✨ Heiler</h3>
-                <p><strong>Identität:</strong> Unterstützung<br>
-                <strong>Aufgabe:</strong> Gruppe am Leben halten</p>
-            </div>
-
-            <div class="glossar-section">
-                <h2>📊 Attribute & Werte</h2>
-                <table class="glossar-table">
-                    <tr><td><strong>HP (Lebenspunkte)</strong></td><td>Aktuelle Gesundheit</td></tr>
-                    <tr><td><strong>Max. HP</strong></td><td>Maximale Lebenspunkte</td></tr>
-                    <tr><td><strong>MP (Manapunkte)</strong></td><td>Ressource für Fähigkeiten</td></tr>
-                    <tr><td><strong>Max. MP</strong></td><td>Maximale Manapunkte</td></tr>
-                    <tr><td><strong>Schaden</strong></td><td>Abgezogene HP</td></tr>
-                    <tr><td><strong>Kritischer Treffer</strong></td><td>Erhöhter Schaden</td></tr>
-                    <tr><td><strong>Schadensreduktion</strong></td><td>Verringerung eingehenden Schadens</td></tr>
-                    <tr><td><strong>Schild</strong></td><td>Absorbiert Schaden vor HP</td></tr>
-                </table>
-            </div>
-
-            <div class="glossar-section">
-                <h2>⚔️ Fähigkeiten (Skills)</h2>
-                
-                <h3>Wächter</h3>
-                <ul>
-                    <li><strong>Schildschlag</strong> – verursacht Schaden</li>
-                    <li><strong>Bollwerk</strong> – reduziert erlittenen Schaden</li>
-                    <li><strong>Provokation</strong> – erzwingt Aufmerksamkeit</li>
-                </ul>
-                
-                <h3>Assassine</h3>
-                <ul>
-                    <li><strong>Schattenstoß</strong> – hoher Schaden</li>
-                    <li><strong>Hinrichten</strong> – nur bei niedrigem Gegner-HP</li>
-                    <li><strong>Blutung</strong> – Schaden über Zeit</li>
-                </ul>
-                
-                <h3>Magier</h3>
-                <ul>
-                    <li><strong>Arkanschlag</strong> – magischer Schaden</li>
-                    <li><strong>Manastrom</strong> – stellt Mana wieder her</li>
-                    <li><strong>Verbrennung</strong> – Schaden über Zeit</li>
-                </ul>
-                
-                <h3>Scharfschütze</h3>
-                <ul>
-                    <li><strong>Schnellschuss</strong> – schneller Angriff</li>
-                    <li><strong>Schwachstelle</strong> – Gegner erleidet mehr Schaden</li>
-                    <li><strong>Fokus</strong> – erhöht Angriffstempo</li>
-                </ul>
-                
-                <h3>Heiler</h3>
-                <ul>
-                    <li><strong>Zerschmettern</strong> – leichter Angriff</li>
-                    <li><strong>Heilung</strong> – stellt HP wieder her</li>
-                    <li><strong>Schutzschild</strong> – absorbiert Schaden</li>
-                </ul>
-            </div>
-
-            <div class="glossar-section">
-                <h2>🧬 Status-Effekte & Verstärkungen</h2>
-                <table class="glossar-table">
-                    <tr><th>Begriff</th><th>Typ</th><th>Wirkung</th></tr>
-                    <tr><td><strong>Blutung</strong></td><td>Debuff</td><td>Schaden pro Kampftick</td></tr>
-                    <tr><td><strong>Verbrennung</strong></td><td>Debuff</td><td>Schaden pro Kampftick</td></tr>
-                    <tr><td><strong>Bollwerk</strong></td><td>Buff</td><td>Schadensreduktion</td></tr>
-                    <tr><td><strong>Schutzschild</strong></td><td>Buff</td><td>Absorbiert Schaden</td></tr>
-                    <tr><td><strong>Schwachstelle</strong></td><td>Debuff</td><td>Ziel erleidet mehr Schaden</td></tr>
-                    <tr><td><strong>Regeneration</strong></td><td>Buff</td><td>Stellt HP pro Tick wieder her</td></tr>
-                </table>
-            </div>
-
-            <div class="glossar-section">
-                <h2>🕒 Cooldowns & Zeit</h2>
-                <table class="glossar-table">
-                    <tr><td><strong>Abklingzeit</strong></td><td>Zeit bis Fähigkeit erneut nutzbar ist</td></tr>
-                    <tr><td><strong>Tick-Dauer</strong></td><td>Feste Zeitspanne eines Kampfticks</td></tr>
-                    <tr><td><strong>Dauer (Ticks)</strong></td><td>Anzahl der Ticks eines Effekts</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    <!-- Awakening System Modal -->
-    <div id="awakening-modal" class="awakening-modal" style="display: none;">
-        <div class="awakening-overlay"></div>
-        <div class="awakening-content">
-            <div class="system-title">SYSTEMMELDUNG</div>
-            <div class="awakening-message">Erwachen verfügbar.</div>
-            <button id="btn-awaken" class="awaken-btn">Erwachen</button>
-        </div>
-    </div>
-
-    <!-- Status Screen Modal -->
-    <div id="status-modal" class="status-modal" style="display: none;">
-        <div class="status-overlay"></div>
-        <div class="status-content">
-            <div class="status-header">
-                <div class="status-title">STATUS</div>
-            </div>
-            
-            <div class="status-body">
-                <div class="status-level-section">
-                    <div class="status-level-number" id="status-level">18</div>
-                    <div class="status-level-label">LEVEL</div>
-                </div>
-                
-                <div class="status-job-section">
-                    <div class="status-job-line">
-                        <span class="status-job-label">JOB</span>
-                        <span class="status-job-value" id="status-job">None</span>
-                    </div>
-                    <div class="status-title-line">
-                        <span class="status-title-label">HUNTER-RANG</span>
-                        <span class="status-hunter-rank" id="status-hunter-rank">D</span>
-                    </div>
-                </div>
-                
-                <div class="status-bars-section">
-                    <div class="status-stat-row">
-                        <div class="status-stat-icon">❤️</div>
-                        <div class="status-stat-bar">
-                            <div class="status-stat-fill status-hp-fill" id="status-hp-fill" style="width: 75%"></div>
-                        </div>
-                        <div class="status-stat-value" id="status-hp-value">2220 / 350</div>
-                    </div>
-                    
-                    <div class="status-stat-row">
-                        <div class="status-stat-icon">✨</div>
-                        <div class="status-stat-bar">
-                            <div class="status-stat-fill status-mp-fill" id="status-mp-fill" style="width: 100%"></div>
-                        </div>
-                        <div class="status-stat-value" id="status-mp-value">350 / 350</div>
-                    </div>
-                </div>
-                
-                <div class="status-attributes-section">
-                    <div class="status-attr-row">
-                        <div class="status-attr-icon">💪</div>
-                        <div class="status-attr-label">Stärke</div>
-                        <div class="status-attr-value" id="status-str">48</div>
-                    </div>
-                    <div class="status-attr-row">
-                        <div class="status-attr-icon">❤️</div>
-                        <div class="status-attr-label">Vitalität</div>
-                        <div class="status-attr-value" id="status-vit">27</div>
-                    </div>
-                    <div class="status-attr-row">
-                        <div class="status-attr-icon">⚡</div>
-                        <div class="status-attr-label">Beweglichkeit</div>
-                        <div class="status-attr-value" id="status-agi">27</div>
-                    </div>
-                    <div class="status-attr-row">
-                        <div class="status-attr-icon">🧠</div>
-                        <div class="status-attr-label">Intelligenz</div>
-                        <div class="status-attr-value" id="status-int">27</div>
-                    </div>
-                    <div class="status-attr-row">
-                        <div class="status-attr-icon">👁️</div>
-                        <div class="status-attr-label">Wahrnehmung</div>
-                        <div class="status-attr-value" id="status-per">27</div>
-                    </div>
+            <div class="modal-body">
+                <div class="awakening-message">
+                    <div class="awakening-icon">⚡</div>
+                    <p class="awakening-text">ERWACHEN VERFÜGBAR</p>
+                    <p class="awakening-desc">Du hast das Erwachen freigeschaltet.</p>
                 </div>
             </div>
-            
-            <div class="status-footer">
-                <button id="btn-close-status" class="status-close-btn">Schließen</button>
+            <div class="modal-footer">
+                <button id="btn-awaken" class="system-btn primary">ERWACHEN</button>
+                <button id="btn-close-awakening" class="system-btn secondary">SPÄTER</button>
             </div>
         </div>
     </div>
 
-    <script type="module" src="./dist/main.js?v=4"></script>
+    <script type="module" src="dist/main.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 /**
- * Main entry point: Bootstraps the application
+ * SYSTEM UI - Main Application Controller
+ * Handles authentication, panel navigation, and game state
  */
 import { CombatEngine } from './combat/engine.js';
-import { UIRenderer } from './ui.js';
-// Auth API
+// ==================== AUTH API ====================
 class AuthAPI {
     static async register(email, password, displayName) {
         const response = await fetch(`${this.baseUrl}/auth/register`, {
@@ -137,26 +137,75 @@ class AuthAPI {
     }
 }
 AuthAPI.baseUrl = '/api';
-// Auth UI
-class AuthUI {
-    constructor() {
+// ==================== SYSTEM UI CONTROLLER ====================
+class SystemUI {
+    constructor(engine) {
         this.currentProfile = null;
-        this.awakeningAvailable = false;
+        this.engine = engine;
     }
     async init() {
-        this.setupTabs();
-        this.setupLoginForm();
-        this.setupRegisterForm();
-        this.setupLogout();
-        this.setupResendVerification();
-        this.setupAwakening();
-        this.setupStatusScreen();
-        this.setupGuildPanel();
+        this.setupAuth();
+        this.setupNavigation();
         await this.checkSession();
-        this.checkForVerificationToken();
-        this.checkDiscordLogin();
     }
-    setupTabs() {
+    // ========== AUTHENTICATION ==========
+    setupAuth() {
+        // Login
+        const loginBtn = document.getElementById('btn-login');
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        loginBtn?.addEventListener('click', async () => {
+            const email = emailInput?.value.trim();
+            const password = passwordInput?.value;
+            if (!email || !password) {
+                this.showError('login-error', 'Bitte alle Felder ausfüllen');
+                return;
+            }
+            try {
+                loginBtn.textContent = 'Lädt...';
+                loginBtn.setAttribute('disabled', 'true');
+                await AuthAPI.login(email, password);
+                await this.loadProfile();
+                this.showSystem();
+            }
+            catch (error) {
+                this.showError('login-error', error.message);
+            }
+            finally {
+                loginBtn.textContent = 'ZUGRIFF ANFORDERN';
+                loginBtn.removeAttribute('disabled');
+            }
+        });
+        // Register
+        const registerBtn = document.getElementById('btn-register');
+        const regEmailInput = document.getElementById('register-email');
+        const regPasswordInput = document.getElementById('register-password');
+        const regDisplayNameInput = document.getElementById('register-displayname');
+        registerBtn?.addEventListener('click', async () => {
+            const email = regEmailInput?.value.trim();
+            const password = regPasswordInput?.value;
+            const displayName = regDisplayNameInput?.value.trim();
+            if (!email || !password || !displayName) {
+                this.showError('register-error', 'Bitte alle Felder ausfüllen');
+                return;
+            }
+            try {
+                registerBtn.textContent = 'Lädt...';
+                registerBtn.setAttribute('disabled', 'true');
+                await AuthAPI.register(email, password, displayName);
+                await AuthAPI.login(email, password);
+                await this.loadProfile();
+                this.showSystem();
+            }
+            catch (error) {
+                this.showError('register-error', error.message);
+            }
+            finally {
+                registerBtn.textContent = 'REGISTRIEREN';
+                registerBtn.removeAttribute('disabled');
+            }
+        });
+        // Tabs
         const loginTab = document.getElementById('tab-login');
         const registerTab = document.getElementById('tab-register');
         const loginForm = document.getElementById('form-login');
@@ -175,76 +224,7 @@ class AuthUI {
             loginForm?.classList.remove('active');
             this.clearErrors();
         });
-    }
-    setupLoginForm() {
-        const loginBtn = document.getElementById('btn-login');
-        const emailInput = document.getElementById('login-email');
-        const passwordInput = document.getElementById('login-password');
-        loginBtn?.addEventListener('click', async () => {
-            const email = emailInput?.value.trim();
-            const password = passwordInput?.value;
-            if (!email || !password) {
-                this.showError('login-error', 'Bitte alle Felder ausfüllen');
-                return;
-            }
-            try {
-                loginBtn.textContent = 'Lädt...';
-                loginBtn.setAttribute('disabled', 'true');
-                await AuthAPI.login(email, password);
-                await this.loadProfile();
-                this.showGame();
-            }
-            catch (error) {
-                this.showError('login-error', error.message);
-            }
-            finally {
-                loginBtn.textContent = 'Anmelden';
-                loginBtn.removeAttribute('disabled');
-            }
-        });
-        [emailInput, passwordInput].forEach(input => {
-            input?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter')
-                    loginBtn?.click();
-            });
-        });
-    }
-    setupRegisterForm() {
-        const registerBtn = document.getElementById('btn-register');
-        const emailInput = document.getElementById('register-email');
-        const passwordInput = document.getElementById('register-password');
-        const displayNameInput = document.getElementById('register-displayname');
-        registerBtn?.addEventListener('click', async () => {
-            const email = emailInput?.value.trim();
-            const password = passwordInput?.value;
-            const displayName = displayNameInput?.value.trim();
-            if (!email || !password || !displayName) {
-                this.showError('register-error', 'Bitte alle Felder ausfüllen');
-                return;
-            }
-            try {
-                registerBtn.textContent = 'Lädt...';
-                registerBtn.setAttribute('disabled', 'true');
-                await AuthAPI.register(email, password, displayName);
-                await this.loadProfile();
-                this.showGame();
-            }
-            catch (error) {
-                this.showError('register-error', error.message);
-            }
-            finally {
-                registerBtn.textContent = 'Registrieren';
-                registerBtn.removeAttribute('disabled');
-            }
-        });
-        [emailInput, passwordInput, displayNameInput].forEach(input => {
-            input?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter')
-                    registerBtn?.click();
-            });
-        });
-    }
-    setupLogout() {
+        // Logout
         const logoutBtn = document.getElementById('btn-logout');
         logoutBtn?.addEventListener('click', async () => {
             try {
@@ -253,140 +233,14 @@ class AuthUI {
                 this.clearForms();
             }
             catch (error) {
-                console.error('Logout-Fehler:', error);
-                alert('Logout fehlgeschlagen');
+                alert(error.message);
             }
         });
-    }
-    setupResendVerification() {
-        const resendBtn = document.getElementById('btn-resend-verification');
-        resendBtn?.addEventListener('click', async () => {
-            try {
-                resendBtn.setAttribute('disabled', 'true');
-                resendBtn.textContent = 'Wird gesendet...';
-                const response = await fetch('/api/auth/resend-verification', {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                const messageEl = document.getElementById('resend-message');
-                if (messageEl) {
-                    messageEl.textContent = data.message || data.error;
-                    messageEl.classList.add('show');
-                    setTimeout(() => messageEl.classList.remove('show'), 5000);
-                }
-                if (response.ok && data.success) {
-                    // Wenn bereits bestätigt, aktualisiere Profil
-                    if (data.message.includes('bereits bestätigt')) {
-                        await this.loadProfile();
-                        this.updateVerificationUI();
-                    }
-                }
-            }
-            catch (error) {
-                alert('Fehler: ' + error.message);
-            }
-            finally {
-                resendBtn.textContent = 'Bestätigungslink erneut senden';
-                resendBtn.removeAttribute('disabled');
-            }
-        });
-    }
-    checkForVerificationToken() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        if (token && window.location.pathname === '/verify-email') {
-            this.verifyEmail(token);
-        }
-    }
-    async verifyEmail(token) {
-        try {
-            const response = await fetch(`/api/auth/verify-email?token=${token}`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
-            if (response.ok) {
-                alert('✓ ' + data.message);
-                // Aktualisiere Profil und UI
-                await this.loadProfile();
-                this.updateVerificationUI();
-                // Navigiere zur Hauptseite
-                window.location.href = '/';
-            }
-            else {
-                alert('✗ ' + data.error);
-            }
-        }
-        catch (error) {
-            alert('Fehler bei der Bestätigung: ' + error.message);
-        }
-    }
-    checkDiscordLogin() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('discord_login')) {
-            // Entferne Parameter aus URL
-            window.history.replaceState({}, '', '/');
-            // Lade Profil und zeige Game-Screen
-            this.checkSession();
-        }
-        if (urlParams.has('error')) {
-            const error = urlParams.get('error');
-            if (error === 'discord_auth_failed') {
-                alert('Discord-Anmeldung fehlgeschlagen. Bitte versuche es erneut.');
-                window.history.replaceState({}, '', '/');
-            }
-            else if (error === 'discord_not_configured') {
-                alert('Discord-Login ist derzeit nicht verfügbar. Bitte melde dich mit E-Mail und Passwort an.');
-                window.history.replaceState({}, '', '/');
-            }
-        }
-    }
-    updateVerificationUI() {
-        const banner = document.getElementById('verification-banner');
-        const startDungeonBtn = document.getElementById('start-dungeon');
-        const startCombatBtn = document.getElementById('start-combat');
-        if (this.currentProfile && !this.currentProfile.emailVerified) {
-            // Zeige Banner, deaktiviere Gameplay
-            if (banner)
-                banner.style.display = 'block';
-            if (startDungeonBtn) {
-                startDungeonBtn.disabled = true;
-                startDungeonBtn.title = 'E-Mail muss erst bestätigt werden';
-            }
-            if (startCombatBtn) {
-                startCombatBtn.disabled = true;
-                startCombatBtn.title = 'E-Mail muss erst bestätigt werden';
-            }
-        }
-        else {
-            // Verstecke Banner, aktiviere Gameplay
-            if (banner)
-                banner.style.display = 'none';
-            if (startDungeonBtn) {
-                startDungeonBtn.disabled = false;
-                startDungeonBtn.title = '';
-            }
-            if (startCombatBtn) {
-                startCombatBtn.disabled = false;
-                startCombatBtn.title = '';
-            }
-        }
     }
     async checkSession() {
         try {
-            const profile = await AuthAPI.getProfile();
-            this.currentProfile = profile;
-            if (window.gameState) {
-                window.gameState.level = profile.progression.level;
-                window.gameState.xp = profile.progression.xp;
-                window.gameState.gold = profile.progression.gold;
-            }
-            const displayNameEl = document.getElementById('user-display-name');
-            if (displayNameEl)
-                displayNameEl.textContent = profile.displayName;
-            this.showGame();
-            this.updateVerificationUI();
-            this.checkAwakening();
+            await this.loadProfile();
+            this.showSystem();
         }
         catch (error) {
             this.showAuth();
@@ -395,46 +249,67 @@ class AuthUI {
     async loadProfile() {
         const profile = await AuthAPI.getProfile();
         this.currentProfile = profile;
-        const displayNameEl = document.getElementById('user-display-name');
-        if (displayNameEl)
-            displayNameEl.textContent = profile.displayName;
-        // Update game state with progression and guild bonus
-        if (window.gameState) {
-            window.gameState.level = profile.progression.level;
-            window.gameState.xp = profile.progression.xp;
-            window.gameState.gold = profile.progression.gold;
-            // Load guild bonus if in a guild
-            if (profile.progression.guildId) {
-                const guilds = await AuthAPI.getGuilds();
-                const currentGuild = guilds.npcGuilds?.find((g) => g.id === profile.progression.guildId)
-                    || guilds.playerGuilds?.find((g) => g.id === profile.progression.guildId);
-                if (currentGuild) {
-                    window.gameState.guildGoldBonus = currentGuild.goldBonus || currentGuild.gold_bonus || 0;
-                }
-            }
-            else {
-                window.gameState.guildGoldBonus = 0;
-            }
-            window.gameState.updateUI();
+        // Update user display
+        const userDisplayName = document.getElementById('user-display-name');
+        if (userDisplayName) {
+            userDisplayName.textContent = profile.displayName.toUpperCase();
         }
-        this.updateVerificationUI();
-        this.checkAwakening();
+        // Update dashboard
+        this.updateDashboard(profile);
+        // Update status panel
+        this.updateStatusPanel(profile);
+        // Load guild bonus
+        if (profile.progression.guildId) {
+            const guilds = await AuthAPI.getGuilds();
+            const currentGuild = guilds.npcGuilds?.find((g) => g.id === profile.progression.guildId)
+                || guilds.playerGuilds?.find((g) => g.id === profile.progression.guildId);
+            if (currentGuild) {
+                window.gameState.guildGoldBonus = currentGuild.goldBonus || currentGuild.gold_bonus || 0;
+            }
+        }
+        else {
+            window.gameState.guildGoldBonus = 0;
+        }
+        // Sync with combat engine
+        const state = this.engine.getState();
+        state.progression.level = profile.progression.level;
+        state.progression.xp = profile.progression.xp;
+        state.progression.gold = profile.progression.gold;
     }
-    showGame() {
+    updateDashboard(profile) {
+        const rankEl = document.getElementById('dash-hunter-rank');
+        const levelEl = document.getElementById('dash-level');
+        const guildEl = document.getElementById('dash-guild');
+        if (rankEl)
+            rankEl.textContent = profile.progression.hunterRank || 'D';
+        if (levelEl)
+            levelEl.textContent = profile.progression.level;
+        if (guildEl)
+            guildEl.textContent = profile.progression.guildName || 'KEINE';
+    }
+    updateStatusPanel(profile) {
+        const levelEl = document.getElementById('status-level');
+        const rankEl = document.getElementById('status-rank');
+        if (levelEl)
+            levelEl.textContent = profile.progression.level;
+        if (rankEl)
+            rankEl.textContent = profile.progression.hunterRank || 'D';
+    }
+    showSystem() {
         const authScreen = document.getElementById('auth-screen');
-        const gameScreen = document.getElementById('game-screen');
+        const systemInterface = document.getElementById('system-interface');
         if (authScreen)
             authScreen.style.display = 'none';
-        if (gameScreen)
-            gameScreen.style.display = 'block';
+        if (systemInterface)
+            systemInterface.style.display = 'flex';
     }
     showAuth() {
         const authScreen = document.getElementById('auth-screen');
-        const gameScreen = document.getElementById('game-screen');
+        const systemInterface = document.getElementById('system-interface');
         if (authScreen)
             authScreen.style.display = 'flex';
-        if (gameScreen)
-            gameScreen.style.display = 'none';
+        if (systemInterface)
+            systemInterface.style.display = 'none';
     }
     showError(elementId, message) {
         const errorDiv = document.getElementById(elementId);
@@ -456,345 +331,270 @@ class AuthUI {
         });
         this.clearErrors();
     }
-    setupAwakening() {
-        const awakenBtn = document.getElementById('btn-awaken');
-        awakenBtn?.addEventListener('click', async () => {
-            try {
-                await AuthAPI.completeAwakening();
-                // Hide awakening modal
-                const modal = document.getElementById('awakening-modal');
-                if (modal)
-                    modal.style.display = 'none';
-                // Log system message
-                if (window.ui) {
-                    window.ui.log('SYSTEM: Erwachen abgeschlossen.');
+    // ========== NAVIGATION ==========
+    setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item[data-panel]');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const panelId = item.getAttribute('data-panel');
+                if (panelId) {
+                    this.switchPanel(panelId);
+                    // Update nav active state
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
                 }
-                // Reload profile to get updated awakening state
-                await this.loadProfile();
-                // Show status screen
-                this.showStatusScreen();
+            });
+        });
+        // Setup quick actions
+        this.setupQuickActions();
+    }
+    switchPanel(panelId) {
+        const panels = document.querySelectorAll('.panel');
+        panels.forEach(panel => panel.classList.remove('active'));
+        const targetPanel = document.getElementById(`panel-${panelId}`);
+        if (targetPanel) {
+            targetPanel.classList.add('active');
+            // Load panel data
+            switch (panelId) {
+                case 'vereinigung':
+                    this.loadGuildsPanel();
+                    break;
+                case 'skills':
+                    this.loadSkillsPanel();
+                    break;
             }
-            catch (error) {
-                console.error('Awakening error:', error);
-                alert('Fehler beim Erwachen: ' + error.message);
+        }
+    }
+    setupQuickActions() {
+        const actions = document.querySelectorAll('[data-action]');
+        actions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-action');
+                switch (action) {
+                    case 'enter-gate':
+                        this.switchToPanel('gates');
+                        break;
+                    case 'start-dungeon':
+                        this.switchToPanel('combat');
+                        break;
+                    case 'manage-skills':
+                        this.switchToPanel('skills');
+                        break;
+                }
+            });
+        });
+    }
+    switchToPanel(panelId) {
+        // Update nav
+        const navItems = document.querySelectorAll('.nav-item[data-panel]');
+        navItems.forEach(item => {
+            if (item.getAttribute('data-panel') === panelId) {
+                item.classList.add('active');
+                item.click();
+            }
+            else {
+                item.classList.remove('active');
             }
         });
     }
-    setupStatusScreen() {
-        const closeBtn = document.getElementById('btn-close-status');
-        closeBtn?.addEventListener('click', () => {
-            const modal = document.getElementById('status-modal');
-            if (modal)
-                modal.style.display = 'none';
-        });
-    }
-    showStatusScreen() {
-        if (!this.currentProfile)
-            return;
-        const modal = document.getElementById('status-modal');
-        if (!modal)
-            return;
-        // Update level
-        const levelEl = document.getElementById('status-level');
-        if (levelEl)
-            levelEl.textContent = this.currentProfile.progression.level.toString();
-        // Update Hunter-Rang
-        const hunterRankEl = document.getElementById('status-hunter-rank');
-        if (hunterRankEl) {
-            const rank = this.currentProfile.progression.hunterRank || 'D';
-            hunterRankEl.textContent = rank;
-            // Color based on rank
-            const rankColors = {
-                'SS': '#ff0066',
-                'S': '#ff6600',
-                'A': '#ffcc00',
-                'B': '#66ff66',
-                'C': '#66ccff',
-                'D': '#cccccc'
-            };
-            hunterRankEl.style.color = rankColors[rank] || '#cccccc';
-        }
-        // Update job (original role - nicht implementiert in diesem Schritt)
-        const jobEl = document.getElementById('status-job');
-        if (jobEl)
-            jobEl.textContent = 'None';
-        // Update HP/MP bars (placeholder values)
-        const hpFill = document.getElementById('status-hp-fill');
-        const hpValue = document.getElementById('status-hp-value');
-        const mpFill = document.getElementById('status-mp-fill');
-        const mpValue = document.getElementById('status-mp-value');
-        // Use current combat state if available
-        if (window.engine) {
-            const state = window.engine.getState();
-            if (hpFill)
-                hpFill.style.width = `${(state.player.hp / state.player.maxHp) * 100}%`;
-            if (hpValue)
-                hpValue.textContent = `${state.player.hp} / ${state.player.maxHp}`;
-            if (mpFill)
-                mpFill.style.width = `${(state.player.mp / state.player.maxMp) * 100}%`;
-            if (mpValue)
-                mpValue.textContent = `${state.player.mp} / ${state.player.maxMp}`;
-        }
-        else {
-            if (hpFill)
-                hpFill.style.width = '100%';
-            if (hpValue)
-                hpValue.textContent = '100 / 100';
-            if (mpFill)
-                mpFill.style.width = '100%';
-            if (mpValue)
-                mpValue.textContent = '50 / 50';
-        }
-        // Update attributes (placeholder - keine Attribute-Berechnung in diesem Schritt)
-        const baseStats = { str: 10, vit: 10, agi: 10, int: 10, per: 10 };
-        const level = this.currentProfile.progression.level;
-        const strEl = document.getElementById('status-str');
-        const vitEl = document.getElementById('status-vit');
-        const agiEl = document.getElementById('status-agi');
-        const intEl = document.getElementById('status-int');
-        const perEl = document.getElementById('status-per');
-        if (strEl)
-            strEl.textContent = (baseStats.str + level * 2).toString();
-        if (vitEl)
-            vitEl.textContent = (baseStats.vit + level).toString();
-        if (agiEl)
-            agiEl.textContent = (baseStats.agi + level).toString();
-        if (intEl)
-            intEl.textContent = (baseStats.int + level).toString();
-        if (perEl)
-            perEl.textContent = (baseStats.per + level).toString();
-        modal.style.display = 'flex';
-    }
-    checkAwakening() {
-        if (!this.currentProfile)
-            return;
-        const awakeningState = this.currentProfile.progression.awakeningState || 'locked';
-        const level = this.currentProfile.progression.level;
-        // Check if awakening should be available
-        if (level >= 10 && awakeningState === 'locked') {
-            this.awakeningAvailable = true;
-        }
-        // Disable role switching if awakened
-        if (awakeningState === 'awakened') {
-            const roleSelect = document.getElementById('role-select');
-            if (roleSelect) {
-                roleSelect.disabled = true;
-                roleSelect.title = 'Rollenwechsel nach Erwachen deaktiviert';
-            }
-        }
-    }
-    showAwakeningModal() {
-        if (!this.awakeningAvailable)
-            return;
-        const modal = document.getElementById('awakening-modal');
-        if (modal) {
-            modal.style.display = 'flex';
-            // Log system message
-            if (window.ui) {
-                window.ui.log('SYSTEM: Erwachen verfügbar.');
-            }
-        }
-    }
-    setupGuildPanel() {
-        const openBtn = document.getElementById('btn-open-guild');
-        const closeBtn = document.getElementById('guild-close-btn');
-        const panel = document.getElementById('guild-panel');
-        const leaveBtn = document.getElementById('btn-leave-guild');
-        if (openBtn) {
-            openBtn.addEventListener('click', async () => {
-                await this.loadGuilds();
-                if (panel)
-                    panel.style.display = 'block';
-            });
-        }
-        if (closeBtn && panel) {
-            closeBtn.addEventListener('click', () => {
-                panel.style.display = 'none';
-            });
-        }
-        if (leaveBtn) {
-            leaveBtn.addEventListener('click', async () => {
-                try {
-                    await AuthAPI.leaveGuild();
-                    await this.loadGuilds();
-                    alert('Vereinigung verlassen!');
-                }
-                catch (error) {
-                    alert(error.message);
-                }
-            });
-        }
-    }
-    async loadGuilds() {
+    // ========== GUILDS PANEL ==========
+    async loadGuildsPanel() {
         try {
             const data = await AuthAPI.getGuilds();
+            // Update current guild
             const currentGuildName = document.getElementById('current-guild-name');
             const leaveBtn = document.getElementById('btn-leave-guild');
-            const guildList = document.getElementById('guild-list');
-            // Aktuelle Guild anzeigen (NPC oder Player)
             let currentGuild = data.npcGuilds?.find((g) => g.id === this.currentProfile?.progression?.guildId);
             if (!currentGuild) {
                 currentGuild = data.playerGuilds?.find((g) => g.id === this.currentProfile?.progression?.guildId);
             }
             if (currentGuildName) {
-                currentGuildName.textContent = currentGuild ? currentGuild.name : 'Keine Vereinigung';
+                currentGuildName.textContent = currentGuild ? currentGuild.name : 'KEINE VEREINIGUNG';
             }
             if (leaveBtn) {
                 leaveBtn.style.display = currentGuild ? 'block' : 'none';
             }
-            // Guild-Liste rendern
-            if (guildList) {
-                guildList.innerHTML = '';
-                // "Vereinigung erstellen" Button
-                if (!this.currentProfile?.progression?.guildId) {
-                    const createDiv = document.createElement('div');
-                    createDiv.className = 'guild-create-section';
-                    createDiv.innerHTML = `
-            <button class="guild-create-btn" id="btn-create-guild">➕ Eigene Vereinigung gründen</button>
-          `;
-                    guildList.appendChild(createDiv);
-                    const createBtn = createDiv.querySelector('#btn-create-guild');
-                    createBtn?.addEventListener('click', () => this.showCreateGuildDialog());
-                }
-                // NPC-Guilds Sektion
-                const npcHeader = document.createElement('h4');
-                npcHeader.textContent = '🏛️ Offizielle Hunter-Vereinigungen';
-                npcHeader.style.color = '#ffd700';
-                npcHeader.style.marginTop = '20px';
-                guildList.appendChild(npcHeader);
-                data.npcGuilds?.forEach((guild) => {
-                    const card = document.createElement('div');
-                    card.className = 'guild-card';
-                    const isAvailable = data.availableNpcGuilds?.includes(guild.id);
-                    const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
-                    if (!isAvailable)
-                        card.classList.add('guild-locked');
-                    if (isCurrent)
-                        card.classList.add('guild-current');
-                    card.innerHTML = `
-            <div class="guild-card-header">
-              <span class="guild-card-name">${guild.name}</span>
-              <span class="guild-card-rank">Min. ${guild.minimumHunterRank}</span>
-            </div>
-            <div class="guild-card-desc">${guild.description}</div>
-            <div class="guild-card-bonus">+${Math.round(guild.goldBonus * 100)}% Gold</div>
-            ${!isCurrent && isAvailable ? `<button class="guild-apply-btn" data-guild-id="${guild.id}">🎲 Bewerben</button>` : ''}
-            ${isCurrent ? '<span class="guild-current-badge">Aktuelle Vereinigung</span>' : ''}
-            ${!isAvailable ? '<span class="guild-locked-badge">🔒 Gesperrt</span>' : ''}
-          `;
-                    guildList.appendChild(card);
-                });
-                // Player-Guilds Sektion
-                if (data.playerGuilds && data.playerGuilds.length > 0) {
-                    const playerHeader = document.createElement('h4');
-                    playerHeader.textContent = '👥 Spieler-Vereinigungen';
-                    playerHeader.style.color = '#66ccff';
-                    playerHeader.style.marginTop = '20px';
-                    guildList.appendChild(playerHeader);
-                    data.playerGuilds.forEach((guild) => {
-                        const card = document.createElement('div');
-                        card.className = 'guild-card guild-player';
-                        const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
-                        if (isCurrent)
-                            card.classList.add('guild-current');
-                        const goldBonus = guild.gold_bonus || 0.10;
-                        card.innerHTML = `
-              <div class="guild-card-header">
-                <span class="guild-card-name">${guild.name}</span>
-                <span class="guild-card-rank">Min. ${guild.minimum_hunter_rank}</span>
-              </div>
-              <div class="guild-card-desc">${guild.description}</div>
-              <div class="guild-card-owner">👑 Gründer: ${guild.owner_name}</div>
-              <div class="guild-card-bonus">+${Math.round(goldBonus * 100)}% Gold</div>
-              ${!isCurrent ? `<button class="guild-join-btn" data-guild-id="${guild.id}">Beitreten</button>` : ''}
-              ${isCurrent ? '<span class="guild-current-badge">Aktuelle Vereinigung</span>' : ''}
-            `;
-                        guildList.appendChild(card);
-                    });
-                }
-                // Apply-Buttons für NPC-Guilds (mit KI-Entscheidung)
-                guildList.querySelectorAll('.guild-apply-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const guildId = e.target.dataset.guildId;
-                        if (!guildId)
-                            return;
-                        try {
-                            const result = await AuthAPI.applyGuild(guildId);
-                            if (result.accepted) {
-                                await this.loadProfile();
-                                await this.loadGuilds();
-                                alert(`✅ ${result.message}`);
-                            }
-                            else {
-                                alert(`❌ ${result.message}`);
-                            }
-                        }
-                        catch (error) {
-                            alert(error.message);
-                        }
-                    });
-                });
-                // Join-Buttons für Player-Guilds (sofortiger Beitritt)
-                guildList.querySelectorAll('.guild-join-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const guildId = e.target.dataset.guildId;
-                        if (!guildId)
-                            return;
-                        try {
-                            await AuthAPI.joinGuild(guildId);
-                            await this.loadProfile();
-                            await this.loadGuilds();
-                            alert('Vereinigung beigetreten!');
-                        }
-                        catch (error) {
-                            alert(error.message);
-                        }
-                    });
-                });
-            }
+            // Render NPC guilds
+            this.renderNPCGuilds(data.npcGuilds, data.availableNpcGuilds);
+            // Render player guilds
+            this.renderPlayerGuilds(data.playerGuilds);
+            // Setup buttons
+            this.setupGuildButtons();
         }
         catch (error) {
-            console.error('Guild load error:', error);
+            console.error('Failed to load guilds:', error);
         }
     }
-    showCreateGuildDialog() {
-        const name = prompt('Name der Vereinigung:');
-        if (!name)
+    renderNPCGuilds(guilds, availableIds) {
+        const list = document.getElementById('npc-guild-list');
+        if (!list)
             return;
-        const description = prompt('Beschreibung:');
-        if (!description)
+        list.innerHTML = '';
+        guilds.forEach(guild => {
+            const isAvailable = availableIds.includes(guild.id);
+            const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
+            const item = document.createElement('div');
+            item.className = 'guild-item';
+            if (!isAvailable)
+                item.classList.add('locked');
+            if (isCurrent)
+                item.classList.add('current');
+            item.innerHTML = `
+        <div class="guild-item-info">
+          <div class="guild-item-name">${guild.name}</div>
+          <div class="guild-item-desc">${guild.description}</div>
+          <div class="guild-item-meta">MIN. ${guild.minimumHunterRank} · +${Math.round(guild.goldBonus * 100)}% GOLD</div>
+        </div>
+        <div class="guild-item-actions">
+          ${!isCurrent && isAvailable ? `<button class="system-btn secondary guild-apply-btn" data-guild-id="${guild.id}">BEWERBEN</button>` : ''}
+          ${!isAvailable ? '<span style="color: var(--text-dim);">GESPERRT</span>' : ''}
+          ${isCurrent ? '<span style="color: var(--accent-primary);">AKTIV</span>' : ''}
+        </div>
+      `;
+            list.appendChild(item);
+        });
+    }
+    renderPlayerGuilds(guilds) {
+        const list = document.getElementById('player-guild-list');
+        if (!list)
             return;
-        const minRank = prompt('Mindest-Hunter-Rang (D/C/B/A/S/SS):', 'D');
-        if (!minRank)
-            return;
-        const validRanks = ['D', 'C', 'B', 'A', 'S', 'SS'];
-        if (!validRanks.includes(minRank.toUpperCase())) {
-            alert('Ungültiger Rang! Bitte D, C, B, A, S oder SS eingeben.');
+        list.innerHTML = '';
+        if (!guilds || guilds.length === 0) {
+            list.innerHTML = '<div class="log-entry">Keine Spieler-Vereinigungen verfügbar</div>';
             return;
         }
-        this.createGuildAsync(name, description, minRank.toUpperCase());
+        guilds.forEach(guild => {
+            const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
+            const item = document.createElement('div');
+            item.className = 'guild-item';
+            if (isCurrent)
+                item.classList.add('current');
+            const goldBonus = guild.gold_bonus || 0.10;
+            item.innerHTML = `
+        <div class="guild-item-info">
+          <div class="guild-item-name">${guild.name}</div>
+          <div class="guild-item-desc">${guild.description}</div>
+          <div class="guild-item-meta">GRÜNDER: ${guild.owner_name} · MIN. ${guild.minimum_hunter_rank} · +${Math.round(goldBonus * 100)}% GOLD</div>
+        </div>
+        <div class="guild-item-actions">
+          ${!isCurrent ? `<button class="system-btn secondary guild-join-btn" data-guild-id="${guild.id}">BEITRETEN</button>` : ''}
+          ${isCurrent ? '<span style="color: var(--accent-primary);">AKTIV</span>' : ''}
+        </div>
+      `;
+            list.appendChild(item);
+        });
+    }
+    setupGuildButtons() {
+        // Leave button
+        const leaveBtn = document.getElementById('btn-leave-guild');
+        leaveBtn?.addEventListener('click', async () => {
+            try {
+                await AuthAPI.leaveGuild();
+                await this.loadProfile();
+                await this.loadGuildsPanel();
+                this.logSystem('Vereinigung verlassen');
+            }
+            catch (error) {
+                alert(error.message);
+            }
+        });
+        // Create button
+        const createBtn = document.getElementById('btn-create-guild');
+        createBtn?.addEventListener('click', () => {
+            const name = prompt('Name der Vereinigung:');
+            if (!name)
+                return;
+            const description = prompt('Beschreibung:');
+            if (!description)
+                return;
+            const minRank = prompt('Mindest-Hunter-Rang (D/C/B/A/S/SS):', 'D');
+            if (!minRank)
+                return;
+            const validRanks = ['D', 'C', 'B', 'A', 'S', 'SS'];
+            if (!validRanks.includes(minRank.toUpperCase())) {
+                alert('Ungültiger Rang!');
+                return;
+            }
+            this.createGuildAsync(name, description, minRank.toUpperCase());
+        });
+        // Apply buttons (NPC)
+        document.querySelectorAll('.guild-apply-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const guildId = e.target.getAttribute('data-guild-id');
+                if (!guildId)
+                    return;
+                try {
+                    const result = await AuthAPI.applyGuild(guildId);
+                    if (result.accepted) {
+                        await this.loadProfile();
+                        await this.loadGuildsPanel();
+                        this.logSystem(`✅ ${result.message}`);
+                    }
+                    else {
+                        this.logSystem(`❌ ${result.message}`);
+                    }
+                }
+                catch (error) {
+                    alert(error.message);
+                }
+            });
+        });
+        // Join buttons (Player)
+        document.querySelectorAll('.guild-join-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const guildId = e.target.getAttribute('data-guild-id');
+                if (!guildId)
+                    return;
+                try {
+                    await AuthAPI.joinGuild(guildId);
+                    await this.loadProfile();
+                    await this.loadGuildsPanel();
+                    this.logSystem('Vereinigung beigetreten');
+                }
+                catch (error) {
+                    alert(error.message);
+                }
+            });
+        });
     }
     async createGuildAsync(name, description, minRank) {
         try {
             const result = await AuthAPI.createGuild(name, description, minRank);
             await this.loadProfile();
-            await this.loadGuilds();
-            alert(`✅ ${result.message}`);
+            await this.loadGuildsPanel();
+            this.logSystem(`✅ ${result.message}`);
         }
         catch (error) {
-            alert(`❌ ${error.message}`);
+            alert(error.message);
+        }
+    }
+    // ========== SKILLS PANEL ==========
+    loadSkillsPanel() {
+        // TODO: Implement skills panel rendering
+        this.logSystem('Skills panel - Coming soon');
+    }
+    // ========== LOGGING ==========
+    logSystem(message) {
+        const dashLog = document.getElementById('dashboard-log');
+        if (dashLog) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry system';
+            entry.textContent = message;
+            dashLog.prepend(entry);
+            // Keep only last 10 entries
+            while (dashLog.children.length > 10) {
+                dashLog.removeChild(dashLog.lastChild);
+            }
         }
     }
 }
-// Initialize combat engine and UI renderer
+// ==================== INITIALIZE ====================
 const engine = new CombatEngine();
-const ui = new UIRenderer();
-const authUI = new AuthUI();
+const systemUI = new SystemUI(engine);
 // Make globally accessible
 window.engine = engine;
-window.ui = ui;
-window.authUI = authUI;
-// Make gameState globally accessible for auth integration
+window.systemUI = systemUI;
+// Global game state
 window.gameState = {
     level: 1,
     xp: 0,
@@ -806,29 +606,11 @@ window.gameState = {
         state.progression.xp = window.gameState.xp;
         state.progression.gold = window.gameState.gold;
         state.progression.guildGoldBonus = window.gameState.guildGoldBonus;
-        ui.updateUI(state);
     }
 };
-// Wire up callbacks
-engine.setOnStateUpdate((state) => {
-    // Sync progression to global state
-    window.gameState.level = state.progression.level;
-    window.gameState.xp = state.progression.xp;
-    window.gameState.gold = state.progression.gold;
-    ui.updateUI(state);
-    // Auto-save progression to server
-    saveProgressionToServer(state.progression.level, state.progression.xp, state.progression.gold);
-});
-engine.setOnCombatEvent((event) => {
-    ui.addLogEntry(event);
-});
-// Register dungeon completion callback for awakening
-engine.setOnDungeonComplete(() => {
-    if (window.authUI) {
-        window.authUI.showAwakeningModal();
-    }
-});
-// Auto-save function with debounce
+// Initialize app
+systemUI.init();
+// Auto-save function
 let saveTimeout = null;
 async function saveProgressionToServer(level, xp, gold) {
     if (saveTimeout)
@@ -841,101 +623,13 @@ async function saveProgressionToServer(level, xp, gold) {
         catch (error) {
             console.error('Fehler beim Speichern:', error);
         }
-    }, 1000); // 1 Sekunde Debounce
+    }, 1000);
 }
-// Initialize UI with starting state
-ui.updateUI(engine.getState());
-// Attach event listeners to buttons
-function setupEventListeners() {
-    // Role selector
-    const roleSelect = document.getElementById('role-select');
-    if (roleSelect) {
-        roleSelect.addEventListener('change', () => {
-            const selectedRole = roleSelect.value;
-            engine.changeRole(selectedRole);
-        });
-    }
-    // Start Combat button
-    const startBtn = document.getElementById('start-combat');
-    if (startBtn) {
-        startBtn.addEventListener('click', () => {
-            engine.startCombat();
-        });
-    }
-    // Reset button
-    const resetBtn = document.getElementById('reset');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-            ui.clearLog();
-            engine.reset();
-        });
-    }
-    // Skill buttons
-    for (let i = 1; i <= 3; i++) {
-        const skillBtn = document.getElementById(`skill-${i}`);
-        if (skillBtn) {
-            skillBtn.addEventListener('click', () => {
-                console.log(`Skill ${i} button clicked`);
-                engine.useSkill(i);
-            });
-        }
-    }
-    // Interrupt button
-    const interruptBtn = document.getElementById('interrupt-btn');
-    if (interruptBtn) {
-        interruptBtn.addEventListener('click', () => {
-            engine.useInterrupt();
-        });
-    }
-    // Dungeon button
-    const dungeonBtn = document.getElementById('start-dungeon');
-    if (dungeonBtn) {
-        dungeonBtn.addEventListener('click', () => {
-            ui.clearLog();
-            engine.startDungeon('VERLASSENER_DUNGEON');
-        });
-    }
-    // Dungeon enemy selection
-    document.addEventListener('click', (event) => {
-        const target = event.target;
-        const enemyCard = target.closest('.dungeon-enemy-card.selectable');
-        if (enemyCard && enemyCard.dataset.enemyId) {
-            const enemyId = parseInt(enemyCard.dataset.enemyId);
-            engine.selectDungeonEnemy(enemyId);
-        }
-    });
-    // Glossar button
-    const glossarBtn = document.getElementById('glossar');
-    const glossarModal = document.getElementById('glossar-modal');
-    const closeBtn = glossarModal?.querySelector('.close');
-    if (glossarBtn && glossarModal) {
-        glossarBtn.addEventListener('click', () => {
-            glossarModal.style.display = 'block';
-        });
-    }
-    if (closeBtn && glossarModal) {
-        closeBtn.addEventListener('click', () => {
-            glossarModal.style.display = 'none';
-        });
-    }
-    // Close modal when clicking outside
-    if (glossarModal) {
-        window.addEventListener('click', (event) => {
-            if (event.target === glossarModal) {
-                glossarModal.style.display = 'none';
-            }
-        });
-    }
-}
-// Setup immediately if DOM is ready, otherwise wait
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        setupEventListeners();
-        authUI.init();
-    });
-}
-else {
-    setupEventListeners();
-    authUI.init();
-}
+engine.setOnStateUpdate((state) => {
+    window.gameState.level = state.progression.level;
+    window.gameState.xp = state.progression.xp;
+    window.gameState.gold = state.progression.gold;
+    saveProgressionToServer(state.progression.level, state.progression.xp, state.progression.gold);
+});
+console.log('🎮 SYSTEM INITIALIZED');
 //# sourceMappingURL=main.js.map
