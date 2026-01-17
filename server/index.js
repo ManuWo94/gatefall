@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+require('dotenv').config(); // .env-Datei laden
 const passport = require('./passport');
 
 const authRoutes = require('./routes/auth');
@@ -41,12 +42,19 @@ app.use('/api/progression', profileRoutes); // /api/progression/save
 // Statische Dateien (Frontend)
 app.use(express.static(path.join(__dirname, '..')));
 
-// SPA Fallback - nur für HTML-Anfragen
-app.get('*', (req, res) => {
-  // Nicht für API-Routen oder Dateien mit Extension
-  if (req.path.startsWith('/api/') || req.path.includes('.')) {
-    return res.status(404).send('Not Found');
+// SPA Fallback - nur für HTML-Anfragen, nicht für API oder statische Dateien
+app.use((req, res, next) => {
+  // Wenn es eine API-Route ist, die nicht gefunden wurde
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
   }
+  
+  // Wenn es eine Datei mit Extension ist (außer .html)
+  if (req.path.includes('.') && !req.path.endsWith('.html')) {
+    return res.status(404).send('File not found');
+  }
+  
+  // Ansonsten: SPA Fallback
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 

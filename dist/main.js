@@ -260,6 +260,10 @@ class AuthUI {
                 alert('Discord-Anmeldung fehlgeschlagen. Bitte versuche es erneut.');
                 window.history.replaceState({}, '', '/');
             }
+            else if (error === 'discord_not_configured') {
+                alert('Discord-Login ist derzeit nicht verfügbar. Bitte melde dich mit E-Mail und Passwort an.');
+                window.history.replaceState({}, '', '/');
+            }
         }
     }
     updateVerificationUI() {
