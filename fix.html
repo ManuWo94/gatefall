@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schnell-Fix</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .step {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .step-num {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover { opacity: 0.9; }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        .code {
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Gatefall Schnell-Fix</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Problem erkannt:</strong><br>
+            Die Server-Dateien sind veraltet. Folge diesen einfachen Schritten:
+        </div>
+
+        <div class="step">
+            <div class="step-num">Schritt 1</div>
+            Gehe zu deinem Plesk-Panel:<br>
+            → <strong>Git</strong> → <strong>Pull Updates</strong> klicken
+        </div>
+
+        <div class="step">
+            <div class="step-num">Schritt 2</div>
+            Klicke auf den Button unten, um das Deployment zu starten
+        </div>
+
+        <button onclick="deploy()">
+            🚀 Deployment starten
+        </button>
+
+        <div id="output" style="margin-top: 20px;"></div>
+
+        <div class="step" style="margin-top: 30px;">
+            <div class="step-num">Alternative (falls Button nicht funktioniert)</div>
+            Gehe zu Plesk → <strong>Node.js</strong><br>
+            → Klicke auf <strong>"Restart Application"</strong>
+            <div class="code">
+                Oder führe aus:<br>
+                cd /var/www/vhosts/keen-goldwasser.5-9-96-43.plesk.page/httpdocs/gatefall<br>
+                bash deploy-plesk.sh
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function deploy() {
+            const btn = event.target;
+            const output = document.getElementById('output');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Deployment läuft...';
+            output.innerHTML = '<div style="background: #f0f0f0; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px;"><div>🔄 Starte Deployment...</div></div>';
+
+            try {
+                const response = await fetch('deploy-handler.php', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Deployment fehlgeschlagen');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let text = '🔄 Starte Deployment...\n\n';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    text += decoder.decode(value);
+                    output.innerHTML = `<div style="background: #f0f0f0; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto; white-space: pre-wrap;">${text}</div>`;
+                }
+
+                output.innerHTML += '<div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold;">✅ Deployment abgeschlossen! Seite in 3 Sekunden neu laden...</div>';
+                
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 3000);
+
+            } catch (error) {
+                output.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px;">❌ Fehler: ${error.message}<br><br>Bitte nutze die Alternative-Methode oben!</div>`;
+                btn.disabled = false;
+                btn.textContent = '🚀 Erneut versuchen';
+            }
+        }
+    </script>
+</body>
+</html>
