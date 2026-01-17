@@ -74,40 +74,52 @@ router.post('/register', async (req, res) => {
                 return res.status(500).json({ error: 'Serverfehler bei der Registrierung' });
               }
 
+              console.log('✅ User registriert:', displayName, '(ID:', userId, ')');
+              
               // Session erstellen (User einloggen)
               req.session.userId = userId;
               req.session.email = normalizedEmail;
               req.session.displayName = displayName;
 
-              // Verifizierungs-Email senden
-              const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
-              const verifyLink = `${baseUrl}/verify-email?token=${verifyToken}`;
-              
-              try {
-                const emailResult = await sendVerificationEmail(normalizedEmail, displayName, verifyLink);
+              // Session explizit speichern
+              req.session.save((saveErr) => {
+                if (saveErr) {
+                  console.error('❌ Session save error bei Registrierung:', saveErr);
+                  return res.status(500).json({ error: 'Session konnte nicht gespeichert werden' });
+                }
+
+                console.log('✅ Session gespeichert nach Registrierung:', req.sessionID);
+
+                // Verifizierungs-Email senden
+                const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+                const verifyLink = `${baseUrl}/verify-email?token=${verifyToken}`;
                 
-                res.json({
-                  success: true,
-                  user: {
-                    email: normalizedEmail,
-                    displayName
-                  },
-                  message: emailResult.dev 
-                    ? 'Registrierung erfolgreich. Bestätigungslink wurde (dev) in der Konsole ausgegeben.'
-                    : 'Registrierung erfolgreich. Bitte bestätige deine E-Mail.'
-                });
-              } catch (emailError) {
-                console.error('Email send error:', emailError);
-                // Registrierung war erfolgreich, nur Email-Versand fehlgeschlagen
-                res.json({
-                  success: true,
-                  user: {
-                    email: normalizedEmail,
-                    displayName
-                  },
-                  warning: 'Registrierung erfolgreich, aber Email konnte nicht gesendet werden. Verwende "Link erneut senden".'
-                });
-              }
+                sendVerificationEmail(normalizedEmail, displayName, verifyLink)
+                  .then((emailResult) => {
+                    res.json({
+                      success: true,
+                      user: {
+                        email: normalizedEmail,
+                        displayName
+                      },
+                      message: emailResult.dev 
+                        ? 'Registrierung erfolgreich. Bestätigungslink wurde (dev) in der Konsole ausgegeben.'
+                        : 'Registrierung erfolgreich. Bitte bestätige deine E-Mail.'
+                    });
+                  })
+                  .catch((emailError) => {
+                    console.error('Email send error:', emailError);
+                    // Registrierung war erfolgreich, nur Email-Versand fehlgeschlagen
+                    res.json({
+                      success: true,
+                      user: {
+                        email: normalizedEmail,
+                        displayName
+                      },
+                      warning: 'Registrierung erfolgreich, aber Email konnte nicht gesendet werden. Verwende "Link erneut senden".'
+                    });
+                  });
+              });
             }
           );
         }
