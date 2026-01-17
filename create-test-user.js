@@ -9,9 +9,9 @@ const dbPath = path.join(__dirname, 'server', 'gatefall.db');
 const db = new sqlite3.Database(dbPath);
 
 const TEST_USER = {
-  email: 'test@gatefall.dev',
-  password: 'test1234',
-  displayName: 'Test-Admin'
+  email: 'test@dev.de',
+  password: '12345678',
+  displayName: 'Manu'
 };
 
 async function createTestUser() {
