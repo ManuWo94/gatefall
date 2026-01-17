@@ -81,6 +81,28 @@
             </div>
             <div id="resend-message" class="resend-message"></div>
         </div>
+
+        <!-- Hunter Guild Panel -->
+        <div id="guild-panel" class="guild-panel" style="display: none;">
+            <div class="guild-header">
+                <h3>🏰 Hunter-Vereinigung</h3>
+                <button id="guild-close-btn" class="guild-close-btn">✕</button>
+            </div>
+            <div class="guild-content">
+                <div class="current-guild-section">
+                    <div class="current-guild-label">Aktuelle Vereinigung:</div>
+                    <div id="current-guild-name" class="current-guild-name">Keine Vereinigung</div>
+                    <button id="btn-leave-guild" class="guild-action-btn guild-leave-btn" style="display: none;">Vereinigung verlassen</button>
+                </div>
+                
+                <div class="guild-list-section">
+                    <h4>Verfügbare Vereinigungen</h4>
+                    <div id="guild-list" class="guild-list">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="main-grid">
             <!-- Left Column: Player & Enemy -->
@@ -167,6 +189,7 @@
             <button class="control-button dungeon-button" id="start-dungeon">🏰 Dungeon starten</button>
             <button class="control-button" id="reset">Zurücksetzen</button>
             <button class="control-button glossar-button" id="glossar">Glossar</button>
+            <button class="control-button guild-button" id="btn-open-guild">🏰 Vereinigung</button>
         </div>
 
         <!-- Combat Log -->

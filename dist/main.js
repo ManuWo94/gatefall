@@ -75,6 +75,40 @@ class AuthAPI {
         }
         return response.json();
     }
+    static async getGuilds() {
+        const response = await fetch(`${this.baseUrl}/profile/guilds`, {
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Gilden laden fehlgeschlagen');
+        }
+        return response.json();
+    }
+    static async joinGuild(guildId) {
+        const response = await fetch(`${this.baseUrl}/profile/guild/join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ guildId })
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Beitritt fehlgeschlagen');
+        }
+        return response.json();
+    }
+    static async leaveGuild() {
+        const response = await fetch(`${this.baseUrl}/profile/guild/leave`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Verlassen fehlgeschlagen');
+        }
+        return response.json();
+    }
 }
 AuthAPI.baseUrl = '/api';
 // Auth UI
@@ -91,6 +125,7 @@ class AuthUI {
         this.setupResendVerification();
         this.setupAwakening();
         this.setupStatusScreen();
+        this.setupGuildPanel();
         await this.checkSession();
         this.checkForVerificationToken();
         this.checkDiscordLogin();
@@ -519,6 +554,98 @@ class AuthUI {
             if (window.ui) {
                 window.ui.log('SYSTEM: Erwachen verfügbar.');
             }
+        }
+    }
+    setupGuildPanel() {
+        const openBtn = document.getElementById('btn-open-guild');
+        const closeBtn = document.getElementById('guild-close-btn');
+        const panel = document.getElementById('guild-panel');
+        const leaveBtn = document.getElementById('btn-leave-guild');
+        if (openBtn) {
+            openBtn.addEventListener('click', async () => {
+                await this.loadGuilds();
+                if (panel)
+                    panel.style.display = 'block';
+            });
+        }
+        if (closeBtn && panel) {
+            closeBtn.addEventListener('click', () => {
+                panel.style.display = 'none';
+            });
+        }
+        if (leaveBtn) {
+            leaveBtn.addEventListener('click', async () => {
+                try {
+                    await AuthAPI.leaveGuild();
+                    await this.loadGuilds();
+                    alert('Vereinigung verlassen!');
+                }
+                catch (error) {
+                    alert(error.message);
+                }
+            });
+        }
+    }
+    async loadGuilds() {
+        try {
+            const data = await AuthAPI.getGuilds();
+            const currentGuildName = document.getElementById('current-guild-name');
+            const leaveBtn = document.getElementById('btn-leave-guild');
+            const guildList = document.getElementById('guild-list');
+            // Aktuelle Guild anzeigen
+            const currentGuild = data.guilds.find((g) => g.id === this.currentProfile?.progression?.guildId);
+            if (currentGuildName) {
+                currentGuildName.textContent = currentGuild ? currentGuild.name : 'Keine Vereinigung';
+            }
+            if (leaveBtn) {
+                leaveBtn.style.display = currentGuild ? 'block' : 'none';
+            }
+            // Guild-Liste rendern
+            if (guildList) {
+                guildList.innerHTML = '';
+                data.guilds.forEach((guild) => {
+                    const card = document.createElement('div');
+                    card.className = 'guild-card';
+                    const isAvailable = data.availableGuilds.includes(guild.id);
+                    const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
+                    if (!isAvailable)
+                        card.classList.add('guild-locked');
+                    if (isCurrent)
+                        card.classList.add('guild-current');
+                    card.innerHTML = `
+            <div class="guild-card-header">
+              <span class="guild-card-name">${guild.name}</span>
+              <span class="guild-card-rank">Min. ${guild.minimumHunterRank}</span>
+            </div>
+            <div class="guild-card-desc">${guild.description}</div>
+            <div class="guild-card-bonus">+${Math.round(guild.goldBonus * 100)}% Gold</div>
+            ${!isCurrent && isAvailable ? `<button class="guild-join-btn" data-guild-id="${guild.id}">Beitreten</button>` : ''}
+            ${isCurrent ? '<span class="guild-current-badge">Aktuelle Vereinigung</span>' : ''}
+            ${!isAvailable ? '<span class="guild-locked-badge">🔒 Gesperrt</span>' : ''}
+          `;
+                    guildList.appendChild(card);
+                });
+                // Join-Buttons
+                guildList.querySelectorAll('.guild-join-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const guildId = e.target.dataset.guildId;
+                        if (!guildId)
+                            return;
+                        try {
+                            await AuthAPI.joinGuild(guildId);
+                            await this.loadProfile();
+                            await this.loadGuilds();
+                            alert('Vereinigung beigetreten!');
+                        }
+                        catch (error) {
+                            alert(error.message);
+                        }
+                    });
+                });
+            }
+        }
+        catch (error) {
+            console.error('Guild load error:', error);
         }
     }
 }

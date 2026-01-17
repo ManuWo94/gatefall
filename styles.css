@@ -1318,3 +1318,156 @@ h3 {
 .status-close-btn:active {
     transform: translateY(0);
 }
+
+/* Hunter-Rang Styling */
+.status-hunter-rank {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+/* Guild Panel */
+.guild-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #0f0f2e 0%, #1a1a4e 100%);
+    border: 2px solid #3a3a6e;
+    border-radius: 8px;
+    padding: 0;
+    min-width: 600px;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow: hidden;
+    z-index: 10000;
+    box-shadow: 0 0 30px rgba(58, 58, 110, 0.8);
+}
+
+.guild-header {
+    background: linear-gradient(135deg, #1a1a4e 0%, #2a2a6e 100%);
+    padding: 15px 20px;
+    border-bottom: 2px solid #4a4a8e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.guild-header h3 {
+    margin: 0;
+    color: #ffd700;
+    font-size: 1.3em;
+}
+
+.guild-close-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+}
+
+.guild-close-btn:hover {
+    color: #ff6666;
+}
+
+.guild-content {
+    padding: 20px;
+    max-height: calc(80vh - 80px);
+    overflow-y: auto;
+}
+
+.current-guild-section {
+    background: rgba(58, 58, 110, 0.3);
+    border: 1px solid #4a4a8e;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.current-guild-label {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.current-guild-name {
+    color: #ffd700;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 5px 0 10px 0;
+}
+
+.guild-leave-btn {
+    background: linear-gradient(135deg, #8b2222 0%, #6b1a1a 100%);
+    border: 1px solid #9b2a2a;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.guild-list {
+    display: grid;
+    gap: 12px;
+}
+
+.guild-card {
+    background: rgba(30, 30, 60, 0.6);
+    border: 2px solid #4a4a8e;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.guild-card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.guild-card-name {
+    color: #fff;
+    font-weight: bold;
+}
+
+.guild-card-rank {
+    color: #ffd700;
+    font-size: 0.85em;
+}
+
+.guild-card-desc {
+    color: #ccc;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+.guild-card-bonus {
+    color: #66ff66;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.guild-join-btn {
+    background: linear-gradient(135deg, #228b22 0%, #1a6b1a 100%);
+    border: 1px solid #2a9b2a;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.guild-card.guild-locked {
+    opacity: 0.5;
+}
+
+.guild-card.guild-current {
+    border-color: #ffd700;
+}
+
+.guild-button {
+    background: linear-gradient(135deg, #6b5b22 0%, #4b3b12 100%);
+    color: #ffd700;
+}
