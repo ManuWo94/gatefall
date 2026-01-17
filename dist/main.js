@@ -424,6 +424,22 @@ class AuthUI {
         const levelEl = document.getElementById('status-level');
         if (levelEl)
             levelEl.textContent = this.currentProfile.progression.level.toString();
+        // Update Hunter-Rang
+        const hunterRankEl = document.getElementById('status-hunter-rank');
+        if (hunterRankEl) {
+            const rank = this.currentProfile.progression.hunterRank || 'D';
+            hunterRankEl.textContent = rank;
+            // Color based on rank
+            const rankColors = {
+                'SS': '#ff0066',
+                'S': '#ff6600',
+                'A': '#ffcc00',
+                'B': '#66ff66',
+                'C': '#66ccff',
+                'D': '#cccccc'
+            };
+            hunterRankEl.style.color = rankColors[rank] || '#cccccc';
+        }
         // Update job (original role - nicht implementiert in diesem Schritt)
         const jobEl = document.getElementById('status-job');
         if (jobEl)
