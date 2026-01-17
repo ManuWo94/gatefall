@@ -126,6 +126,10 @@ db.serialize(() => {
       level INTEGER NOT NULL DEFAULT 1,
       xp INTEGER NOT NULL DEFAULT 0,
       gold INTEGER NOT NULL DEFAULT 0,
+      awakening_state TEXT DEFAULT 'locked',
+      hunter_rank TEXT DEFAULT 'D',
+      role TEXT DEFAULT 'waechter',
+      guild_id TEXT,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);

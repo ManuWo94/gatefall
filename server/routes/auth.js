@@ -9,11 +9,11 @@ const SALT_ROUNDS = 10;
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { email, password, displayName, role } = req.body;
+  let { email, password, displayName, role } = req.body;
 
   // Validierung
-  if (!email || !password || !displayName || !role) {
-    return res.status(400).json({ error: 'Alle Felder sind erforderlich' });
+  if (!email || !password || !displayName) {
+    return res.status(400).json({ error: 'E-Mail, Passwort und Name sind erforderlich' });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,9 +29,11 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ error: 'Anzeigename muss mindestens 3 Zeichen lang sein' });
   }
 
+  // Rolle validieren oder Default setzen
   const validRoles = ['waechter', 'assassine', 'magier', 'scharfschuetze', 'heiler'];
-  if (!validRoles.includes(role)) {
-    return res.status(400).json({ error: 'Ungültige Rolle' });
+  if (!role || !validRoles.includes(role)) {
+    console.log('⚠️ Keine gültige Rolle angegeben, setze Default: waechter');
+    role = 'waechter'; // Default-Rolle
   }
 
   try {
