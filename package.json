@@ -8,7 +8,8 @@
     "server": "node server/index.js",
     "dev": "npm run build && npm run server",
     "deploy": "node deploy.js",
-    "plesk-test": "node plesk-test.js"
+    "plesk-test": "node plesk-test.js",
+    "debug-session": "node debug-session.js"
   },
   "devDependencies": {
     "http-server": "^14.1.1",
