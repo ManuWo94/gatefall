@@ -6,7 +6,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "server": "node server/index.js",
-    "dev": "npm run build && npm run server"
+    "dev": "npm run build && npm run server",
+    "deploy": "git pull origin main && npm install && node create-test-user.js && echo 'Deployment complete!'"
   },
   "devDependencies": {
     "http-server": "^14.1.1",
