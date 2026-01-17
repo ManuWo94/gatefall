@@ -49,6 +49,17 @@
                     <label>ANZEIGENAME</label>
                     <input type="text" id="register-displayname" autocomplete="username">
                 </div>
+                <div class="input-group">
+                    <label>ROLLE (NICHT ÄNDERBAR)</label>
+                    <select id="register-role" class="role-select">
+                        <option value="waechter">🛡️ WÄCHTER - Tank (140 HP, 8 Schaden)</option>
+                        <option value="assassine">🗡️ ASSASSINE - Hoher Schaden (85 HP, 14 Schaden)</option>
+                        <option value="magier">✨ MAGIER - Magie (80 HP, 120 Mana)</option>
+                        <option value="scharfschuetze">🏹 SCHARFSCHÜTZE - Fernkampf (95 HP, 10 Schaden)</option>
+                        <option value="heiler">💚 HEILER - Unterstützung (90 HP, 100 Mana)</option>
+                    </select>
+                    <small style="color: var(--text-dim); margin-top: 4px; display: block;">⚠️ Die Rolle kann nach der Registrierung nicht mehr geändert werden!</small>
+                </div>
                 <button id="btn-register" class="system-btn primary">REGISTRIEREN</button>
                 <div id="register-error" class="auth-error"></div>
             </div>
@@ -127,7 +138,7 @@
                         <div class="dash-card-icon">🏆</div>
                         <div class="dash-card-content">
                             <div class="dash-card-label">TITEL</div>
-                            <div class="dash-card-value small" id="dash-title">HUNTER</div>
+                            <div class="dash-card-value small" id="dash-title">D-Rang Heiler</div>
                         </div>
                         <div class="dash-card-glow"></div>
                     </div>

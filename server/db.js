@@ -79,7 +79,7 @@ db.serialize(() => {
     }
   });
 
-  // Migration: Add awakening_state, hunter_rank, guild_id to progression table
+  // Migration: Add awakening_state, hunter_rank, guild_id, role to progression table
   db.all("PRAGMA table_info(progression)", [], (err, columns) => {
     if (err) {
       console.error('Fehler beim Prüfen der progression Tabelle:', err);
@@ -89,6 +89,7 @@ db.serialize(() => {
     const hasAwakeningState = columns.some(col => col.name === 'awakening_state');
     const hasHunterRank = columns.some(col => col.name === 'hunter_rank');
     const hasGuildId = columns.some(col => col.name === 'guild_id');
+    const hasRole = columns.some(col => col.name === 'role');
 
     if (!hasAwakeningState) {
       db.run('ALTER TABLE progression ADD COLUMN awakening_state TEXT DEFAULT "locked"', (err) => {
@@ -108,6 +109,13 @@ db.serialize(() => {
       db.run('ALTER TABLE progression ADD COLUMN guild_id TEXT', (err) => {
         if (err) console.error('Fehler beim Hinzufügen von guild_id:', err);
         else console.log('✓ Spalte guild_id hinzugefügt');
+      });
+    }
+
+    if (!hasRole) {
+      db.run('ALTER TABLE progression ADD COLUMN role TEXT DEFAULT "waechter"', (err) => {
+        if (err) console.error('Fehler beim Hinzufügen von role:', err);
+        else console.log('✓ Spalte role hinzugefügt');
       });
     }
   });

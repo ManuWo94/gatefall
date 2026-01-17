@@ -31,7 +31,7 @@ export declare const ROLE_DISPLAY_NAMES: Record<Role, string>;
  * Level 1-9: Rang + Rollenname (z.B. "D-Rang Heiler")
  * Level 10+: Rang + Hunter (z.B. "C-Rang Hunter")
  */
-export declare function getPlayerTitle(level: number, rank: GateRank, role: Role): string;
+export declare function getPlayerTitle(level: number, rank: GateRank, role: Role | string): string;
 export interface Enemy extends Character {
     statusEffects: StatusEffect[];
     damageMultiplier: number;

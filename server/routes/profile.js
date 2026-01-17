@@ -42,7 +42,7 @@ router.get('/', requireAuth, (req, res) => {
 
         // Progression holen
         db.get(
-          'SELECT level, xp, gold, awakening_state, hunter_rank, guild_id FROM progression WHERE user_id = ?',
+          'SELECT level, xp, gold, awakening_state, hunter_rank, guild_id, role FROM progression WHERE user_id = ?',
           [userId],
           (err, progression) => {
             if (err) {
@@ -89,6 +89,7 @@ router.get('/', requireAuth, (req, res) => {
                   gold: progression.gold,
                   awakeningState: progression.awakening_state || 'locked',
                   hunterRank: progression.hunter_rank || 'D',
+                  role: progression.role || 'waechter',
                   guildId: progression.guild_id || null,
                   guildName: guildName
                 }

@@ -23,8 +23,9 @@ export const ROLE_DISPLAY_NAMES = {
  * Level 10+: Rang + Hunter (z.B. "C-Rang Hunter")
  */
 export function getPlayerTitle(level, rank, role) {
+    const roleKey = (typeof role === 'string' ? role : role);
     if (level < 10) {
-        return `${rank}-Rang ${ROLE_DISPLAY_NAMES[role]}`;
+        return `${rank}-Rang ${ROLE_DISPLAY_NAMES[roleKey] || 'Jäger'}`;
     }
     else {
         return `${rank}-Rang Hunter`;

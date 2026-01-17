@@ -7,12 +7,12 @@ import { getPlayerTitle } from './combat/types.js';
 import { GatesUIManager } from './gates-ui.js';
 // ==================== AUTH API ====================
 class AuthAPI {
-    static async register(email, password, displayName) {
+    static async register(email, password, displayName, role) {
         const response = await fetch(`${this.baseUrl}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ email, password, displayName })
+            body: JSON.stringify({ email, password, displayName, role })
         });
         if (!response.ok) {
             const error = await response.json();
@@ -184,18 +184,20 @@ class SystemUI {
         const regEmailInput = document.getElementById('register-email');
         const regPasswordInput = document.getElementById('register-password');
         const regDisplayNameInput = document.getElementById('register-displayname');
+        const regRoleInput = document.getElementById('register-role');
         registerBtn?.addEventListener('click', async () => {
             const email = regEmailInput?.value.trim();
             const password = regPasswordInput?.value;
             const displayName = regDisplayNameInput?.value.trim();
-            if (!email || !password || !displayName) {
+            const role = regRoleInput?.value;
+            if (!email || !password || !displayName || !role) {
                 this.showError('register-error', 'Bitte alle Felder ausfüllen');
                 return;
             }
             try {
                 registerBtn.textContent = 'Lädt...';
                 registerBtn.setAttribute('disabled', 'true');
-                await AuthAPI.register(email, password, displayName);
+                await AuthAPI.register(email, password, displayName, role);
                 await AuthAPI.login(email, password);
                 await this.loadProfile();
                 this.showSystem();
@@ -283,12 +285,19 @@ class SystemUI {
         const rankEl = document.getElementById('dash-hunter-rank');
         const levelEl = document.getElementById('dash-level');
         const guildEl = document.getElementById('dash-guild');
+        const titleEl = document.getElementById('dash-title');
+        const role = profile.progression.role || 'waechter';
+        const level = profile.progression.level || 1;
+        const rank = profile.progression.hunterRank || 'D';
+        const title = getPlayerTitle(level, rank, role);
         if (rankEl)
-            rankEl.textContent = profile.progression.hunterRank || 'D';
+            rankEl.textContent = rank;
         if (levelEl)
-            levelEl.textContent = profile.progression.level;
+            levelEl.textContent = level;
         if (guildEl)
             guildEl.textContent = profile.progression.guildName || 'KEINE';
+        if (titleEl)
+            titleEl.textContent = title;
     }
     updateStatusPanel(profile) {
         const levelEl = document.getElementById('status-level');
@@ -377,10 +386,10 @@ class SystemUI {
         }
     }
     // ========== GATES PANEL ==========
-    loadGatesPanel() {
+    async loadGatesPanel() {
         const level = this.currentProfile?.progression?.level || 1;
         const rank = this.currentProfile?.progression?.hunterRank || 'D';
-        this.gatesUI.init(level, rank);
+        await this.gatesUI.init(level, rank);
     }
     setupQuickActions() {
         const actions = document.querySelectorAll('[data-action]');

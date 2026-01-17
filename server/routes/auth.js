@@ -9,10 +9,10 @@ const SALT_ROUNDS = 10;
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { email, password, displayName } = req.body;
+  const { email, password, displayName, role } = req.body;
 
   // Validierung
-  if (!email || !password || !displayName) {
+  if (!email || !password || !displayName || !role) {
     return res.status(400).json({ error: 'Alle Felder sind erforderlich' });
   }
 
@@ -27,6 +27,11 @@ router.post('/register', async (req, res) => {
 
   if (displayName.length < 3) {
     return res.status(400).json({ error: 'Anzeigename muss mindestens 3 Zeichen lang sein' });
+  }
+
+  const validRoles = ['waechter', 'assassine', 'magier', 'scharfschuetze', 'heiler'];
+  if (!validRoles.includes(role)) {
+    return res.status(400).json({ error: 'Ungültige Rolle' });
   }
 
   try {
@@ -66,15 +71,15 @@ router.post('/register', async (req, res) => {
 
           // Default-Progression erstellen
           db.run(
-            'INSERT INTO progression (user_id, level, xp, gold) VALUES (?, 1, 0, 0)',
-            [userId],
+            'INSERT INTO progression (user_id, level, xp, gold, role) VALUES (?, 1, 0, 0, ?)',
+            [userId, role],
             async (err) => {
               if (err) {
                 console.error('Insert progression error:', err);
                 return res.status(500).json({ error: 'Serverfehler bei der Registrierung' });
               }
 
-              console.log('✅ User registriert:', displayName, '(ID:', userId, ')');
+              console.log('✅ User registriert:', displayName, '(ID:', userId, ') - Rolle:', role);
               
               // Session erstellen (User einloggen)
               req.session.userId = userId;

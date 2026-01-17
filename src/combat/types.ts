@@ -43,9 +43,11 @@ export const ROLE_DISPLAY_NAMES: Record<Role, string> = {
  * Level 1-9: Rang + Rollenname (z.B. "D-Rang Heiler")
  * Level 10+: Rang + Hunter (z.B. "C-Rang Hunter")
  */
-export function getPlayerTitle(level: number, rank: GateRank, role: Role): string {
+export function getPlayerTitle(level: number, rank: GateRank, role: Role | string): string {
+    const roleKey = (typeof role === 'string' ? role : role) as Role;
+    
     if (level < 10) {
-        return `${rank}-Rang ${ROLE_DISPLAY_NAMES[role]}`;
+        return `${rank}-Rang ${ROLE_DISPLAY_NAMES[roleKey] || 'Jäger'}`;
     } else {
         return `${rank}-Rang Hunter`;
     }
