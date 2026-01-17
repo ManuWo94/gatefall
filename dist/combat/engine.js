@@ -6,6 +6,7 @@ import { CombatEventType, StatusEffectType, Role } from './types.js';
 const DUNGEONS = {
     VERLASSENER_DUNGEON: {
         name: 'Verlassener Dungeon',
+        gateRank: 'D',
         enemies: [
             { id: 1, name: 'Goblin', maxHp: 80, autoAttackDamage: 6 },
             { id: 2, name: 'Goblin', maxHp: 80, autoAttackDamage: 6 },

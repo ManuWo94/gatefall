@@ -46,7 +46,10 @@ export interface EnemyDefinition {
 export interface Dungeon {
     name: string;
     enemies: EnemyDefinition[];
+    gateRank: GateRank;
 }
+
+export type GateRank = 'D' | 'C' | 'B' | 'A' | 'S' | 'SS';
 
 export interface DungeonState {
     isActive: boolean;

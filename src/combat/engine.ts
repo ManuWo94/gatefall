@@ -8,6 +8,7 @@ import { CombatState, CombatEvent, CombatEventType, Player, Enemy, Skill, Status
 const DUNGEONS: Record<string, Dungeon> = {
     VERLASSENER_DUNGEON: {
         name: 'Verlassener Dungeon',
+        gateRank: 'D',
         enemies: [
             { id: 1, name: 'Goblin', maxHp: 80, autoAttackDamage: 6 },
             { id: 2, name: 'Goblin', maxHp: 80, autoAttackDamage: 6 },

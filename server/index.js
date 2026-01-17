@@ -47,7 +47,7 @@ const sessionConfig = {
   name: 'gatefall.sid', // Custom cookie name
   cookie: {
     httpOnly: true,
-    secure: false, // TEMPORÄR AUF FALSE FÜR DEBUGGING
+    secure: process.env.NODE_ENV === 'production', // Jetzt funktioniert es mit Proxy
     sameSite: 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 Tage
     path: '/'

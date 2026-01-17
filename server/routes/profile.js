@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../db');
+const { GUILDS, getGuildById, getAvailableGuilds, canJoinGuild } = require('../guilds');
 
 const router = express.Router();
 
@@ -41,7 +42,7 @@ router.get('/', requireAuth, (req, res) => {
 
         // Progression holen
         db.get(
-          'SELECT level, xp, gold, awakening_state FROM progression WHERE user_id = ?',
+          'SELECT level, xp, gold, awakening_state, hunter_rank, guild_id FROM progression WHERE user_id = ?',
           [userId],
           (err, progression) => {
             if (err) {
@@ -62,7 +63,9 @@ router.get('/', requireAuth, (req, res) => {
                 level: progression.level,
                 xp: progression.xp,
                 gold: progression.gold,
-                awakeningState: progression.awakening_state || 'locked'
+                awakeningState: progression.awakening_state || 'locked',
+                hunterRank: progression.hunter_rank || 'D',
+                guildId: progression.guild_id || null
               }
             });
           }
@@ -90,23 +93,67 @@ router.post('/save', requireAuth, (req, res) => {
   }
 
   try {
-    db.run(
-      'UPDATE progression SET level = ?, xp = ?, gold = ? WHERE user_id = ?',
-      [level, xp, gold, userId],
-      function(err) {
+    // Hole aktuelle Progression für Hunter-Rang-Check
+    db.get(
+      'SELECT level, awakening_state, hunter_rank FROM progression WHERE user_id = ?',
+      [userId],
+      (err, currentProg) => {
         if (err) {
           console.error('Database error:', err);
           return res.status(500).json({ error: 'Serverfehler beim Speichern' });
         }
 
-        if (this.changes === 0) {
+        if (!currentProg) {
           return res.status(404).json({ error: 'Progression nicht gefunden' });
         }
 
-        res.json({
-          success: true,
-          progression: { level, xp, gold }
-        });
+        // Hunter-Rang-Progression (nur nach Awakening)
+        let newHunterRank = currentProg.hunter_rank || 'D';
+        const isAwakened = currentProg.awakening_state === 'awakened';
+
+        if (isAwakened) {
+          // Level → Hunter Rang Mapping
+          if (level >= 50) newHunterRank = 'SS';
+          else if (level >= 40) newHunterRank = 'S';
+          else if (level >= 30) newHunterRank = 'A';
+          else if (level >= 20) newHunterRank = 'B';
+          else if (level >= 10) newHunterRank = 'C';
+        }
+
+        // Log wenn Rang aufgestiegen ist
+        if (newHunterRank !== currentProg.hunter_rank) {
+          console.log(`🎖️  Hunter-Rang aufgestiegen: ${currentProg.hunter_rank} → ${newHunterRank}`);
+        }
+
+        db.run(
+          'UPDATE progression SET level = ?, xp = ?, gold = ?, hunter_rank = ? WHERE user_id = ?',
+          [level, xp, gold, newHunterRank, userId],
+          function(err) {
+            if (err) {
+              console.error('Database error:', err);
+              return res.status(500).json({ error: 'Serverfehler beim Speichern' });
+            }
+
+            if (this.changes === 0) {
+              return res.status(404).json({ error: 'Progression nicht gefunden' });
+            }
+
+            const response = {
+              success: true,
+              progression: { level, xp, gold, hunterRank: newHunterRank }
+            };
+
+            // Benachrichtigung wenn Rang aufgestiegen
+            if (newHunterRank !== currentProg.hunter_rank) {
+              response.hunterRankUp = {
+                from: currentProg.hunter_rank,
+                to: newHunterRank
+              };
+            }
+
+            res.json(response);
+          }
+        );
       }
     );
   } catch (error) {
@@ -122,7 +169,7 @@ router.post('/awakening/complete', requireAuth, (req, res) => {
   try {
     // Check current state
     db.get(
-      'SELECT level, awakening_state FROM progression WHERE user_id = ?',
+      'SELECT level, awakening_state, hunter_rank FROM progression WHERE user_id = ?',
       [userId],
       (err, progression) => {
         if (err) {
@@ -144,10 +191,12 @@ router.post('/awakening/complete', requireAuth, (req, res) => {
           return res.status(400).json({ error: 'Erwachen bereits abgeschlossen' });
         }
 
-        // Update awakening state
+        console.log('🌟 Erwachen abgeschlossen! Hunter-Rang: D → C');
+
+        // Update awakening state AND set hunter rank to C
         db.run(
-          'UPDATE progression SET awakening_state = ? WHERE user_id = ?',
-          ['awakened', userId],
+          'UPDATE progression SET awakening_state = ?, hunter_rank = ? WHERE user_id = ?',
+          ['awakened', 'C', userId],
           function(err) {
             if (err) {
               console.error('Database error:', err);
@@ -156,7 +205,8 @@ router.post('/awakening/complete', requireAuth, (req, res) => {
 
             res.json({
               success: true,
-              awakeningState: 'awakened'
+              awakeningState: 'awakened',
+              hunterRank: 'C'
             });
           }
         );
@@ -164,6 +214,158 @@ router.post('/awakening/complete', requireAuth, (req, res) => {
     );
   } catch (error) {
     console.error('Awakening error:', error);
+    res.status(500).json({ error: 'Serverfehler' });
+  }
+});
+
+// GET /api/guilds - Liste aller Vereinigungen
+router.get('/guilds', requireAuth, (req, res) => {
+  const userId = req.session.userId;
+
+  try {
+    // Hole Hunter-Rang des Spielers
+    db.get(
+      'SELECT hunter_rank FROM progression WHERE user_id = ?',
+      [userId],
+      (err, progression) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Serverfehler' });
+        }
+
+        if (!progression) {
+          return res.status(404).json({ error: 'Progression nicht gefunden' });
+        }
+
+        const hunterRank = progression.hunter_rank || 'D';
+        const availableGuilds = getAvailableGuilds(hunterRank);
+
+        res.json({
+          guilds: GUILDS,
+          availableGuilds: availableGuilds.map(g => g.id),
+          currentHunterRank: hunterRank
+        });
+      }
+    );
+  } catch (error) {
+    console.error('Guilds error:', error);
+    res.status(500).json({ error: 'Serverfehler' });
+  }
+});
+
+// POST /api/guild/join - Vereinigung beitreten
+router.post('/guild/join', requireAuth, (req, res) => {
+  const { guildId } = req.body;
+  const userId = req.session.userId;
+
+  if (!guildId) {
+    return res.status(400).json({ error: 'Guild ID erforderlich' });
+  }
+
+  const guild = getGuildById(guildId);
+  if (!guild) {
+    return res.status(404).json({ error: 'Vereinigung nicht gefunden' });
+  }
+
+  try {
+    db.get(
+      'SELECT hunter_rank, guild_id FROM progression WHERE user_id = ?',
+      [userId],
+      (err, progression) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Serverfehler' });
+        }
+
+        if (!progression) {
+          return res.status(404).json({ error: 'Progression nicht gefunden' });
+        }
+
+        // Bereits in Vereinigung?
+        if (progression.guild_id) {
+          return res.status(400).json({ error: 'Du bist bereits in einer Vereinigung' });
+        }
+
+        // Rang ausreichend?
+        const hunterRank = progression.hunter_rank || 'D';
+        if (!canJoinGuild(hunterRank, guildId)) {
+          return res.status(403).json({ 
+            error: `Hunter-Rang ${guild.minimumHunterRank} erforderlich. Dein Rang: ${hunterRank}` 
+          });
+        }
+
+        console.log(`🏰 Vereinigung beigetreten: ${guild.name}`);
+
+        // Vereinigung beitreten
+        db.run(
+          'UPDATE progression SET guild_id = ? WHERE user_id = ?',
+          [guildId, userId],
+          function(err) {
+            if (err) {
+              console.error('Database error:', err);
+              return res.status(500).json({ error: 'Serverfehler' });
+            }
+
+            res.json({
+              success: true,
+              guildId: guildId,
+              guildName: guild.name,
+              message: `Vereinigung beigetreten: ${guild.name}`
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Join guild error:', error);
+    res.status(500).json({ error: 'Serverfehler' });
+  }
+});
+
+// POST /api/guild/leave - Vereinigung verlassen
+router.post('/guild/leave', requireAuth, (req, res) => {
+  const userId = req.session.userId;
+
+  try {
+    db.get(
+      'SELECT guild_id FROM progression WHERE user_id = ?',
+      [userId],
+      (err, progression) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Serverfehler' });
+        }
+
+        if (!progression) {
+          return res.status(404).json({ error: 'Progression nicht gefunden' });
+        }
+
+        if (!progression.guild_id) {
+          return res.status(400).json({ error: 'Du bist in keiner Vereinigung' });
+        }
+
+        const guild = getGuildById(progression.guild_id);
+        console.log(`🏰 Vereinigung verlassen: ${guild ? guild.name : progression.guild_id}`);
+
+        db.run(
+          'UPDATE progression SET guild_id = NULL WHERE user_id = ?',
+          [userId],
+          function(err) {
+            if (err) {
+              console.error('Database error:', err);
+              return res.status(500).json({ error: 'Serverfehler' });
+            }
+
+            res.json({
+              success: true,
+              message: 'Vereinigung verlassen'
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Leave guild error:', error);
     res.status(500).json({ error: 'Serverfehler' });
   }
 });
