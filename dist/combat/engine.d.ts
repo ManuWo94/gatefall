@@ -94,6 +94,10 @@ export declare class CombatEngine {
      */
     private handleCombatEnd;
     /**
+     * Get Gate Rank multiplier for rewards
+     */
+    private getGateRankMultiplier;
+    /**
      * Emit a combat event
      */
     private emitEvent;

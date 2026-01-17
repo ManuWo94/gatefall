@@ -470,7 +470,28 @@ export class CombatEngine {
                     }
                 if (allDefeated) {
                     this.state.dungeonState.isActive = false;
+                    
+                    // Calculate rewards with Gate-Rang multiplier
+                    const baseXp = 50;
+                    const baseGold = 30;
+                    const gateMultiplier = this.getGateRankMultiplier(dungeon.gateRank);
+                    
+                    const earnedXp = Math.floor(baseXp * gateMultiplier);
+                    const earnedGold = Math.floor(baseGold * gateMultiplier);
+                    
+                    this.state.progression.xp += earnedXp;
+                    this.state.progression.gold += earnedGold;
+                    
+                    // Check for level up (simple: 100 XP per level)
+                    while (this.state.progression.xp >= 100) {
+                        this.state.progression.xp -= 100;
+                        this.state.progression.level++;
+                        this.emitEvent(CombatEventType.VICTORY, `🎉 Level ${this.state.progression.level} erreicht!`);
+                    }
+                    
                     this.emitEvent(CombatEventType.VICTORY, '=== Dungeon abgeschlossen! ===');
+                    this.emitEvent(CombatEventType.INFO, `Gate-Rang ${dungeon.gateRank}: Belohnungen x${gateMultiplier.toFixed(1)}`);
+                    this.emitEvent(CombatEventType.INFO, `+${earnedXp} XP, +${earnedGold} Gold`);
                 } else {
                     this.emitEvent(CombatEventType.INFO, 'Wähle den nächsten Gegner!');
                 }
@@ -481,6 +502,21 @@ export class CombatEngine {
         }
 
         this.notifyStateUpdate();
+    }
+
+    /**
+     * Get Gate Rank multiplier for rewards
+     */
+    private getGateRankMultiplier(rank: string): number {
+        const multipliers: Record<string, number> = {
+            'D': 1.0,
+            'C': 1.2,
+            'B': 1.5,
+            'A': 2.0,
+            'S': 3.0,
+            'SS': 5.0
+        };
+        return multipliers[rank] || 1.0;
     }
 
     /**
