@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Mail-Verifizierung - GateFall</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="verify-page">
+        <div class="verify-container">
+            <h1>E-Mail-Verifizierung</h1>
+            <div id="verify-status" class="verify-status">
+                <div class="spinner"></div>
+                <p>Deine E-Mail-Adresse wird bestätigt...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const statusDiv = document.getElementById('verify-status');
+
+        if (!token) {
+            statusDiv.innerHTML = `
+                <div class="error-icon">✗</div>
+                <p class="error-text">Ungültiger Verifizierungslink</p>
+                <button onclick="window.location.href='/'" class="btn-primary">Zur Startseite</button>
+            `;
+        } else {
+            fetch(`/api/auth/verify-email?token=${token}`, {
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    statusDiv.innerHTML = `
+                        <div class="success-icon">✓</div>
+                        <p class="success-text">${data.message}</p>
+                        <p>Du wirst in 3 Sekunden weitergeleitet...</p>
+                    `;
+                    setTimeout(() => window.location.href = '/', 3000);
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="error-icon">✗</div>
+                        <p class="error-text">${data.error}</p>
+                        <button onclick="window.location.href='/'" class="btn-primary">Zur Startseite</button>
+                    `;
+                }
+            })
+            .catch(err => {
+                statusDiv.innerHTML = `
+                    <div class="error-icon">✗</div>
+                    <p class="error-text">Verifizierung fehlgeschlagen</p>
+                    <button onclick="window.location.href='/'" class="btn-primary">Zur Startseite</button>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

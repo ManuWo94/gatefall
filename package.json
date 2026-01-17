@@ -1,0 +1,26 @@
+{
+  "name": "gatefall",
+  "version": "0.1.0",
+  "description": "Solo Leveling-style dungeon game",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "server": "node server/index.js",
+    "dev": "npm run build && npm run server"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^12.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.22.1",
+    "express-session": "^1.18.2",
+    "nodemailer": "^7.0.12",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4",
+    "sqlite3": "^5.1.6"
+  }
+}

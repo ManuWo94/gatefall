@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatefall - Solo Leveling Dungeon</title>
+    <link rel="icon" href="favicon.ico" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login/Register Screen -->
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-container">
+            <h1>⚔️ Gatefall</h1>
+            
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active">Anmelden</button>
+                <button id="tab-register" class="auth-tab">Registrieren</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="form-login" class="auth-form active">
+                <input type="email" id="login-email" placeholder="E-Mail" required>
+                <input type="password" id="login-password" placeholder="Passwort" required>
+                <button id="btn-login" class="auth-btn">Anmelden</button>
+                <div id="login-error" class="auth-error"></div>
+                
+                <div class="auth-divider">
+                    <span>oder</span>
+                </div>
+                
+                <a href="/api/auth/discord" class="discord-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    Mit Discord anmelden
+                </a>
+            </div>
+
+            <!-- Register Form -->
+            <div id="form-register" class="auth-form">
+                <input type="email" id="register-email" placeholder="E-Mail" required>
+                <input type="password" id="register-password" placeholder="Passwort (min. 8 Zeichen)" required>
+                <input type="text" id="register-displayname" placeholder="Anzeigename (min. 3 Zeichen)" required>
+                <button id="btn-register" class="auth-btn">Registrieren</button>
+                <div id="register-error" class="auth-error"></div>
+                
+                <div class="auth-divider">
+                    <span>oder</span>
+                </div>
+                
+                <a href="/api/auth/discord" class="discord-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    Mit Discord registrieren
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="container" style="display: none;">
+        <div class="game-header">
+            <h1>⚔️ Gatefall</h1>
+            <div class="user-info">
+                <span id="user-display-name">Jäger</span>
+                <button id="btn-logout" class="logout-btn">Abmelden</button>
+            </div>
+        </div>
+
+        <!-- Email Verification Banner -->
+        <div id="verification-banner" class="verification-banner" style="display: none;">
+            <div class="banner-content">
+                <div class="banner-icon">✉️</div>
+                <div class="banner-text">
+                    <strong>E-Mail nicht bestätigt</strong>
+                    <p>Bitte bestätige deine E-Mail-Adresse, um zu spielen.</p>
+                </div>
+                <button id="btn-resend-verification" class="resend-btn">Bestätigungslink erneut senden</button>
+            </div>
+            <div id="resend-message" class="resend-message"></div>
+        </div>
+        
+        <div class="main-grid">
+            <!-- Left Column: Player & Enemy -->
+            <div class="left-column">
+                <!-- Player Panel -->
+                <div class="panel player-panel">
+            <h2>Spieler</h2>
+            <div class="character-info">
+                <div class="role-selector">
+                    <label for="role-select">Rolle:</label>
+                    <select id="role-select">
+                        <option value="waechter">Wächter</option>
+                        <option value="assassine" selected>Assassine</option>
+                        <option value="magier">Magier</option>
+                        <option value="scharfschuetze">Scharfschütze</option>
+                        <option value="heiler">Heiler</option>
+                    </select>
+                </div>
+                <div class="name" id="player-name">Jäger</div>
+                <div class="stat-bar">
+                    <label>LP:</label>
+                    <div class="bar-container">
+                        <div class="bar hp-bar" id="player-hp-bar"></div>
+                    </div>
+                    <span class="stat-text" id="player-hp-text">100/100</span>
+                </div>
+                <div class="stat-bar">
+                    <label>MP:</label>
+                    <div class="bar-container">
+                        <div class="bar mp-bar" id="player-mp-bar"></div>
+                    </div>
+                    <span class="stat-text" id="player-mp-text">50/50</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enemy Panel -->
+        <div class="panel enemy-panel">
+            <h2>Gegner</h2>
+            <div class="character-info">
+                <div class="dungeon-info" id="dungeon-info" style="display: none;">
+                    <div class="dungeon-name" id="dungeon-name"></div>
+                    <div class="dungeon-progress" id="dungeon-progress"></div>
+                </div>
+                <div class="name" id="enemy-name">Goblin</div>
+                <div class="stat-bar">
+                    <label>LP:</label>
+                    <div class="bar-container">
+                        <div class="bar hp-bar" id="enemy-hp-bar"></div>
+                    </div>
+                    <span class="stat-text" id="enemy-hp-text">80/80</span>
+                </div>
+            </div>
+        </div>
+            </div>
+            
+            <!-- Right Column: Skills & Dungeon Enemies -->
+            <div class="right-column">
+                <!-- Dungeon Enemies List -->
+                <div class="panel dungeon-enemies-panel" id="dungeon-enemies-panel" style="display: none;">
+                    <h2>🏰 Dungeon Gegner</h2>
+                    <p class="dungeon-hint">Wähle einen Gegner zum Angreifen:</p>
+                    <div id="dungeon-enemies-list" class="dungeon-enemies-list"></div>
+                </div>
+
+                <!-- Skills -->
+                <div class="skills-panel">
+                    <h3>Fähigkeiten</h3>
+                    <div class="skills-container">
+                        <button class="skill-button" id="skill-1">Fähigkeit 1</button>
+                        <button class="skill-button" id="skill-2">Fähigkeit 2</button>
+                        <button class="skill-button" id="skill-3">Fähigkeit 3</button>
+                    </div>
+                    <div class="interrupt-container">
+                        <button class="interrupt-button" id="interrupt-btn" style="display: none;">Unterbrechen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="controls">
+            <button class="control-button" id="start-combat">Kampf starten</button>
+            <button class="control-button dungeon-button" id="start-dungeon">🏰 Dungeon starten</button>
+            <button class="control-button" id="reset">Zurücksetzen</button>
+            <button class="control-button glossar-button" id="glossar">Glossar</button>
+        </div>
+
+        <!-- Combat Log -->
+        <div class="combat-log-panel">
+            <h3>Kampfprotokoll</h3>
+            <div class="combat-log" id="combat-log">
+                <div class="log-entry">Bereit zum Kampf...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Glossar Modal -->
+    <div id="glossar-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>📖 Gatefall – Glossar</h1>
+            
+            <div class="glossar-section">
+                <h2>🧍‍♂️ Spieler & Grundlagen</h2>
+                <table class="glossar-table">
+                    <tr><td><strong>Jäger</strong></td><td>Spielercharakter</td></tr>
+                    <tr><td><strong>Rolle</strong></td><td>Kampfstil eines Jägers</td></tr>
+                    <tr><td><strong>Dungeon</strong></td><td>Instanzierter Kampfbereich</td></tr>
+                    <tr><td><strong>Durchlauf</strong></td><td>Ein kompletter Dungeon-Run</td></tr>
+                    <tr><td><strong>Kampftick</strong></td><td>Fester Kampfschritt (alle 350 ms)</td></tr>
+                    <tr><td><strong>Automatischer Angriff</strong></td><td>Regelmäßiger Grundangriff ohne Skill</td></tr>
+                    <tr><td><strong>Kampflog</strong></td><td>Textausgabe aller Kampfereignisse</td></tr>
+                </table>
+            </div>
+
+            <div class="glossar-section">
+                <h2>🎭 Rollen (Spielbar)</h2>
+                
+                <h3>🛡 Wächter</h3>
+                <p><strong>Identität:</strong> Schutz & Überleben<br>
+                <strong>Aufgabe:</strong> Schaden abfangen, Stabilität sichern</p>
+                
+                <h3>⚔ Assassine</h3>
+                <p><strong>Identität:</strong> Burst & Risiko<br>
+                <strong>Aufgabe:</strong> Gegner schnell ausschalten</p>
+                
+                <h3>🧙 Magier</h3>
+                <p><strong>Identität:</strong> Magieschaden & Kontrolle<br>
+                <strong>Aufgabe:</strong> Schaden über Effekte und Ressourcen</p>
+                
+                <h3>🏹 Scharfschütze</h3>
+                <p><strong>Identität:</strong> Konstanter Schaden<br>
+                <strong>Aufgabe:</strong> Dauer-DPS & Schwächen ausnutzen</p>
+                
+                <h3>✨ Heiler</h3>
+                <p><strong>Identität:</strong> Unterstützung<br>
+                <strong>Aufgabe:</strong> Gruppe am Leben halten</p>
+            </div>
+
+            <div class="glossar-section">
+                <h2>📊 Attribute & Werte</h2>
+                <table class="glossar-table">
+                    <tr><td><strong>HP (Lebenspunkte)</strong></td><td>Aktuelle Gesundheit</td></tr>
+                    <tr><td><strong>Max. HP</strong></td><td>Maximale Lebenspunkte</td></tr>
+                    <tr><td><strong>MP (Manapunkte)</strong></td><td>Ressource für Fähigkeiten</td></tr>
+                    <tr><td><strong>Max. MP</strong></td><td>Maximale Manapunkte</td></tr>
+                    <tr><td><strong>Schaden</strong></td><td>Abgezogene HP</td></tr>
+                    <tr><td><strong>Kritischer Treffer</strong></td><td>Erhöhter Schaden</td></tr>
+                    <tr><td><strong>Schadensreduktion</strong></td><td>Verringerung eingehenden Schadens</td></tr>
+                    <tr><td><strong>Schild</strong></td><td>Absorbiert Schaden vor HP</td></tr>
+                </table>
+            </div>
+
+            <div class="glossar-section">
+                <h2>⚔️ Fähigkeiten (Skills)</h2>
+                
+                <h3>Wächter</h3>
+                <ul>
+                    <li><strong>Schildschlag</strong> – verursacht Schaden</li>
+                    <li><strong>Bollwerk</strong> – reduziert erlittenen Schaden</li>
+                    <li><strong>Provokation</strong> – erzwingt Aufmerksamkeit</li>
+                </ul>
+                
+                <h3>Assassine</h3>
+                <ul>
+                    <li><strong>Schattenstoß</strong> – hoher Schaden</li>
+                    <li><strong>Hinrichten</strong> – nur bei niedrigem Gegner-HP</li>
+                    <li><strong>Blutung</strong> – Schaden über Zeit</li>
+                </ul>
+                
+                <h3>Magier</h3>
+                <ul>
+                    <li><strong>Arkanschlag</strong> – magischer Schaden</li>
+                    <li><strong>Manastrom</strong> – stellt Mana wieder her</li>
+                    <li><strong>Verbrennung</strong> – Schaden über Zeit</li>
+                </ul>
+                
+                <h3>Scharfschütze</h3>
+                <ul>
+                    <li><strong>Schnellschuss</strong> – schneller Angriff</li>
+                    <li><strong>Schwachstelle</strong> – Gegner erleidet mehr Schaden</li>
+                    <li><strong>Fokus</strong> – erhöht Angriffstempo</li>
+                </ul>
+                
+                <h3>Heiler</h3>
+                <ul>
+                    <li><strong>Zerschmettern</strong> – leichter Angriff</li>
+                    <li><strong>Heilung</strong> – stellt HP wieder her</li>
+                    <li><strong>Schutzschild</strong> – absorbiert Schaden</li>
+                </ul>
+            </div>
+
+            <div class="glossar-section">
+                <h2>🧬 Status-Effekte & Verstärkungen</h2>
+                <table class="glossar-table">
+                    <tr><th>Begriff</th><th>Typ</th><th>Wirkung</th></tr>
+                    <tr><td><strong>Blutung</strong></td><td>Debuff</td><td>Schaden pro Kampftick</td></tr>
+                    <tr><td><strong>Verbrennung</strong></td><td>Debuff</td><td>Schaden pro Kampftick</td></tr>
+                    <tr><td><strong>Bollwerk</strong></td><td>Buff</td><td>Schadensreduktion</td></tr>
+                    <tr><td><strong>Schutzschild</strong></td><td>Buff</td><td>Absorbiert Schaden</td></tr>
+                    <tr><td><strong>Schwachstelle</strong></td><td>Debuff</td><td>Ziel erleidet mehr Schaden</td></tr>
+                    <tr><td><strong>Regeneration</strong></td><td>Buff</td><td>Stellt HP pro Tick wieder her</td></tr>
+                </table>
+            </div>
+
+            <div class="glossar-section">
+                <h2>🕒 Cooldowns & Zeit</h2>
+                <table class="glossar-table">
+                    <tr><td><strong>Abklingzeit</strong></td><td>Zeit bis Fähigkeit erneut nutzbar ist</td></tr>
+                    <tr><td><strong>Tick-Dauer</strong></td><td>Feste Zeitspanne eines Kampfticks</td></tr>
+                    <tr><td><strong>Dauer (Ticks)</strong></td><td>Anzahl der Ticks eines Effekts</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script type="module" src="./dist/main.js?v=4"></script>
+</body>
+</html>
