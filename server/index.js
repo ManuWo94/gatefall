@@ -13,10 +13,15 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+
+// CORS nur für Development (Codespace)
+if (process.env.NODE_ENV !== 'production') {
+  const cors = require('cors');
+  app.use(cors({
+    origin: true,
+    credentials: true
+  }));
+}
 
 // Session-Konfiguration
 app.use(session({
