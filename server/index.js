@@ -11,9 +11,13 @@ const profileRoutes = require('./routes/profile');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust Proxy - wichtig für Plesk/Nginx Reverse Proxy
+app.set('trust proxy', 1);
+
 // Logging für Debugging
 console.log('🔧 Environment:', process.env.NODE_ENV);
 console.log('🔧 SESSION_SECRET gesetzt:', !!process.env.SESSION_SECRET);
+console.log('🔧 Trust Proxy: aktiviert');
 
 // Middleware
 app.use(express.json());
