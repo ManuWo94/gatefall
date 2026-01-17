@@ -476,96 +476,52 @@
 
             <!-- GATES PANEL -->
             <div class="panel" id="panel-gates">
-                <!-- Gate Ranks Selection -->
-                <div class="gates-ranks-section">
-                    <div class="section-header">
-                        <span class="section-icon">🌌</span>
-                        <span class="section-title">GATE-RÄNGE</span>
+                <!-- Gates Header -->
+                <div class="gates-header">
+                    <div class="gates-header-left">
+                        <span class="gates-icon">🌌</span>
+                        <span class="gates-title">VERFÜGBARE GATES</span>
                     </div>
-                    <div class="gate-ranks-grid">
-                        <button class="gate-rank-card rank-d" data-rank="D">
-                            <div class="rank-glow"></div>
-                            <div class="rank-content">
-                                <div class="rank-letter">D</div>
-                                <div class="rank-info">
-                                    <div class="rank-mult">×1.0</div>
-                                    <div class="rank-desc">ANFÄNGER</div>
-                                </div>
-                            </div>
-                        </button>
-                        <button class="gate-rank-card rank-c" data-rank="C">
-                            <div class="rank-glow"></div>
-                            <div class="rank-content">
-                                <div class="rank-letter">C</div>
-                                <div class="rank-info">
-                                    <div class="rank-mult">×1.2</div>
-                                    <div class="rank-desc">FORTGESCHRITTEN</div>
-                                </div>
-                            </div>
-                        </button>
-                        <button class="gate-rank-card rank-b" data-rank="B">
-                            <div class="rank-glow"></div>
-                            <div class="rank-content">
-                                <div class="rank-letter">B</div>
-                                <div class="rank-info">
-                                    <div class="rank-mult">×1.5</div>
-                                    <div class="rank-desc">ERFAHREN</div>
-                                </div>
-                            </div>
-                        </button>
-                        <button class="gate-rank-card rank-a" data-rank="A">
-                            <div class="rank-glow"></div>
-                            <div class="rank-content">
-                                <div class="rank-letter">A</div>
-                                <div class="rank-info">
-                                    <div class="rank-mult">×2.0</div>
-                                    <div class="rank-desc">ELITE</div>
-                                </div>
-                            </div>
-                        </button>
-                        <button class="gate-rank-card rank-s" data-rank="S">
-                            <div class="rank-glow"></div>
-                            <div class="rank-content">
-                                <div class="rank-letter">S</div>
-                                <div class="rank-info">
-                                    <div class="rank-mult">×3.0</div>
-                                    <div class="rank-desc">MEISTER</div>
-                                </div>
-                            </div>
-                        </button>
-                        <button class="gate-rank-card rank-ss" data-rank="SS">
-                            <div class="rank-glow"></div>
-                            <div class="rank-content">
-                                <div class="rank-letter">SS</div>
-                                <div class="rank-info">
-                                    <div class="rank-mult">×5.0</div>
-                                    <div class="rank-desc">LEGENDE</div>
-                                </div>
-                            </div>
-                        </button>
+                    <div class="gates-header-right">
+                        <div class="gates-info-item">
+                            <span>📊</span>
+                            <span id="gates-count">0/60 Gates</span>
+                        </div>
+                        <div class="gates-info-item">
+                            <span>🔄</span>
+                            <span id="gates-reset-timer">Reset in: --:--:--</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Dungeon Selection -->
-                <div class="dungeon-selection-section" style="display: none;">
-                    <div class="section-header">
-                        <span class="section-icon">🏰</span>
-                        <span class="section-title">VERFÜGBARE DUNGEONS</span>
-                    </div>
-                    <div class="dungeon-grid" id="dungeon-list">
-                        <div class="dungeon-card-modern">
-                            <div class="dungeon-bg"></div>
-                            <div class="dungeon-content">
-                                <div class="dungeon-icon">🏚️</div>
-                                <div class="dungeon-name">VERLASSENER DUNGEON</div>
-                                <div class="dungeon-rank-badge">RANG D</div>
-                                <button class="dungeon-start-btn" id="btn-start-dungeon">
-                                    <span>BETRETEN</span>
-                                    <span>→</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Filter Buttons -->
+                <div class="gates-filter-bar">
+                    <button class="gate-filter-btn active" data-filter="all">
+                        ALLE <span class="filter-count" id="filter-count-all">60</span>
+                    </button>
+                    <button class="gate-filter-btn" data-filter="D">
+                        🟤 D <span class="filter-count" id="filter-count-d">15</span>
+                    </button>
+                    <button class="gate-filter-btn" data-filter="C">
+                        🔵 C <span class="filter-count" id="filter-count-c">15</span>
+                    </button>
+                    <button class="gate-filter-btn" data-filter="B">
+                        🟢 B <span class="filter-count" id="filter-count-b">12</span>
+                    </button>
+                    <button class="gate-filter-btn" data-filter="A">
+                        🟡 A <span class="filter-count" id="filter-count-a">10</span>
+                    </button>
+                    <button class="gate-filter-btn" data-filter="S">
+                        🔴 S <span class="filter-count" id="filter-count-s">6</span>
+                    </button>
+                    <button class="gate-filter-btn" data-filter="SS">
+                        ⚫ SS <span class="filter-count" id="filter-count-ss">2</span>
+                    </button>
+                </div>
+
+                <!-- Gates Grid (Kachelsystem) -->
+                <div class="gates-grid" id="gates-grid">
+                    <!-- Gates werden hier dynamisch generiert -->
                 </div>
             </div>
 

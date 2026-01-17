@@ -4,7 +4,8 @@
  */
 
 import { CombatEngine } from './combat/engine.js';
-import { Role, CombatState } from './combat/types.js';
+import { Role, CombatState, getPlayerTitle } from './combat/types.js';
+import { GatesUIManager } from './gates-ui.js';
 
 // ==================== AUTH API ====================
 class AuthAPI {
@@ -156,9 +157,11 @@ class AuthAPI {
 class SystemUI {
   private currentProfile: any = null;
   private engine: CombatEngine;
+  private gatesUI: GatesUIManager;
 
   constructor(engine: CombatEngine) {
     this.engine = engine;
+    this.gatesUI = new GatesUIManager();
   }
 
   async init() {
@@ -322,8 +325,14 @@ class SystemUI {
     const levelEl = document.getElementById('status-level');
     const rankEl = document.getElementById('status-rank');
 
-    if (levelEl) levelEl.textContent = profile.progression.level;
-    if (rankEl) rankEl.textContent = profile.progression.hunterRank || 'D';
+    // Titel basierend auf Level und Rolle
+    const role = profile.progression.role || 'waechter';
+    const level = profile.progression.level || 1;
+    const rank = profile.progression.hunterRank || 'D';
+    const title = getPlayerTitle(level, rank, role);
+
+    if (levelEl) levelEl.textContent = `${level}`;
+    if (rankEl) rankEl.textContent = title;
   }
 
   private showSystem() {
@@ -397,8 +406,18 @@ class SystemUI {
         case 'skills':
           this.loadSkillsPanel();
           break;
+        case 'gates':
+          this.loadGatesPanel();
+          break;
       }
     }
+  }
+
+  // ========== GATES PANEL ==========
+  private loadGatesPanel() {
+    const level = this.currentProfile?.progression?.level || 1;
+    const rank = this.currentProfile?.progression?.hunterRank || 'D';
+    this.gatesUI.init(level, rank);
   }
 
   private setupQuickActions() {

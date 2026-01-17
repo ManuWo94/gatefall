@@ -9,6 +9,27 @@ export var Role;
     Role["SCHARFSCHUETZE"] = "scharfschuetze";
     Role["HEILER"] = "heiler";
 })(Role || (Role = {}));
+// Rollennamen für Titel (vor Level 10)
+export const ROLE_DISPLAY_NAMES = {
+    [Role.WAECHTER]: 'Wächter',
+    [Role.ASSASSINE]: 'Assassine',
+    [Role.MAGIER]: 'Magier',
+    [Role.SCHARFSCHUETZE]: 'Scharfschütze',
+    [Role.HEILER]: 'Heiler'
+};
+/**
+ * Gibt den Titel basierend auf Level und Rang zurück
+ * Level 1-9: Rang + Rollenname (z.B. "D-Rang Heiler")
+ * Level 10+: Rang + Hunter (z.B. "C-Rang Hunter")
+ */
+export function getPlayerTitle(level, rank, role) {
+    if (level < 10) {
+        return `${rank}-Rang ${ROLE_DISPLAY_NAMES[role]}`;
+    }
+    else {
+        return `${rank}-Rang Hunter`;
+    }
+}
 export var StatusEffectType;
 (function (StatusEffectType) {
     StatusEffectType["BLEED"] = "bleed";

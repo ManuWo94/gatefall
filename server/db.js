@@ -151,8 +151,21 @@ db.serialize(() => {
     )
   `);
 
+  // Daily Gates for Players
+  db.run(`
+    CREATE TABLE IF NOT EXISTS player_gates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      gate_date TEXT NOT NULL,
+      completed_gate_ids TEXT DEFAULT '[]',
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(user_id, gate_date)
+    )
+  `);
+
   db.run(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
   db.run(`CREATE INDEX IF NOT EXISTS idx_guild_applications ON guild_applications(guild_id, status)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_player_gates ON player_gates(user_id, gate_date)`);
 
   console.log('✓ Datenbank initialisiert:', dbPath);
 });

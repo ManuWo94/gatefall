@@ -7,6 +7,7 @@ const passport = require('./passport');
 
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
+const gatesRoutes = require('./routes/gates');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -72,6 +73,7 @@ app.use(passport.session());
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/progression', profileRoutes); // /api/progression/save
+app.use('/api/gates', gatesRoutes);
 
 // Statische Dateien (Frontend)
 app.use(express.static(path.join(__dirname, '..')));

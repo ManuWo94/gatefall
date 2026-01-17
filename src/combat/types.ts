@@ -12,6 +12,8 @@ export interface Player extends Character {
     mp: number;
     maxMp: number;
     role: Role;
+    level: number;
+    hunterRank: GateRank;
     autoAttackDamage: number;
     autoAttackCount: number; // for Marksman passive
     shield: number; // Ward/Schutzschild
@@ -25,6 +27,28 @@ export enum Role {
     MAGIER = 'magier',
     SCHARFSCHUETZE = 'scharfschuetze',
     HEILER = 'heiler'
+}
+
+// Rollennamen für Titel (vor Level 10)
+export const ROLE_DISPLAY_NAMES: Record<Role, string> = {
+    [Role.WAECHTER]: 'Wächter',
+    [Role.ASSASSINE]: 'Assassine',
+    [Role.MAGIER]: 'Magier',
+    [Role.SCHARFSCHUETZE]: 'Scharfschütze',
+    [Role.HEILER]: 'Heiler'
+};
+
+/**
+ * Gibt den Titel basierend auf Level und Rang zurück
+ * Level 1-9: Rang + Rollenname (z.B. "D-Rang Heiler")
+ * Level 10+: Rang + Hunter (z.B. "C-Rang Hunter")
+ */
+export function getPlayerTitle(level: number, rank: GateRank, role: Role): string {
+    if (level < 10) {
+        return `${rank}-Rang ${ROLE_DISPLAY_NAMES[role]}`;
+    } else {
+        return `${rank}-Rang Hunter`;
+    }
 }
 
 export interface Enemy extends Character {
@@ -86,6 +110,7 @@ export interface Progression {
     level: number;
     xp: number;
     gold: number;
+    hunterRank: GateRank;
     guildGoldBonus?: number; // Gold-Bonus der Gilde (0.10 = +10%)
 }
 

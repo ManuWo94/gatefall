@@ -3,6 +3,8 @@
  * Handles authentication, panel navigation, and game state
  */
 import { CombatEngine } from './combat/engine.js';
+import { getPlayerTitle } from './combat/types.js';
+import { GatesUIManager } from './gates-ui.js';
 // ==================== AUTH API ====================
 class AuthAPI {
     static async register(email, password, displayName) {
@@ -142,6 +144,7 @@ class SystemUI {
     constructor(engine) {
         this.currentProfile = null;
         this.engine = engine;
+        this.gatesUI = new GatesUIManager();
     }
     async init() {
         this.setupAuth();
@@ -290,10 +293,15 @@ class SystemUI {
     updateStatusPanel(profile) {
         const levelEl = document.getElementById('status-level');
         const rankEl = document.getElementById('status-rank');
+        // Titel basierend auf Level und Rolle
+        const role = profile.progression.role || 'waechter';
+        const level = profile.progression.level || 1;
+        const rank = profile.progression.hunterRank || 'D';
+        const title = getPlayerTitle(level, rank, role);
         if (levelEl)
-            levelEl.textContent = profile.progression.level;
+            levelEl.textContent = `${level}`;
         if (rankEl)
-            rankEl.textContent = profile.progression.hunterRank || 'D';
+            rankEl.textContent = title;
     }
     showSystem() {
         const authScreen = document.getElementById('auth-screen');
@@ -362,8 +370,17 @@ class SystemUI {
                 case 'skills':
                     this.loadSkillsPanel();
                     break;
+                case 'gates':
+                    this.loadGatesPanel();
+                    break;
             }
         }
+    }
+    // ========== GATES PANEL ==========
+    loadGatesPanel() {
+        const level = this.currentProfile?.progression?.level || 1;
+        const rank = this.currentProfile?.progression?.hunterRank || 'D';
+        this.gatesUI.init(level, rank);
     }
     setupQuickActions() {
         const actions = document.querySelectorAll('[data-action]');

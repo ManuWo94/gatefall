@@ -10,6 +10,8 @@ export interface Player extends Character {
     mp: number;
     maxMp: number;
     role: Role;
+    level: number;
+    hunterRank: GateRank;
     autoAttackDamage: number;
     autoAttackCount: number;
     shield: number;
@@ -23,6 +25,13 @@ export declare enum Role {
     SCHARFSCHUETZE = "scharfschuetze",
     HEILER = "heiler"
 }
+export declare const ROLE_DISPLAY_NAMES: Record<Role, string>;
+/**
+ * Gibt den Titel basierend auf Level und Rang zurück
+ * Level 1-9: Rang + Rollenname (z.B. "D-Rang Heiler")
+ * Level 10+: Rang + Hunter (z.B. "C-Rang Hunter")
+ */
+export declare function getPlayerTitle(level: number, rank: GateRank, role: Role): string;
 export interface Enemy extends Character {
     statusEffects: StatusEffect[];
     damageMultiplier: number;
@@ -74,6 +83,7 @@ export interface Progression {
     level: number;
     xp: number;
     gold: number;
+    hunterRank: GateRank;
     guildGoldBonus?: number;
 }
 export interface BossState {

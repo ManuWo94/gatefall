@@ -47,6 +47,8 @@ export class CombatEngine {
                 mp: stats.maxMp,
                 maxMp: stats.maxMp,
                 role: role,
+                level: 1,
+                hunterRank: 'D',
                 autoAttackDamage: stats.autoAttackDamage,
                 autoAttackCount: 0,
                 shield: 0,
@@ -84,7 +86,8 @@ export class CombatEngine {
             progression: {
                 level: 1,
                 xp: 0,
-                gold: 0
+                gold: 0,
+                hunterRank: 'D'
             }
         };
     }
