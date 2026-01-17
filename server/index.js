@@ -26,7 +26,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // HTTPS in Produktion
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax', // lax auch in Produktion, da gleiche Domain
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 Tage
   }
 }));
