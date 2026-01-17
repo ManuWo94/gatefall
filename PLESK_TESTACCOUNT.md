@@ -4,18 +4,15 @@
 
 Der Testaccount existiert nur lokal im Codespace. Die Datenbank auf dem Plesk-Server muss synchronisiert werden.
 
-## ✅ Einfachste Lösung: Deployment Script
+## ✅ Lösung: Deploy Command in Plesk
 
 In Plesk Git Settings → **"Deploy actions"** oder **"Additional Deploy Commands"** eintragen:
 ```
-node deploy.js
+deploy
 ```
 
-Das Script führt automatisch aus:
-1. `git pull origin main` - Code aktualisieren
-2. `npm install --production` - Dependencies installieren
-3. `npm run build` - TypeScript kompilieren
-4. `node create-test-user.js` - Testaccount erstellen
+**WICHTIG:** Nur `deploy` eintragen, NICHT `npm run deploy` oder `node deploy.js`!
+Plesk fügt automatisch `npm run` davor hinzu.
 
 ## Alternative: Manuell über Plesk Terminal
 
