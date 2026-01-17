@@ -397,6 +397,9 @@ class SystemUI {
 
     // Setup quick actions
     this.setupQuickActions();
+    
+    // Setup combat controls
+    this.setupCombatControls();
   }
 
   private switchPanel(panelId: string) {
@@ -654,6 +657,33 @@ class SystemUI {
   private loadSkillsPanel() {
     // TODO: Implement skills panel rendering
     this.logSystem('Skills panel - Coming soon');
+  }
+
+  // ========== COMBAT CONTROLS ==========
+  private setupCombatControls() {
+    const startBtn = document.getElementById('btn-start-combat');
+    const stopBtn = document.getElementById('btn-stop-combat');
+    
+    startBtn?.addEventListener('click', () => {
+      // Start combat
+      this.engine.startCombat();
+      
+      if (startBtn) startBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'block';
+      
+      this.logSystem('Kampf gestartet!');
+    });
+    
+    stopBtn?.addEventListener('click', () => {
+      // Reset combat state  
+      const state = this.engine.getState();
+      state.isRunning = false;
+      
+      if (startBtn) startBtn.style.display = 'block';
+      if (stopBtn) stopBtn.style.display = 'none';
+      
+      this.logSystem('Kampf beendet');
+    });
   }
 
   // ========== LOGGING ==========
