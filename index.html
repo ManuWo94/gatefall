@@ -540,16 +540,6 @@
                             <span class="guild-stat-label">MITGLIEDER</span>
                             <span class="guild-stat-value" id="guild-members-count">0</span>
                         </div>
-                        <div class="guild-stat-item">
-                            <span class="guild-stat-icon">⚔️</span>
-                            <span class="guild-stat-label">GESAMTKAMPF</span>
-                            <span class="guild-stat-value" id="guild-total-combat">0</span>
-                        </div>
-                        <div class="guild-stat-item">
-                            <span class="guild-stat-icon">📊</span>
-                            <span class="guild-stat-label">FORTSCHRITT</span>
-                            <span class="guild-stat-value" id="guild-progress">0%</span>
-                        </div>
                     </div>
                 </div>
 
@@ -617,16 +607,55 @@
                         </div>
                     </div>
 
-                    <!-- Right: Events -->
+                    <!-- Right: NPCs & Trupp -->
                     <div class="guild-events-panel">
                         <div class="guild-panel-header">
-                            <span class="guild-panel-icon">🎯</span>
-                            <span class="guild-panel-title">EREIGNISSE</span>
+                            <span class="guild-panel-icon">👥</span>
+                            <span class="guild-panel-title">VERFÜGBARE NPCs</span>
                         </div>
                         <div class="guild-panel-content">
-                            <div class="guild-no-events" id="guild-events-list">
-                                Noch gibt es keine Ereignisse
+                            <div class="guild-npc-list" id="guild-npc-list">
+                                Tritt einer Vereinigung bei, um NPCs zu rekrutieren
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trupp-Verwaltung -->
+                <div class="guild-squad-section">
+                    <div class="guild-panel-header">
+                        <span class="guild-panel-icon">⚔️</span>
+                        <span class="guild-panel-title">DEIN TRUPP</span>
+                        <span class="guild-squad-count" id="squad-count">0/4</span>
+                    </div>
+                    <div class="guild-panel-content">
+                        <div class="squad-grid" id="squad-grid">
+                            <div class="squad-slot empty" data-slot="0">
+                                <div class="squad-slot-icon">👤</div>
+                                <div class="squad-slot-label">LEER</div>
+                            </div>
+                            <div class="squad-slot empty" data-slot="1">
+                                <div class="squad-slot-icon">👤</div>
+                                <div class="squad-slot-label">LEER</div>
+                            </div>
+                            <div class="squad-slot empty" data-slot="2">
+                                <div class="squad-slot-icon">👤</div>
+                                <div class="squad-slot-label">LEER</div>
+                            </div>
+                            <div class="squad-slot empty" data-slot="3">
+                                <div class="squad-slot-icon">👤</div>
+                                <div class="squad-slot-label">LEER</div>
+                            </div>
+                        </div>
+                        <div class="squad-actions">
+                            <button class="guild-action-btn" id="btn-deploy-squad" disabled>
+                                <span class="guild-btn-icon">🚀</span>
+                                <span>TRUPP IN DUNGEON SENDEN</span>
+                            </button>
+                            <button class="guild-action-btn secondary" id="btn-clear-squad">
+                                <span class="guild-btn-icon">🗑️</span>
+                                <span>TRUPP LEEREN</span>
+                            </button>
                         </div>
                     </div>
                 </div>

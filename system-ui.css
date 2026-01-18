@@ -1777,14 +1777,15 @@ body {
 
 /* ==================== GUILD/VEREINIGUNG PANEL ==================== */
 .guild-header {
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.95) 0%, rgba(5, 15, 30, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 8px;
     padding: 1.5rem 2rem;
     margin-bottom: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 200, 255, 0.2);
 }
 
 .guild-header-left {
@@ -1796,22 +1797,23 @@ body {
 .guild-name-display {
     font-size: 2rem;
     font-weight: 800;
-    letter-spacing: 2px;
-    color: var(--accent-primary);
+    letter-spacing: 3px;
+    color: #00d4ff;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.8);
 }
 
 .guild-bracket {
-    color: var(--text-dim);
+    color: rgba(0, 200, 255, 0.6);
     margin: 0 0.25rem;
 }
 
 .guild-name-text {
-    color: var(--text-primary);
+    color: #00d4ff;
 }
 
 .guild-tag {
     font-size: 1rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
 }
 
@@ -1829,11 +1831,12 @@ body {
 
 .guild-stat-icon {
     font-size: 1.5rem;
+    filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.6));
 }
 
 .guild-stat-label {
     font-size: 0.75rem;
-    color: var(--text-dim);
+    color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -1841,7 +1844,8 @@ body {
 .guild-stat-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--accent-primary);
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 200, 255, 0.6);
 }
 
 .guild-content-grid {
@@ -1854,24 +1858,25 @@ body {
 .guild-info-panel,
 .guild-description-panel,
 .guild-events-panel {
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 200, 255, 0.1);
 }
 
 .guild-panel-header {
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(0, 120, 180, 0.3) 0%, rgba(0, 80, 140, 0.3) 100%);
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(0, 200, 255, 0.3);
 }
 
 .guild-panel-icon {
     font-size: 1.25rem;
+    filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.6));
 }
 
 .guild-panel-title {
@@ -1879,7 +1884,7 @@ body {
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--text-primary);
+    color: #00d4ff;
 }
 
 .guild-panel-content {
@@ -1892,13 +1897,16 @@ body {
     gap: 0.75rem;
     padding: 0.75rem;
     margin-bottom: 0.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    transition: var(--transition-fast);
+    background: rgba(10, 20, 35, 0.6);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.3s ease;
 }
 
 .guild-info-row:hover {
-    background: rgba(124, 58, 237, 0.1);
+    background: rgba(0, 120, 180, 0.3);
+    border-color: rgba(0, 200, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
 }
 
 .guild-info-icon {
@@ -1908,13 +1916,13 @@ body {
 .guild-info-label {
     flex: 1;
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .guild-info-value {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: white;
 }
 
 .guild-action-buttons {
@@ -1929,30 +1937,45 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 0.875rem 1.25rem;
-    background: var(--accent-gradient);
-    border: none;
-    border-radius: 8px;
-    color: var(--text-primary);
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 6px;
+    color: white;
     font-size: 0.875rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: var(--transition-fast);
-    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .guild-action-btn:hover {
+    background: linear-gradient(135deg, #0080ff 0%, #0066cc 100%);
+    border-color: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 120, 255, 0.6);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md), 0 0 20px var(--accent-glow);
 }
 
 .guild-action-btn.secondary {
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(37, 99, 235, 0.3) 100%);
+    background: linear-gradient(135deg, rgba(20, 40, 70, 0.9) 0%, rgba(10, 25, 45, 0.9) 100%);
+    border-color: rgba(0, 200, 255, 0.3);
+}
+
+.guild-action-btn.secondary:hover {
+    background: linear-gradient(135deg, rgba(30, 50, 80, 0.95) 0%, rgba(15, 30, 50, 0.95) 100%);
+    border-color: #00d4ff;
 }
 
 .guild-action-btn.danger {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%);
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.8) 0%, rgba(185, 28, 28, 0.8) 100%);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.guild-action-btn.danger:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%);
+    border-color: #ef4444;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
 }
 
 .guild-btn-icon {
@@ -1962,7 +1985,7 @@ body {
 .guild-description-text,
 .guild-internal-text {
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
     min-height: 100px;
 }
@@ -1970,7 +1993,7 @@ body {
 .guild-no-events {
     text-align: center;
     padding: 2rem 1rem;
-    color: var(--text-dim);
+    color: rgba(255, 255, 255, 0.5);
     font-size: 0.875rem;
     font-style: italic;
 }
@@ -1983,11 +2006,11 @@ body {
 
 .guild-stats-panel,
 .guild-lists-panel {
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 200, 255, 0.1);
 }
 
 .guild-stats-grid {
@@ -2001,26 +2024,33 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    background: rgba(10, 20, 35, 0.6);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.guild-stat-row:hover {
+    background: rgba(0, 120, 180, 0.2);
+    border-color: rgba(0, 200, 255, 0.4);
 }
 
 .guild-stat-row .stat-label {
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .guild-stat-row .stat-value {
     font-size: 0.875rem;
     font-weight: 700;
-    color: var(--accent-primary);
+    color: #00d4ff;
 }
 
 .guild-tabs {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(0, 200, 255, 0.3);
 }
 
 .guild-tab {
@@ -2028,18 +2058,18 @@ body {
     padding: 0.75rem 1rem;
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.875rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: var(--transition-fast);
+    transition: all 0.3s ease;
     position: relative;
 }
 
 .guild-tab.active {
-    color: var(--accent-primary);
+    color: #00d4ff;
 }
 
 .guild-tab.active::after {
@@ -2049,16 +2079,313 @@ body {
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--accent-gradient);
+    background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.8);
 }
 
 .guild-tab:hover:not(.active) {
-    color: var(--text-primary);
+    color: white;
 }
 
 .guild-list {
     max-height: 300px;
     overflow-y: auto;
+}
+
+/* Guild Item (in Liste) */
+.guild-item {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: rgba(10, 20, 35, 0.6);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.guild-item:hover {
+    background: rgba(0, 120, 180, 0.2);
+    border-color: rgba(0, 200, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+    transform: translateX(5px);
+}
+
+.guild-item.current {
+    border-color: #00d4ff;
+    background: rgba(0, 120, 180, 0.3);
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.4);
+}
+
+.guild-item.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.guild-item.locked:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.guild-item-info {
+    flex: 1;
+}
+
+.guild-item-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #00d4ff;
+    margin-bottom: 0.25rem;
+    letter-spacing: 1px;
+}
+
+.guild-item-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.guild-item-meta {
+    font-size: 0.75rem;
+    color: rgba(0, 200, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guild-item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.guild-apply-btn,
+.guild-join-btn {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 4px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.guild-apply-btn:hover,
+.guild-join-btn:hover {
+    background: linear-gradient(135deg, #0080ff 0%, #0066cc 100%);
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 120, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* NPC Liste */
+.guild-npc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.npc-card {
+    padding: 0.75rem;
+    background: rgba(10, 20, 35, 0.6);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.npc-card:hover {
+    background: rgba(0, 120, 180, 0.3);
+    border-color: rgba(0, 200, 255, 0.6);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+    transform: translateX(3px);
+}
+
+.npc-card.in-squad {
+    border-color: #00d4ff;
+    background: rgba(0, 120, 180, 0.4);
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.5);
+}
+
+.npc-info {
+    flex: 1;
+}
+
+.npc-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #00d4ff;
+    margin-bottom: 0.25rem;
+}
+
+.npc-stats {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    gap: 1rem;
+}
+
+.npc-rank {
+    padding: 0.15rem 0.5rem;
+    background: rgba(0, 200, 255, 0.3);
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 0.7rem;
+}
+
+.npc-level {
+    color: #fbbf24;
+}
+
+/* Trupp-Sektion */
+.guild-squad-section {
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 200, 255, 0.1);
+    margin-top: 1.5rem;
+}
+
+.guild-squad-count {
+    margin-left: auto;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 200, 255, 0.3);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #00d4ff;
+}
+
+.squad-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.squad-slot {
+    aspect-ratio: 1;
+    background: rgba(10, 20, 35, 0.6);
+    border: 2px dashed rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.squad-slot.empty:hover {
+    background: rgba(0, 120, 180, 0.2);
+    border-color: rgba(0, 200, 255, 0.5);
+}
+
+.squad-slot.filled {
+    background: linear-gradient(135deg, rgba(0, 120, 180, 0.4) 0%, rgba(0, 80, 140, 0.4) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.4);
+    cursor: default;
+}
+
+.squad-slot.filled:hover .squad-remove {
+    opacity: 1;
+}
+
+.squad-slot-icon {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+.squad-slot.filled .squad-slot-icon {
+    opacity: 1;
+}
+
+.squad-slot-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.squad-slot.filled .squad-slot-label {
+    color: #00d4ff;
+    font-weight: 700;
+}
+
+.squad-member-info {
+    text-align: center;
+}
+
+.squad-member-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #00d4ff;
+    margin-bottom: 0.25rem;
+}
+
+.squad-member-stats {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.squad-remove {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: rgba(239, 68, 68, 0.8);
+    border: 1px solid rgba(239, 68, 68, 1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.squad-remove:hover {
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+    transform: scale(1.1);
+}
+
+.squad-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.squad-actions .guild-action-btn {
+    flex: 1;
+}
+
+.squad-actions .guild-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.squad-actions .guild-action-btn:disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* ==================== RESPONSIVE ==================== */

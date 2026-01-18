@@ -487,7 +487,7 @@ export class CombatEngine {
                     if (guildBonus > 0) {
                         const bonusGold = Math.floor(earnedGold * guildBonus);
                         earnedGold += bonusGold;
-                        this.emitEvent(CombatEventType.INFO, `🏰 Vereinigungs-Bonus: +${bonusGold} Gold (+${Math.floor(guildBonus * 100)}%)`);
+                        this.emitEvent(CombatEventType.INFO, `🏰 Vereinigungs-Bonus: +${bonusGold} Goldmünzen (+${Math.floor(guildBonus * 100)}%)`);
                     }
                     
                     this.state.progression.xp += earnedXp;
@@ -502,7 +502,7 @@ export class CombatEngine {
                     
                     this.emitEvent(CombatEventType.VICTORY, '=== Dungeon abgeschlossen! ===');
                     this.emitEvent(CombatEventType.INFO, `Gate-Rang ${dungeon.gateRank}: Belohnungen x${gateMultiplier.toFixed(1)}`);
-                    this.emitEvent(CombatEventType.INFO, `+${earnedXp} XP, +${earnedGold} Gold`);
+                    this.emitEvent(CombatEventType.INFO, `+${earnedXp} XP, +${earnedGold} Goldmünzen`);
                 } else {
                     this.emitEvent(CombatEventType.INFO, 'Wähle den nächsten Gegner!');
                 }

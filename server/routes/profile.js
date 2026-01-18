@@ -495,8 +495,8 @@ router.post('/guild/apply', requireAuth, (req, res) => {
         const hunterRank = progression.hunter_rank || 'D';
         const level = progression.level || 1;
 
-        // KI-Entscheidung
-        const decision = aiGuildDecision(guildId, hunterRank, level, 0);
+        // KI-Entscheidung mit userId für wöchentliche Änderung
+        const decision = aiGuildDecision(guildId, hunterRank, level, 0, userId.toString());
 
         if (decision.accepted) {
           // Sofort beitreten
@@ -563,11 +563,25 @@ router.post('/guild/create', requireAuth, (req, res) => {
           return res.status(404).json({ error: 'Progression nicht gefunden' });
         }
 
-        // Für jetzt: Keine Bedingungen (später: Geld, Level, Ruf)
-        // TODO: Später Bedingungen hinzufügen
-        // - Kosten: z.B. 10000 Gold
-        // - Mindestlevel: z.B. 40
-        // - Reputation: z.B. 500
+        // Bedingung: Mindestens SS-Rang erforderlich
+        const RANK_HIERARCHY = { 'D': 0, 'C': 1, 'B': 2, 'A': 3, 'S': 4, 'SS': 5 };
+        const playerRankLevel = RANK_HIERARCHY[progression.hunter_rank] || 0;
+        const requiredRankLevel = RANK_HIERARCHY['SS'];
+
+        if (playerRankLevel < requiredRankLevel) {
+          return res.status(403).json({ 
+            error: `Hunter-Rang SS erforderlich, um eine eigene Vereinigung zu gründen. Dein aktueller Rang: ${progression.hunter_rank}` 
+          });
+        }
+
+        // TODO: Später zusätzliche Bedingungen
+        // - Kosten: z.B. 1.000.000 Goldmünzen
+        // const CREATION_COST = 1000000;
+        // if (progression.gold < CREATION_COST) {
+        //   return res.status(403).json({ 
+        //     error: `Nicht genug Goldmünzen. Benötigt: ${CREATION_COST}, Verfügbar: ${progression.gold}` 
+        //   });
+        // }
 
         // Bereits in Vereinigung?
         if (progression.guild_id) {

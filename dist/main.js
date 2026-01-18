@@ -143,6 +143,8 @@ AuthAPI.baseUrl = '/api';
 class SystemUI {
     constructor(engine) {
         this.currentProfile = null;
+        // ========== GUILDS PANEL ==========
+        this.currentSquad = [null, null, null, null];
         this.engine = engine;
         this.gatesUI = new GatesUIManager();
     }
@@ -425,10 +427,11 @@ class SystemUI {
             }
         });
     }
-    // ========== GUILDS PANEL ==========
     async loadGuildsPanel() {
         try {
             const data = await AuthAPI.getGuilds();
+            // Cache guild data globally
+            window.cachedGuilds = data;
             // Update current guild
             const currentGuildName = document.getElementById('current-guild-name');
             const leaveBtn = document.getElementById('btn-leave-guild');
@@ -442,12 +445,16 @@ class SystemUI {
             if (leaveBtn) {
                 leaveBtn.style.display = currentGuild ? 'block' : 'none';
             }
+            // Render NPCs if in a guild
+            this.renderGuildNPCs(currentGuild);
             // Render NPC guilds
             this.renderNPCGuilds(data.npcGuilds, data.availableNpcGuilds);
             // Render player guilds
             this.renderPlayerGuilds(data.playerGuilds);
             // Setup buttons
             this.setupGuildButtons();
+            // Setup squad system
+            this.setupSquadSystem();
         }
         catch (error) {
             console.error('Failed to load guilds:', error);
@@ -471,7 +478,7 @@ class SystemUI {
         <div class="guild-item-info">
           <div class="guild-item-name">${guild.name}</div>
           <div class="guild-item-desc">${guild.description}</div>
-          <div class="guild-item-meta">MIN. ${guild.minimumHunterRank} · +${Math.round(guild.goldBonus * 100)}% GOLD</div>
+          <div class="guild-item-meta">MIN. ${guild.minimumHunterRank} · +${Math.round(guild.goldBonus * 100)}% GOLDMÜNZEN</div>
         </div>
         <div class="guild-item-actions">
           ${!isCurrent && isAvailable ? `<button class="system-btn secondary guild-apply-btn" data-guild-id="${guild.id}">BEWERBEN</button>` : ''}
@@ -502,7 +509,7 @@ class SystemUI {
         <div class="guild-item-info">
           <div class="guild-item-name">${guild.name}</div>
           <div class="guild-item-desc">${guild.description}</div>
-          <div class="guild-item-meta">GRÜNDER: ${guild.owner_name} · MIN. ${guild.minimum_hunter_rank} · +${Math.round(goldBonus * 100)}% GOLD</div>
+          <div class="guild-item-meta">GRÜNDER: ${guild.owner_name} · MIN. ${guild.minimum_hunter_rank} · +${Math.round(goldBonus * 100)}% GOLDMÜNZEN</div>
         </div>
         <div class="guild-item-actions">
           ${!isCurrent ? `<button class="system-btn secondary guild-join-btn" data-guild-id="${guild.id}">BEITRETEN</button>` : ''}
@@ -595,6 +602,160 @@ class SystemUI {
         catch (error) {
             alert(error.message);
         }
+    }
+    // ========== NPC & SQUAD SYSTEM ==========
+    renderGuildNPCs(guild) {
+        const list = document.getElementById('guild-npc-list');
+        if (!list)
+            return;
+        if (!guild || !guild.npcs) {
+            list.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">Tritt einer Vereinigung bei, um NPCs zu rekrutieren</div>';
+            return;
+        }
+        list.innerHTML = '';
+        guild.npcs.forEach((npc, index) => {
+            const isInSquad = this.currentSquad.some(s => s && s.index === index);
+            const card = document.createElement('div');
+            card.className = `npc-card ${isInSquad ? 'in-squad' : ''}`;
+            card.innerHTML = `
+        <div class="npc-info">
+          <div class="npc-name">${npc.name}</div>
+          <div class="npc-stats">
+            <span class="npc-rank">RANG ${npc.rank}</span>
+            <span class="npc-level">Level ${npc.level}</span>
+          </div>
+        </div>
+      `;
+            if (!isInSquad) {
+                card.addEventListener('click', () => this.addToSquad(npc, index));
+            }
+            list.appendChild(card);
+        });
+    }
+    setupSquadSystem() {
+        const clearBtn = document.getElementById('btn-clear-squad');
+        const deployBtn = document.getElementById('btn-deploy-squad');
+        clearBtn?.addEventListener('click', () => {
+            this.currentSquad = [null, null, null, null];
+            this.updateSquadDisplay();
+            this.updateDeployButton();
+        });
+        deployBtn?.addEventListener('click', () => {
+            if (this.currentSquad.filter(s => s).length > 0) {
+                this.logSystem(`🚀 Trupp mit ${this.currentSquad.filter(s => s).length} Mitgliedern wird zum Dungeon geschickt!`);
+                // TODO: Integration mit Combat System
+                alert('Trupp-Raids werden bald verfügbar sein!');
+            }
+        });
+        // Tab switching
+        const tabs = document.querySelectorAll('.guild-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabType = tab.getAttribute('data-tab');
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Show/hide lists
+                const npcList = document.getElementById('npc-guild-list');
+                const playerList = document.getElementById('player-guild-list');
+                if (tabType === 'official') {
+                    if (npcList)
+                        npcList.style.display = 'block';
+                    if (playerList)
+                        playerList.style.display = 'none';
+                }
+                else {
+                    if (npcList)
+                        npcList.style.display = 'none';
+                    if (playerList)
+                        playerList.style.display = 'block';
+                }
+            });
+        });
+        this.updateSquadDisplay();
+    }
+    addToSquad(npc, npcIndex) {
+        // Find first empty slot
+        const emptySlot = this.currentSquad.findIndex(s => !s);
+        if (emptySlot !== -1) {
+            this.currentSquad[emptySlot] = { ...npc, index: npcIndex };
+        }
+        else if (this.currentSquad.length < 4) {
+            this.currentSquad.push({ ...npc, index: npcIndex });
+        }
+        else {
+            alert('Trupp ist voll! Maximal 4 Mitglieder.');
+            return;
+        }
+        this.updateSquadDisplay();
+        this.updateDeployButton();
+        this.renderGuildNPCs(this.getCurrentGuild());
+        this.logSystem(`✅ ${npc.name} zum Trupp hinzugefügt`);
+    }
+    removeFromSquad(slotIndex) {
+        const member = this.currentSquad[slotIndex];
+        if (member) {
+            this.currentSquad[slotIndex] = null;
+            this.updateSquadDisplay();
+            this.updateDeployButton();
+            this.renderGuildNPCs(this.getCurrentGuild());
+            this.logSystem(`❌ ${member.name} aus Trupp entfernt`);
+        }
+    }
+    updateSquadDisplay() {
+        const slots = document.querySelectorAll('.squad-slot');
+        const countEl = document.getElementById('squad-count');
+        let activeCount = 0;
+        slots.forEach((slot, index) => {
+            const member = this.currentSquad[index];
+            if (member) {
+                activeCount++;
+                slot.classList.remove('empty');
+                slot.classList.add('filled');
+                slot.innerHTML = `
+          <div class="squad-member-info">
+            <div class="squad-member-name">${member.name}</div>
+            <div class="squad-member-stats">
+              <span>Rang ${member.rank}</span>
+              <span>Level ${member.level}</span>
+            </div>
+          </div>
+          <div class="squad-remove" data-slot="${index}">✕</div>
+        `;
+                const removeBtn = slot.querySelector('.squad-remove');
+                removeBtn?.addEventListener('click', () => this.removeFromSquad(index));
+            }
+            else {
+                slot.classList.remove('filled');
+                slot.classList.add('empty');
+                slot.innerHTML = `
+          <div class="squad-slot-icon">👤</div>
+          <div class="squad-slot-label">LEER</div>
+        `;
+            }
+        });
+        if (countEl) {
+            countEl.textContent = `${activeCount}/4`;
+        }
+    }
+    updateDeployButton() {
+        const deployBtn = document.getElementById('btn-deploy-squad');
+        if (deployBtn) {
+            const hasMembers = this.currentSquad.filter(s => s).length > 0;
+            deployBtn.disabled = !hasMembers;
+        }
+    }
+    getCurrentGuild() {
+        const guildId = this.currentProfile?.progression?.guildId;
+        if (!guildId)
+            return null;
+        // Check in NPC guilds (from guilds.js)
+        const guilds = window.cachedGuilds;
+        if (guilds) {
+            return guilds.npcGuilds?.find((g) => g.id === guildId) ||
+                guilds.playerGuilds?.find((g) => g.id === guildId);
+        }
+        return null;
     }
     // ========== SKILLS PANEL ==========
     loadSkillsPanel() {
