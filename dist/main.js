@@ -626,17 +626,25 @@ class SystemUI {
         // Show section and render NPCs
         section.style.display = 'block';
         container.innerHTML = '';
+        const roleNames = {
+            'waechter': 'Wächter',
+            'jaeger': 'Jäger',
+            'magier': 'Magier',
+            'heiler': 'Heiler'
+        };
         guild.npcs.forEach((npc) => {
             const card = document.createElement('div');
             card.className = 'npc-portal-card';
             const isInSquad = this.currentSquad.some(m => m.id === npc.id);
             const canRecruit = this.currentSquad.length < 4 && !isInSquad;
+            const roleName = roleNames[npc.role] || npc.role || 'Hunter';
             card.innerHTML = `
         <div class="npc-rank-badge rank-${npc.rank.toLowerCase()}">${npc.rank}</div>
         <div class="npc-avatar">👤</div>
         <div class="npc-name">${npc.name}</div>
-        <div class="npc-level">STUFE ${npc.level}</div>
-        ${canRecruit ? `<button class="system-btn primary recruit-btn" data-npc='${JSON.stringify(npc)}'>REKRUTIEREN</button>` : ''}
+        <div class="npc-role">${roleName}</div>
+        <div class="npc-level">LEVEL ${npc.level}</div>
+        ${canRecruit ? `<button class="system-btn primary recruit-btn" data-npc-id="${npc.id}">REKRUTIEREN</button>` : ''}
         ${isInSquad ? '<div class="npc-status">IM TRUPP</div>' : ''}
       `;
             container.appendChild(card);
@@ -644,20 +652,23 @@ class SystemUI {
         if (npcCount) {
             npcCount.textContent = guild.npcs.length.toString();
         }
-        // Event delegation for recruit buttons
-        const newContainer = container.cloneNode(true);
-        container.parentNode?.replaceChild(newContainer, container);
-        newContainer.addEventListener('click', (e) => {
-            const target = e.target;
-            const btn = target.closest('.recruit-btn');
-            if (btn) {
-                const npcData = btn.getAttribute('data-npc');
-                if (npcData) {
-                    const npc = JSON.parse(npcData);
-                    this.recruitToSquad(npc);
+        // Event delegation OHNE cloneNode - nur wenn noch nicht gesetzt
+        if (!container._hasRecruitListener) {
+            container._hasRecruitListener = true;
+            container.addEventListener('click', (e) => {
+                const target = e.target;
+                const btn = target.closest('.recruit-btn');
+                if (btn) {
+                    const npcId = btn.getAttribute('data-npc-id');
+                    if (npcId && guild?.npcs) {
+                        const npc = guild.npcs.find((n) => n.id === npcId);
+                        if (npc) {
+                            this.recruitToSquad(npc);
+                        }
+                    }
                 }
-            }
-        });
+            });
+        }
     }
     recruitToSquad(npc) {
         if (this.currentSquad.length >= 4) {
@@ -699,32 +710,41 @@ class SystemUI {
         this.currentSquad.forEach((member, index) => {
             const card = document.createElement('div');
             card.className = 'squad-member-card';
+            const roleNames = {
+                'waechter': 'Wächter',
+                'jaeger': 'Jäger',
+                'magier': 'Magier',
+                'heiler': 'Heiler'
+            };
+            const roleName = roleNames[member.role] || member.role || 'Hunter';
             card.innerHTML = `
         <div class="squad-rank-badge rank-${member.rank.toLowerCase()}">${member.rank}</div>
         <div class="squad-avatar">${member.isNPC ? '👤' : '👨‍🎤'}</div>
         <div class="squad-name">${member.name}</div>
-        <div class="squad-level">STUFE ${member.level}</div>
+        <div class="squad-role">${roleName}</div>
+        <div class="squad-level">LEVEL ${member.level}</div>
         <button class="system-btn danger remove-btn" data-index="${index}">ENTFERNEN</button>
       `;
             container.appendChild(card);
         });
-        // Event delegation
-        const newContainer = container.cloneNode(true);
-        container.parentNode?.replaceChild(newContainer, container);
-        newContainer.addEventListener('click', (e) => {
-            const target = e.target;
-            const btn = target.closest('.remove-btn');
-            if (btn) {
-                const indexStr = btn.getAttribute('data-index');
-                if (indexStr !== null) {
-                    const index = parseInt(indexStr);
-                    const removed = this.currentSquad.splice(index, 1)[0];
-                    this.updateSquadDisplay();
-                    this.renderGuildNPCs(this.currentGuildData);
-                    this.showGuildModal('✅ Entfernt', `${removed.name} wurde aus dem Trupp entfernt.`, true);
+        // Event delegation OHNE cloneNode
+        if (!container._hasRemoveListener) {
+            container._hasRemoveListener = true;
+            container.addEventListener('click', (e) => {
+                const target = e.target;
+                const btn = target.closest('.remove-btn');
+                if (btn) {
+                    const indexStr = btn.getAttribute('data-index');
+                    if (indexStr !== null) {
+                        const index = parseInt(indexStr);
+                        const removed = this.currentSquad.splice(index, 1)[0];
+                        this.updateSquadDisplay();
+                        this.renderGuildNPCs(this.currentGuildData);
+                        this.showGuildModal('✅ Entfernt', `${removed.name} wurde aus dem Trupp entfernt.`, true);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
     async createGuildAsync(name, description, minRank) {
         try {

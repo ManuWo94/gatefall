@@ -9,10 +9,10 @@ const GUILDS = [
     description: 'Die größte und offenste Vereinigung für aufstrebende Hunter. Jeder ist willkommen, unabhängig vom Rang.',
     goldBonus: 0.10, // +10%
     npcs: [
-      { name: 'Rookie Jin', rank: 'D', level: 5 },
-      { name: 'Anfänger Mira', rank: 'D', level: 7 },
-      { name: 'Hunter Kael', rank: 'C', level: 12 },
-      { name: 'Scout Lyra', rank: 'C', level: 14 }
+      { id: 'npc-1', name: 'Rookie Jin', rank: 'D', level: 5, role: 'waechter' },
+      { id: 'npc-2', name: 'Anfänger Mira', rank: 'D', level: 7, role: 'heiler' },
+      { id: 'npc-3', name: 'Hunter Kael', rank: 'C', level: 12, role: 'jaeger' },
+      { id: 'npc-4', name: 'Scout Lyra', rank: 'C', level: 14, role: 'magier' }
     ]
   },
   {
@@ -22,9 +22,9 @@ const GUILDS = [
     description: 'Krieger und Nahkämpfer, die auf rohe Kraft und Ausdauer setzen. Hier zählt der Wille zu kämpfen.',
     goldBonus: 0.12, // +12%
     npcs: [
-      { name: 'Brawler Grom', rank: 'D', level: 8 },
-      { name: 'Kämpfer Thora', rank: 'C', level: 15 },
-      { name: 'Krieger Baltus', rank: 'B', level: 22 }
+      { id: 'npc-5', name: 'Brawler Grom', rank: 'D', level: 8, role: 'waechter' },
+      { id: 'npc-6', name: 'Kämpfer Thora', rank: 'C', level: 15, role: 'waechter' },
+      { id: 'npc-7', name: 'Krieger Baltus', rank: 'B', level: 22, role: 'waechter' }
     ]
   },
   {
@@ -34,9 +34,9 @@ const GUILDS = [
     description: 'Agile und listige Hunter, die sich auf Stealth und Geschwindigkeit spezialisieren. Schatten sind ihre Verbündeten.',
     goldBonus: 0.15, // +15%
     npcs: [
-      { name: 'Schleicher Nyx', rank: 'C', level: 16 },
-      { name: 'Assassine Kira', rank: 'B', level: 25 },
-      { name: 'Phantom Zev', rank: 'A', level: 35 }
+      { id: 'npc-8', name: 'Schleicher Nyx', rank: 'C', level: 16, role: 'jaeger' },
+      { id: 'npc-9', name: 'Assassine Kira', rank: 'B', level: 25, role: 'jaeger' },
+      { id: 'npc-10', name: 'Phantom Zev', rank: 'A', level: 35, role: 'jaeger' }
     ]
   },
   {
@@ -46,9 +46,9 @@ const GUILDS = [
     description: 'Elite-Hunter mit hervorragendem taktischen Verständnis. Nur erfahrene Mitglieder werden aufgenommen.',
     goldBonus: 0.20, // +20%
     npcs: [
-      { name: 'Taktiker Valen', rank: 'B', level: 28 },
-      { name: 'Stratege Elena', rank: 'A', level: 38 },
-      { name: 'Kommandant Rex', rank: 'A', level: 42 }
+      { id: 'npc-11', name: 'Taktiker Valen', rank: 'B', level: 28, role: 'magier' },
+      { id: 'npc-12', name: 'Stratege Elena', rank: 'A', level: 38, role: 'magier' },
+      { id: 'npc-13', name: 'Kommandant Rex', rank: 'A', level: 42, role: 'waechter' }
     ]
   },
   {
@@ -58,9 +58,9 @@ const GUILDS = [
     description: 'Magisch begabte Hunter, die die Mysterien der Gates erforschen. Weisheit und Macht vereint.',
     goldBonus: 0.22, // +22%
     npcs: [
-      { name: 'Magier Elyndor', rank: 'B', level: 27 },
-      { name: 'Zauberin Seraphina', rank: 'A', level: 36 },
-      { name: 'Erzmagier Aldric', rank: 'S', level: 48 }
+      { id: 'npc-14', name: 'Magier Elyndor', rank: 'B', level: 27, role: 'magier' },
+      { id: 'npc-15', name: 'Zauberin Seraphina', rank: 'A', level: 36, role: 'magier' },
+      { id: 'npc-16', name: 'Erzmagier Aldric', rank: 'S', level: 48, role: 'magier' }
     ]
   },
   {
@@ -70,9 +70,9 @@ const GUILDS = [
     description: 'Mysteriöse Organisation der mächtigsten Hunter. Ihre Ziele sind unbekannt, ihre Macht jedoch unbestritten.',
     goldBonus: 0.30, // +30%
     npcs: [
-      { name: 'Schatten-Hunter Raven', rank: 'A', level: 45 },
-      { name: 'Dunkle Klinge Moros', rank: 'S', level: 52 },
-      { name: 'Void-Meister Nihil', rank: 'S', level: 58 }
+      { id: 'npc-17', name: 'Schatten-Hunter Raven', rank: 'A', level: 45, role: 'jaeger' },
+      { id: 'npc-18', name: 'Dunkle Klinge Moros', rank: 'S', level: 52, role: 'jaeger' },
+      { id: 'npc-19', name: 'Void-Meister Nihil', rank: 'S', level: 58, role: 'magier' }
     ]
   },
   {
@@ -82,9 +82,9 @@ const GUILDS = [
     description: 'Verteidiger der Menschheit gegen die größten Bedrohungen. Nur die Stärksten können sich ihnen anschließen.',
     goldBonus: 0.32, // +32%
     npcs: [
-      { name: 'Wächter Gorath', rank: 'A', level: 44 },
-      { name: 'Titan-Brecher Valka', rank: 'S', level: 55 },
-      { name: 'Koloss-Jäger Thor', rank: 'SS', level: 65 }
+      { id: 'npc-20', name: 'Wächter Gorath', rank: 'A', level: 44, role: 'waechter' },
+      { id: 'npc-21', name: 'Titan-Brecher Valka', rank: 'S', level: 55, role: 'waechter' },
+      { id: 'npc-22', name: 'Koloss-Jäger Thor', rank: 'SS', level: 65, role: 'waechter' }
     ]
   },
   {
@@ -94,9 +94,9 @@ const GUILDS = [
     description: 'Legendäre Einzelgänger und Meisterassassinen. Jedes Mitglied ist eine lebende Legende der S-Klasse.',
     goldBonus: 0.40, // +40%
     npcs: [
-      { name: 'Assassine Prime', rank: 'S', level: 60 },
-      { name: 'Shadow King Erebus', rank: 'SS', level: 72 },
-      { name: 'Blade Master Kenshin', rank: 'SS', level: 75 }
+      { id: 'npc-23', name: 'Assassine Prime', rank: 'S', level: 60, role: 'jaeger' },
+      { id: 'npc-24', name: 'Shadow King Erebus', rank: 'SS', level: 72, role: 'jaeger' },
+      { id: 'npc-25', name: 'Blade Master Kenshin', rank: 'SS', level: 75, role: 'jaeger' }
     ]
   },
   {
@@ -106,9 +106,9 @@ const GUILDS = [
     description: 'Die absolute Elite. Nur die legendärsten Hunter der SS-Klasse haben die Ehre, diesen Orden zu betreten.',
     goldBonus: 0.50, // +50%
     npcs: [
-      { name: 'Erzhunter Celestia', rank: 'SS', level: 78 },
-      { name: 'Gott-Jäger Azrael', rank: 'SS', level: 85 },
-      { name: 'Apokalypse-Bezwinger Omega', rank: 'SS', level: 92 }
+      { id: 'npc-26', name: 'Erzhunter Celestia', rank: 'SS', level: 78, role: 'magier' },
+      { id: 'npc-27', name: 'Gott-Jäger Azrael', rank: 'SS', level: 85, role: 'jaeger' },
+      { id: 'npc-28', name: 'Apokalypse-Bezwinger Omega', rank: 'SS', level: 92, role: 'waechter' }
     ]
   },
   {
@@ -118,9 +118,9 @@ const GUILDS = [
     description: 'Wilde und ungestüme Hunter, die mit elementarer Gewalt kämpfen. Hier herrscht das Gesetz des Stärkeren.',
     goldBonus: 0.18, // +18%
     npcs: [
-      { name: 'Stürmer Gale', rank: 'C', level: 18 },
-      { name: 'Donnerkrieger Raiden', rank: 'B', level: 26 },
-      { name: 'Blitz-Meister Volt', rank: 'A', level: 40 }
+      { id: 'npc-29', name: 'Stürmer Gale', rank: 'C', level: 18, role: 'jaeger' },
+      { id: 'npc-30', name: 'Donnerkrieger Raiden', rank: 'B', level: 26, role: 'waechter' },
+      { id: 'npc-31', name: 'Blitz-Meister Volt', rank: 'A', level: 40, role: 'magier' }
     ]
   },
   {
