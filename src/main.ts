@@ -491,11 +491,11 @@ class SystemUI {
       // Render NPCs if in a guild
       this.renderGuildNPCs(currentGuild);
 
-      // Render guilds in grid
-      this.renderGuildGrid(data.npcGuilds, data.playerGuilds, data.availableNpcGuilds);
-
-      // Setup buttons
+      // Setup buttons FIRST (before rendering)
       this.setupGuildButtons();
+
+      // Render guilds in grid (after event delegation is set)
+      this.renderGuildGrid(data.npcGuilds, data.playerGuilds, data.availableNpcGuilds);
       
       // Setup squad system
       this.setupSquadSystem();
@@ -649,18 +649,24 @@ class SystemUI {
       });
     }
 
-    // Guild cards - Event Delegation auf Grid
+    // Guild cards - Event Delegation auf Grid (OHNE cloneNode!)
     const grid = document.getElementById('guilds-grid');
     if (grid) {
-      const newGrid = grid.cloneNode(true) as HTMLElement;
-      grid.parentNode?.replaceChild(newGrid, grid);
+      // Remove old event listeners by setting a flag
+      if ((grid as any)._hasGuildClickListener) {
+        return; // Already set up
+      }
+      (grid as any)._hasGuildClickListener = true;
       
-      newGrid.addEventListener('click', async (e) => {
+      grid.addEventListener('click', async (e) => {
         const target = e.target as HTMLElement;
         const btn = target.closest('.guild-apply-btn') as HTMLElement;
         
         if (btn) {
+          console.log('🎯 BEWERBEN clicked!', btn);
           const guildId = btn.getAttribute('data-guild-id');
+          console.log('Guild ID:', guildId);
+          
           if (!guildId) return;
 
           try {
