@@ -632,6 +632,46 @@
         </div>
     </div>
 
+    <!-- GUILD CREATION MODAL -->
+    <div id="guild-creation-modal" class="system-modal" style="display: none;">
+        <div class="modal-content portal-style">
+            <div class="modal-header portal-header">
+                <h2 class="modal-title portal-title">VEREINIGUNG GRÜNDEN</h2>
+            </div>
+            <div class="modal-body portal-body">
+                <div class="guild-creation-form">
+                    <div class="form-group">
+                        <label for="guild-name-input">Name der Vereinigung</label>
+                        <input type="text" id="guild-name-input" class="system-input" placeholder="z.B. Elite Jäger" maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="guild-desc-input">Beschreibung</label>
+                        <textarea id="guild-desc-input" class="system-input" placeholder="Beschreibe deine Vereinigung..." maxlength="200" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="guild-rank-input">Mindest-Hunter-Rang</label>
+                        <select id="guild-rank-input" class="system-input">
+                            <option value="SS" selected>SS - National Level Hunter</option>
+                            <option value="S">S - Elite Hunter</option>
+                            <option value="A">A - Veteran Hunter</option>
+                            <option value="B">B - Advanced Hunter</option>
+                            <option value="C">C - Intermediate Hunter</option>
+                            <option value="D">D - Rookie Hunter</option>
+                        </select>
+                    </div>
+                    <div class="guild-creation-cost">
+                        <div class="cost-label">Gründungskosten:</div>
+                        <div class="cost-amount">💰 <span id="creation-cost">1,000,000</span> Goldmünzen</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-confirm-create-guild" class="system-btn primary">GRÜNDEN</button>
+                <button id="btn-cancel-create-guild" class="system-btn secondary">ABBRECHEN</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="dist/main.js"></script>
 </body>
 </html>

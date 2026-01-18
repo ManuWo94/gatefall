@@ -2088,6 +2088,8 @@ body {
     background: radial-gradient(circle at 50% 40%, rgba(0, 200, 255, 0.15) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.4s ease;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .guild-portal-card:hover::before {
@@ -2118,6 +2120,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    position: relative;
+    z-index: 1;
 }
 
 .guild-card-rank {
@@ -2135,6 +2139,8 @@ body {
 .guild-card-icon {
     font-size: 3rem;
     filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.6));
+    position: relative;
+    z-index: 1;
 }
 
 .guild-card-name {
@@ -2144,6 +2150,8 @@ body {
     text-align: center;
     margin: 0.5rem 0;
     letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
 }
 
 .guild-card-desc {
@@ -2176,6 +2184,8 @@ body {
     transition: all 0.3s ease;
     width: 100%;
     letter-spacing: 1px;
+    position: relative;
+    z-index: 10;
 }
 
 .guild-apply-btn:hover,
@@ -2866,6 +2876,83 @@ body {
     letter-spacing: 1.5px;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+/* Guild Creation Form */
+.guild-creation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.system-input {
+    background: rgba(10, 20, 40, 0.8);
+    border: 2px solid rgba(0, 200, 255, 0.3);
+    border-radius: 6px;
+    padding: 0.75rem;
+    color: white;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.system-input:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+}
+
+.system-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+textarea.system-input {
+    resize: vertical;
+    min-height: 80px;
+}
+
+select.system-input {
+    cursor: pointer;
+}
+
+.guild-creation-cost {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.cost-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.cost-amount {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    letter-spacing: 1px;
 }
 
 .system-btn.portal-btn:hover {

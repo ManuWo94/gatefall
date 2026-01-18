@@ -623,29 +623,30 @@ class SystemUI {
       });
     }
 
-    // Create button
+    // Create button - öffnet Modal
     const createBtn = document.getElementById('btn-create-guild');
     if (createBtn) {
       const newCreateBtn = createBtn.cloneNode(true) as HTMLElement;
       createBtn.parentNode?.replaceChild(newCreateBtn, createBtn);
       
       newCreateBtn.addEventListener('click', () => {
-        const name = prompt('Name der Vereinigung:');
-        if (!name) return;
+        this.showGuildCreationModal();
+      });
+    }
 
-        const description = prompt('Beschreibung:');
-        if (!description) return;
-
-        const minRank = prompt('Mindest-Hunter-Rang (D/C/B/A/S/SS):', 'SS');
-        if (!minRank) return;
-
-        const validRanks = ['D', 'C', 'B', 'A', 'S', 'SS'];
-        if (!validRanks.includes(minRank.toUpperCase())) {
-          alert('Ungültiger Rang!');
-          return;
-        }
-
-        this.createGuildAsync(name, description, minRank.toUpperCase());
+    // Guild Creation Modal Buttons
+    const confirmCreateBtn = document.getElementById('btn-confirm-create-guild');
+    const cancelCreateBtn = document.getElementById('btn-cancel-create-guild');
+    
+    if (confirmCreateBtn) {
+      confirmCreateBtn.addEventListener('click', () => {
+        this.confirmGuildCreation();
+      });
+    }
+    
+    if (cancelCreateBtn) {
+      cancelCreateBtn.addEventListener('click', () => {
+        this.closeGuildCreationModal();
       });
     }
 
@@ -837,6 +838,78 @@ class SystemUI {
     } catch (error: any) {
       this.showGuildModal('❌ Fehler', error.message, false);
     }
+  }
+
+  // ========== GUILD CREATION MODAL ==========
+  private showGuildCreationModal() {
+    // Prüfe SS-Rang Voraussetzung
+    const hunterRank = this.currentProfile?.progression?.hunterRank || 'D';
+    if (hunterRank !== 'SS') {
+      this.showGuildModal(
+        '❌ VORAUSSETZUNGEN NICHT ERFÜLLT',
+        `Du benötigst mindestens Rang SS, um eine Vereinigung zu gründen. Dein aktueller Rang: ${hunterRank}`,
+        false
+      );
+      return;
+    }
+
+    const modal = document.getElementById('guild-creation-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+    }
+  }
+
+  private closeGuildCreationModal() {
+    const modal = document.getElementById('guild-creation-modal');
+    if (modal) {
+      modal.style.display = 'none';
+      
+      // Clear inputs
+      const nameInput = document.getElementById('guild-name-input') as HTMLInputElement;
+      const descInput = document.getElementById('guild-desc-input') as HTMLTextAreaElement;
+      const rankInput = document.getElementById('guild-rank-input') as HTMLSelectElement;
+      
+      if (nameInput) nameInput.value = '';
+      if (descInput) descInput.value = '';
+      if (rankInput) rankInput.value = 'SS';
+    }
+  }
+
+  private async confirmGuildCreation() {
+    const nameInput = document.getElementById('guild-name-input') as HTMLInputElement;
+    const descInput = document.getElementById('guild-desc-input') as HTMLTextAreaElement;
+    const rankInput = document.getElementById('guild-rank-input') as HTMLSelectElement;
+
+    const name = nameInput?.value.trim();
+    const description = descInput?.value.trim();
+    const minRank = rankInput?.value;
+
+    // Validierung
+    if (!name || name.length < 3) {
+      this.showGuildModal('❌ Fehler', 'Der Name muss mindestens 3 Zeichen lang sein.', false);
+      return;
+    }
+
+    if (!description || description.length < 10) {
+      this.showGuildModal('❌ Fehler', 'Die Beschreibung muss mindestens 10 Zeichen lang sein.', false);
+      return;
+    }
+
+    // Prüfe Goldmünzen
+    const currentGold = this.currentProfile?.progression?.gold || 0;
+    const cost = 1000000;
+    
+    if (currentGold < cost) {
+      this.showGuildModal(
+        '❌ NICHT GENUG GOLDMÜNZEN',
+        `Du benötigst ${cost.toLocaleString('de-DE')} Goldmünzen. Du hast: ${currentGold.toLocaleString('de-DE')}`,
+        false
+      );
+      return;
+    }
+
+    this.closeGuildCreationModal();
+    await this.createGuildAsync(name, description, minRank);
   }
 
   // ========== GUILD MODAL ==========
