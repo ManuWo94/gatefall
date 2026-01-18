@@ -1776,16 +1776,396 @@ body {
 }
 
 /* ==================== GUILD/VEREINIGUNG PANEL ==================== */
-.guild-header {
+/* Komplette Übereinstimmung mit Gates-Design */
+
+#panel-vereinigung {
+    background: linear-gradient(135deg, rgba(5, 15, 30, 0.7) 0%, rgba(10, 20, 40, 0.7) 100%);
+    padding: 1.5rem;
+}
+
+/* Current Guild Banner */
+.current-guild-banner {
     background: linear-gradient(135deg, rgba(10, 25, 50, 0.95) 0%, rgba(5, 15, 30, 0.95) 100%);
     border: 2px solid rgba(0, 200, 255, 0.4);
     border-radius: 8px;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 20px rgba(0, 200, 255, 0.2);
+}
+
+.guild-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.guild-banner-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.9));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.guild-banner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.guild-banner-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.guild-banner-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #00d4ff;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.8);
+    letter-spacing: 2px;
+}
+
+.guild-banner-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Guild NPCs Section */
+.guild-npcs-section {
+    margin-bottom: 1.5rem;
+}
+
+#guild-npc-grid {
+    min-height: 200px;
+}
+
+/* NPC Card im Portal-Stil */
+.npc-portal-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.npc-portal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(0, 200, 255, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.npc-portal-card:hover::before {
+    opacity: 1;
+}
+
+.npc-portal-card:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.6);
+    transform: translateY(-8px);
+}
+
+.npc-portal-card.in-squad {
+    border-color: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+.npc-rank-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, rgba(0, 100, 200, 0.9) 0%, rgba(0, 50, 150, 0.9) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.6);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.6);
+    z-index: 10;
+}
+
+.npc-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 200, 255, 0.3) 0%, transparent 70%);
+    border: 3px solid rgba(0, 200, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.npc-portal-card:hover .npc-avatar {
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.8);
+    transform: scale(1.1);
+}
+
+.npc-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.npc-level {
+    font-size: 0.85rem;
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.npc-recruit-btn {
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    letter-spacing: 1px;
+}
+
+.npc-recruit-btn:hover {
+    background: linear-gradient(135deg, #0080ff 0%, #0066cc 100%);
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 120, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.npc-recruit-btn.recruited {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    border-color: #10b981;
+}
+
+/* Squad Display Section */
+.squad-display-section {
+    margin-bottom: 1.5rem;
+}
+
+.squad-grid-display {
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.squad-member-card {
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    min-height: 150px;
+}
+
+.squad-member-card.empty {
+    border-style: dashed;
+    opacity: 0.5;
+    justify-content: center;
+}
+
+.squad-member-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 200, 255, 0.3) 0%, transparent 70%);
+    border: 2px solid rgba(0, 200, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.squad-member-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-align: center;
+}
+
+.squad-member-stats {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.squad-remove-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    background: rgba(239, 68, 68, 0.9);
+    border: 1px solid #ef4444;
+    border-radius: 50%;
+    color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.squad-remove-btn:hover {
+    background: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+    transform: scale(1.1);
+}
+
+/* Guild Card im Portal-Stil */
+.guild-portal-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.guild-portal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(0, 200, 255, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.guild-portal-card:hover::before {
+    opacity: 1;
+}
+
+.guild-portal-card:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.6);
+    transform: translateY(-8px);
+}
+
+.guild-portal-card.current {
+    border-color: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+.guild-portal-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.guild-portal-card.locked:hover {
+    transform: none;
+}
+
+.guild-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.guild-card-rank {
+    background: linear-gradient(135deg, rgba(0, 100, 200, 0.9) 0%, rgba(0, 50, 150, 0.9) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.6);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.6);
+}
+
+.guild-card-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.6));
+}
+
+.guild-card-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-align: center;
+    margin: 0.5rem 0;
+    letter-spacing: 1px;
+}
+
+.guild-card-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.guild-card-bonus {
+    font-size: 0.75rem;
+    color: #fbbf24;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.guild-apply-btn,
+.guild-join-btn {
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    letter-spacing: 1px;
+}
+
+.guild-apply-btn:hover,
+.guild-join-btn:hover {
+    background: linear-gradient(135deg, #0080ff 0%, #0066cc 100%);
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 120, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .guild-header-left {
@@ -1858,11 +2238,11 @@ body {
 .guild-info-panel,
 .guild-description-panel,
 .guild-events-panel {
-    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
-    border: 1px solid rgba(0, 200, 255, 0.3);
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 200, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 200, 255, 0.2);
 }
 
 .guild-panel-header {
@@ -2006,11 +2386,11 @@ body {
 
 .guild-stats-panel,
 .guild-lists-panel {
-    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
-    border: 1px solid rgba(0, 200, 255, 0.3);
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 200, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 200, 255, 0.2);
 }
 
 .guild-stats-grid {
@@ -2249,11 +2629,11 @@ body {
 
 /* Trupp-Sektion */
 .guild-squad-section {
-    background: linear-gradient(135deg, rgba(10, 25, 50, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
-    border: 1px solid rgba(0, 200, 255, 0.3);
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 200, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 200, 255, 0.2);
     margin-top: 1.5rem;
 }
 
@@ -2386,6 +2766,95 @@ body {
 .squad-actions .guild-action-btn:disabled:hover {
     transform: none;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Guild Application Modal */
+.modal-content.portal-style {
+    background: linear-gradient(135deg, rgba(10, 25, 50, 0.98) 0%, rgba(5, 15, 30, 0.98) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.6);
+    box-shadow: 0 0 40px rgba(0, 200, 255, 0.4);
+}
+
+.modal-header.portal-header {
+    background: linear-gradient(135deg, rgba(0, 120, 180, 0.4) 0%, rgba(0, 80, 140, 0.4) 100%);
+    border-bottom: 2px solid rgba(0, 200, 255, 0.5);
+}
+
+.modal-title.portal-title {
+    color: #00d4ff;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.8);
+    letter-spacing: 3px;
+}
+
+.modal-body.portal-body {
+    padding: 2rem;
+}
+
+.guild-application-message {
+    text-align: center;
+    padding: 2rem;
+}
+
+.guild-modal-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.8));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.guild-modal-icon.accepted {
+    filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.8));
+}
+
+.guild-modal-icon.rejected {
+    filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.8));
+}
+
+.guild-modal-status {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00d4ff;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.guild-modal-status.accepted {
+    color: #10b981;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+.guild-modal-status.rejected {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.guild-modal-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.system-btn.portal-btn {
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border: 2px solid rgba(0, 200, 255, 0.6);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.system-btn.portal-btn:hover {
+    background: linear-gradient(135deg, #0080ff 0%, #0066cc 100%);
+    border-color: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 120, 255, 0.6);
+    transform: translateY(-2px);
 }
 
 /* ==================== RESPONSIVE ==================== */

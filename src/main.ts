@@ -468,7 +468,8 @@ class SystemUI {
   }
 
   // ========== GUILDS PANEL ==========
-  private currentSquad: any[] = [null, null, null, null];
+  private currentSquad: any[] = [];
+  private currentGuildData: any = null;
   
   private async loadGuildsPanel() {
     try {
@@ -477,179 +478,303 @@ class SystemUI {
       // Cache guild data globally
       (window as any).cachedGuilds = data;
       
-      // Update current guild
-      const currentGuildName = document.getElementById('current-guild-name');
-      const leaveBtn = document.getElementById('btn-leave-guild');
-      
+      // Find current guild
       let currentGuild = data.npcGuilds?.find((g: any) => g.id === this.currentProfile?.progression?.guildId);
       if (!currentGuild) {
         currentGuild = data.playerGuilds?.find((g: any) => g.id === this.currentProfile?.progression?.guildId);
       }
-      
-      if (currentGuildName) {
-        currentGuildName.textContent = currentGuild ? currentGuild.name : 'KEINE VEREINIGUNG';
-      }
-      if (leaveBtn) {
-        leaveBtn.style.display = currentGuild ? 'block' : 'none';
-      }
+      this.currentGuildData = currentGuild;
+
+      // Update banner
+      this.updateGuildBanner(currentGuild);
 
       // Render NPCs if in a guild
       this.renderGuildNPCs(currentGuild);
 
-      // Render NPC guilds
-      this.renderNPCGuilds(data.npcGuilds, data.availableNpcGuilds);
-      
-      // Render player guilds
-      this.renderPlayerGuilds(data.playerGuilds);
+      // Render guilds in grid
+      this.renderGuildGrid(data.npcGuilds, data.playerGuilds, data.availableNpcGuilds);
 
       // Setup buttons
       this.setupGuildButtons();
       
       // Setup squad system
       this.setupSquadSystem();
+
+      // Update squad display
+      this.updateSquadDisplay();
     } catch (error) {
       console.error('Failed to load guilds:', error);
     }
   }
 
-  private renderNPCGuilds(guilds: any[], availableIds: string[]) {
-    const list = document.getElementById('npc-guild-list');
-    if (!list) return;
-
-    list.innerHTML = '';
+  private updateGuildBanner(guild: any) {
+    const bannerName = document.getElementById('guild-banner-name');
+    const leaveBtn = document.getElementById('btn-leave-guild');
     
-    guilds.forEach(guild => {
-      const isAvailable = availableIds.includes(guild.id);
-      const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
-      
-      const item = document.createElement('div');
-      item.className = 'guild-item';
-      if (!isAvailable) item.classList.add('locked');
-      if (isCurrent) item.classList.add('current');
-
-      item.innerHTML = `
-        <div class="guild-item-info">
-          <div class="guild-item-name">${guild.name}</div>
-          <div class="guild-item-desc">${guild.description}</div>
-          <div class="guild-item-meta">MIN. ${guild.minimumHunterRank} · +${Math.round(guild.goldBonus * 100)}% GOLDMÜNZEN</div>
-        </div>
-        <div class="guild-item-actions">
-          ${!isCurrent && isAvailable ? `<button class="system-btn secondary guild-apply-btn" data-guild-id="${guild.id}">BEWERBEN</button>` : ''}
-          ${!isAvailable ? '<span style="color: var(--text-dim);">GESPERRT</span>' : ''}
-          ${isCurrent ? '<span style="color: var(--accent-primary);">AKTIV</span>' : ''}
-        </div>
-      `;
-
-      list.appendChild(item);
-    });
+    if (bannerName) {
+      bannerName.textContent = guild ? guild.name : 'KEINE VEREINIGUNG';
+    }
+    if (leaveBtn) {
+      leaveBtn.style.display = guild ? 'inline-flex' : 'none';
+    }
   }
 
-  private renderPlayerGuilds(guilds: any[]) {
-    const list = document.getElementById('player-guild-list');
-    if (!list) return;
-
-    list.innerHTML = '';
+  private renderGuildGrid(npcGuilds: any[], playerGuilds: any[], availableIds: string[]) {
+    const grid = document.getElementById('guilds-grid');
+    const countEl = document.getElementById('guild-count');
     
-    if (!guilds || guilds.length === 0) {
-      list.innerHTML = '<div class="log-entry">Keine Spieler-Vereinigungen verfügbar</div>';
-      return;
-    }
+    if (!grid) return;
 
-    guilds.forEach(guild => {
-      const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
+    // Start with NPC guilds (official tab active by default)
+    let currentGuilds = npcGuilds;
+    
+    const renderGuilds = (guilds: any[], isNpc: boolean = true) => {
+      grid.innerHTML = '';
       
-      const item = document.createElement('div');
-      item.className = 'guild-item';
-      if (isCurrent) item.classList.add('current');
+      guilds.forEach(guild => {
+        const isAvailable = isNpc ? availableIds.includes(guild.id) : true;
+        const isCurrent = guild.id === this.currentProfile?.progression?.guildId;
+        
+        const card = document.createElement('div');
+        card.className = `guild-portal-card ${isCurrent ? 'current' : ''} ${!isAvailable ? 'locked' : ''}`;
+        
+        const minRank = guild.minimumHunterRank || guild.minimum_hunter_rank || 'D';
+        const goldBonus = guild.goldBonus || guild.gold_bonus || 0.10;
+        
+        card.innerHTML = `
+          <div class="guild-card-header">
+            <div class="guild-card-rank">MIN. ${minRank}</div>
+          </div>
+          <div class="guild-card-icon">🏛️</div>
+          <div class="guild-card-name">${guild.name}</div>
+          <div class="guild-card-desc">${guild.description}</div>
+          <div class="guild-card-bonus">+${Math.round(goldBonus * 100)}% GOLDMÜNZEN</div>
+          ${!isCurrent && isAvailable ? 
+            `<button class="guild-apply-btn" data-guild-id="${guild.id}">${isNpc ? 'BEWERBEN' : 'BEITRETEN'}</button>` : 
+            isCurrent ? '<div style="color: #10b981; font-weight: 700; text-align: center;">✓ AKTIVE VEREINIGUNG</div>' :
+            '<div style="color: rgba(255,255,255,0.5); text-align: center;">GESPERRT</div>'
+          }
+        `;
+        
+        grid.appendChild(card);
+      });
+      
+      if (countEl) {
+        countEl.textContent = guilds.length.toString();
+      }
+    };
 
-      const goldBonus = guild.gold_bonus || 0.10;
-      item.innerHTML = `
-        <div class="guild-item-info">
-          <div class="guild-item-name">${guild.name}</div>
-          <div class="guild-item-desc">${guild.description}</div>
-          <div class="guild-item-meta">GRÜNDER: ${guild.owner_name} · MIN. ${guild.minimum_hunter_rank} · +${Math.round(goldBonus * 100)}% GOLDMÜNZEN</div>
-        </div>
-        <div class="guild-item-actions">
-          ${!isCurrent ? `<button class="system-btn secondary guild-join-btn" data-guild-id="${guild.id}">BEITRETEN</button>` : ''}
-          ${isCurrent ? '<span style="color: var(--accent-primary);">AKTIV</span>' : ''}
-        </div>
-      `;
+    // Initial render
+    renderGuilds(npcGuilds, true);
 
-      list.appendChild(item);
+    // Tab switching
+    const tabs = document.querySelectorAll('[data-guild-tab]');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabType = tab.getAttribute('data-guild-tab');
+        
+        // Update active tab
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Render appropriate guilds
+        if (tabType === 'official') {
+          renderGuilds(npcGuilds, true);
+        } else {
+          renderGuilds(playerGuilds, false);
+        }
+      });
     });
   }
 
   private setupGuildButtons() {
     // Leave button
     const leaveBtn = document.getElementById('btn-leave-guild');
-    leaveBtn?.addEventListener('click', async () => {
-      try {
-        await AuthAPI.leaveGuild();
-        await this.loadProfile();
-        await this.loadGuildsPanel();
-        this.logSystem('Vereinigung verlassen');
-      } catch (error: any) {
-        alert(error.message);
-      }
-    });
+    if (leaveBtn) {
+      const newLeaveBtn = leaveBtn.cloneNode(true) as HTMLElement;
+      leaveBtn.parentNode?.replaceChild(newLeaveBtn, leaveBtn);
+      
+      newLeaveBtn.addEventListener('click', async () => {
+        try {
+          await AuthAPI.leaveGuild();
+          await this.loadProfile();
+          await this.loadGuildsPanel();
+          this.showGuildModal('✅ Verlassen', 'Du hast die Vereinigung verlassen.', true);
+        } catch (error: any) {
+          this.showGuildModal('❌ Fehler', error.message, false);
+        }
+      });
+    }
 
     // Create button
     const createBtn = document.getElementById('btn-create-guild');
-    createBtn?.addEventListener('click', () => {
-      const name = prompt('Name der Vereinigung:');
-      if (!name) return;
+    if (createBtn) {
+      const newCreateBtn = createBtn.cloneNode(true) as HTMLElement;
+      createBtn.parentNode?.replaceChild(newCreateBtn, createBtn);
+      
+      newCreateBtn.addEventListener('click', () => {
+        const name = prompt('Name der Vereinigung:');
+        if (!name) return;
 
-      const description = prompt('Beschreibung:');
-      if (!description) return;
+        const description = prompt('Beschreibung:');
+        if (!description) return;
 
-      const minRank = prompt('Mindest-Hunter-Rang (D/C/B/A/S/SS):', 'D');
-      if (!minRank) return;
+        const minRank = prompt('Mindest-Hunter-Rang (D/C/B/A/S/SS):', 'SS');
+        if (!minRank) return;
 
-      const validRanks = ['D', 'C', 'B', 'A', 'S', 'SS'];
-      if (!validRanks.includes(minRank.toUpperCase())) {
-        alert('Ungültiger Rang!');
-        return;
-      }
+        const validRanks = ['D', 'C', 'B', 'A', 'S', 'SS'];
+        if (!validRanks.includes(minRank.toUpperCase())) {
+          alert('Ungültiger Rang!');
+          return;
+        }
 
-      this.createGuildAsync(name, description, minRank.toUpperCase());
-    });
+        this.createGuildAsync(name, description, minRank.toUpperCase());
+      });
+    }
 
-    // Apply buttons (NPC)
-    document.querySelectorAll('.guild-apply-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const guildId = (e.target as HTMLElement).getAttribute('data-guild-id');
-        if (!guildId) return;
+    // Guild cards - Event Delegation auf Grid
+    const grid = document.getElementById('guilds-grid');
+    if (grid) {
+      const newGrid = grid.cloneNode(true) as HTMLElement;
+      grid.parentNode?.replaceChild(newGrid, grid);
+      
+      newGrid.addEventListener('click', async (e) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.guild-apply-btn') as HTMLElement;
+        
+        if (btn) {
+          const guildId = btn.getAttribute('data-guild-id');
+          if (!guildId) return;
 
-        try {
-          const result = await AuthAPI.applyGuild(guildId);
-          if (result.accepted) {
-            await this.loadProfile();
-            await this.loadGuildsPanel();
-            this.logSystem(`✅ ${result.message}`);
-          } else {
-            this.logSystem(`❌ ${result.message}`);
+          try {
+            const result = await AuthAPI.applyGuild(guildId);
+            
+            if (result.accepted) {
+              await this.loadProfile();
+              await this.loadGuildsPanel();
+              this.showGuildModal('✅ ANGENOMMEN!', result.message, true);
+            } else {
+              this.showGuildModal('❌ ABGELEHNT', result.message, false);
+            }
+          } catch (error: any) {
+            this.showGuildModal('❌ Fehler', error.message, false);
           }
-        } catch (error: any) {
-          alert(error.message);
         }
       });
+    }
+  }
+
+  private renderGuildNPCs(guild: any) {
+    const container = document.getElementById('npc-grid');
+    if (!container || !guild?.npcs) return;
+
+    container.innerHTML = '';
+
+    guild.npcs.forEach((npc: any) => {
+      const card = document.createElement('div');
+      card.className = 'npc-portal-card';
+      
+      const isInSquad = this.currentSquad.some(m => m.id === npc.id);
+      const canRecruit = this.currentSquad.length < 4 && !isInSquad;
+
+      card.innerHTML = `
+        <div class="npc-rank-badge rank-${npc.rank.toLowerCase()}">${npc.rank}</div>
+        <div class="npc-avatar">👤</div>
+        <div class="npc-name">${npc.name}</div>
+        <div class="npc-level">STUFE ${npc.level}</div>
+        ${canRecruit ? `<button class="system-btn primary recruit-btn" data-npc='${JSON.stringify(npc)}'>REKRUTIEREN</button>` : ''}
+        ${isInSquad ? '<div class="npc-status">IM TRUPP</div>' : ''}
+      `;
+
+      container.appendChild(card);
     });
 
-    // Join buttons (Player)
-    document.querySelectorAll('.guild-join-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const guildId = (e.target as HTMLElement).getAttribute('data-guild-id');
-        if (!guildId) return;
+    // Event delegation for recruit buttons
+    const newContainer = container.cloneNode(true) as HTMLElement;
+    container.parentNode?.replaceChild(newContainer, container);
 
-        try {
-          await AuthAPI.joinGuild(guildId);
-          await this.loadProfile();
-          await this.loadGuildsPanel();
-          this.logSystem('Vereinigung beigetreten');
-        } catch (error: any) {
-          alert(error.message);
+    newContainer.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const btn = target.closest('.recruit-btn') as HTMLElement;
+      
+      if (btn) {
+        const npcData = btn.getAttribute('data-npc');
+        if (npcData) {
+          const npc = JSON.parse(npcData);
+          this.recruitToSquad(npc);
         }
-      });
+      }
+    });
+  }
+
+  private recruitToSquad(npc: any) {
+    if (this.currentSquad.length >= 4) {
+      this.showGuildModal('❌ Trupp voll', 'Dein Trupp kann maximal 4 Mitglieder haben.', false);
+      return;
+    }
+
+    if (this.currentSquad.some(m => m.id === npc.id)) {
+      this.showGuildModal('❌ Bereits im Trupp', 'Dieses Mitglied ist bereits im Trupp.', false);
+      return;
+    }
+
+    this.currentSquad.push({
+      id: npc.id,
+      name: npc.name,
+      rank: npc.rank,
+      level: npc.level,
+      isNPC: true
+    });
+
+    this.updateSquadDisplay();
+    this.renderGuildNPCs(this.currentGuildData);
+    this.showGuildModal('✅ Rekrutiert!', `${npc.name} wurde dem Trupp hinzugefügt.`, true);
+  }
+
+  private updateSquadDisplay() {
+    const container = document.getElementById('squad-display');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (this.currentSquad.length === 0) {
+      container.innerHTML = '<div class="empty-squad">Kein Trupp-Mitglied ausgewählt</div>';
+      return;
+    }
+
+    this.currentSquad.forEach((member, index) => {
+      const card = document.createElement('div');
+      card.className = 'squad-member-card';
+      
+      card.innerHTML = `
+        <div class="squad-rank-badge rank-${member.rank.toLowerCase()}">${member.rank}</div>
+        <div class="squad-avatar">${member.isNPC ? '👤' : '👨‍🎤'}</div>
+        <div class="squad-name">${member.name}</div>
+        <div class="squad-level">STUFE ${member.level}</div>
+        <button class="system-btn danger remove-btn" data-index="${index}">ENTFERNEN</button>
+      `;
+
+      container.appendChild(card);
+    });
+
+    // Event delegation
+    const newContainer = container.cloneNode(true) as HTMLElement;
+    container.parentNode?.replaceChild(newContainer, container);
+
+    newContainer.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const btn = target.closest('.remove-btn') as HTMLElement;
+      
+      if (btn) {
+        const indexStr = btn.getAttribute('data-index');
+        if (indexStr !== null) {
+          const index = parseInt(indexStr);
+          const removed = this.currentSquad.splice(index, 1)[0];
+          this.updateSquadDisplay();
+          this.renderGuildNPCs(this.currentGuildData);
+          this.showGuildModal('✅ Entfernt', `${removed.name} wurde aus dem Trupp entfernt.`, true);
+        }
+      }
     });
   }
 
@@ -658,168 +783,62 @@ class SystemUI {
       const result = await AuthAPI.createGuild(name, description, minRank);
       await this.loadProfile();
       await this.loadGuildsPanel();
-      this.logSystem(`✅ ${result.message}`);
+      this.showGuildModal('✅ VEREINIGUNG GEGRÜNDET!', result.message, true);
     } catch (error: any) {
-      alert(error.message);
+      this.showGuildModal('❌ Fehler', error.message, false);
     }
+  }
+
+  // ========== GUILD MODAL ==========
+  private showGuildModal(title: string, message: string, accepted: boolean) {
+    const modal = document.getElementById('guild-application-modal');
+    const modalTitle = document.getElementById('guild-modal-title');
+    const modalIcon = document.getElementById('guild-modal-icon');
+    const modalStatus = document.getElementById('guild-modal-status');
+    const modalText = document.getElementById('guild-modal-text');
+    const closeBtn = document.getElementById('btn-close-guild-modal');
+
+    if (!modal || !modalTitle || !modalIcon || !modalStatus || !modalText) return;
+
+    // Set content
+    modalTitle.textContent = title.includes('VEREINIGUNG') ? 'VEREINIGUNG' : 'BEWERBUNG';
+    modalStatus.textContent = title;
+    modalText.textContent = message;
+
+    // Set icon and classes
+    if (accepted) {
+      modalIcon.textContent = '✅';
+      modalIcon.className = 'guild-modal-icon accepted';
+      modalStatus.className = 'guild-modal-status accepted';
+    } else {
+      modalIcon.textContent = '❌';
+      modalIcon.className = 'guild-modal-icon rejected';
+      modalStatus.className = 'guild-modal-status rejected';
+    }
+
+    // Show modal
+    modal.style.display = 'flex';
+
+    // Close handler
+    const closeHandler = () => {
+      modal.style.display = 'none';
+      closeBtn?.removeEventListener('click', closeHandler);
+      modal?.removeEventListener('click', outsideClickHandler);
+    };
+
+    const outsideClickHandler = (e: Event) => {
+      if (e.target === modal) {
+        closeHandler();
+      }
+    };
+
+    closeBtn?.addEventListener('click', closeHandler);
+    modal?.addEventListener('click', outsideClickHandler);
   }
 
   // ========== NPC & SQUAD SYSTEM ==========
-  private renderGuildNPCs(guild: any) {
-    const list = document.getElementById('guild-npc-list');
-    if (!list) return;
-
-    if (!guild || !guild.npcs) {
-      list.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">Tritt einer Vereinigung bei, um NPCs zu rekrutieren</div>';
-      return;
-    }
-
-    list.innerHTML = '';
-    
-    guild.npcs.forEach((npc: any, index: number) => {
-      const isInSquad = this.currentSquad.some(s => s && s.index === index);
-      
-      const card = document.createElement('div');
-      card.className = `npc-card ${isInSquad ? 'in-squad' : ''}`;
-      card.innerHTML = `
-        <div class="npc-info">
-          <div class="npc-name">${npc.name}</div>
-          <div class="npc-stats">
-            <span class="npc-rank">RANG ${npc.rank}</span>
-            <span class="npc-level">Level ${npc.level}</span>
-          </div>
-        </div>
-      `;
-      
-      if (!isInSquad) {
-        card.addEventListener('click', () => this.addToSquad(npc, index));
-      }
-      
-      list.appendChild(card);
-    });
-  }
-
   private setupSquadSystem() {
-    const clearBtn = document.getElementById('btn-clear-squad');
-    const deployBtn = document.getElementById('btn-deploy-squad');
-
-    clearBtn?.addEventListener('click', () => {
-      this.currentSquad = [null, null, null, null];
-      this.updateSquadDisplay();
-      this.updateDeployButton();
-    });
-
-    deployBtn?.addEventListener('click', () => {
-      if (this.currentSquad.filter(s => s).length > 0) {
-        this.logSystem(`🚀 Trupp mit ${this.currentSquad.filter(s => s).length} Mitgliedern wird zum Dungeon geschickt!`);
-        // TODO: Integration mit Combat System
-        alert('Trupp-Raids werden bald verfügbar sein!');
-      }
-    });
-
-    // Tab switching
-    const tabs = document.querySelectorAll('.guild-tab');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabType = tab.getAttribute('data-tab');
-        
-        // Update active tab
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        // Show/hide lists
-        const npcList = document.getElementById('npc-guild-list');
-        const playerList = document.getElementById('player-guild-list');
-        
-        if (tabType === 'official') {
-          if (npcList) npcList.style.display = 'block';
-          if (playerList) playerList.style.display = 'none';
-        } else {
-          if (npcList) npcList.style.display = 'none';
-          if (playerList) playerList.style.display = 'block';
-        }
-      });
-    });
-
-    this.updateSquadDisplay();
-  }
-
-  private addToSquad(npc: any, npcIndex: number) {
-    // Find first empty slot
-    const emptySlot = this.currentSquad.findIndex(s => !s);
-    if (emptySlot !== -1) {
-      this.currentSquad[emptySlot] = { ...npc, index: npcIndex };
-    } else if (this.currentSquad.length < 4) {
-      this.currentSquad.push({ ...npc, index: npcIndex });
-    } else {
-      alert('Trupp ist voll! Maximal 4 Mitglieder.');
-      return;
-    }
-    
-    this.updateSquadDisplay();
-    this.updateDeployButton();
-    this.renderGuildNPCs(this.getCurrentGuild());
-    this.logSystem(`✅ ${npc.name} zum Trupp hinzugefügt`);
-  }
-
-  private removeFromSquad(slotIndex: number) {
-    const member = this.currentSquad[slotIndex];
-    if (member) {
-      this.currentSquad[slotIndex] = null;
-      this.updateSquadDisplay();
-      this.updateDeployButton();
-      this.renderGuildNPCs(this.getCurrentGuild());
-      this.logSystem(`❌ ${member.name} aus Trupp entfernt`);
-    }
-  }
-
-  private updateSquadDisplay() {
-    const slots = document.querySelectorAll('.squad-slot');
-    const countEl = document.getElementById('squad-count');
-    
-    let activeCount = 0;
-    
-    slots.forEach((slot, index) => {
-      const member = this.currentSquad[index];
-      
-      if (member) {
-        activeCount++;
-        slot.classList.remove('empty');
-        slot.classList.add('filled');
-        slot.innerHTML = `
-          <div class="squad-member-info">
-            <div class="squad-member-name">${member.name}</div>
-            <div class="squad-member-stats">
-              <span>Rang ${member.rank}</span>
-              <span>Level ${member.level}</span>
-            </div>
-          </div>
-          <div class="squad-remove" data-slot="${index}">✕</div>
-        `;
-        
-        const removeBtn = slot.querySelector('.squad-remove');
-        removeBtn?.addEventListener('click', () => this.removeFromSquad(index));
-      } else {
-        slot.classList.remove('filled');
-        slot.classList.add('empty');
-        slot.innerHTML = `
-          <div class="squad-slot-icon">👤</div>
-          <div class="squad-slot-label">LEER</div>
-        `;
-      }
-    });
-
-    if (countEl) {
-      countEl.textContent = `${activeCount}/4`;
-    }
-  }
-
-  private updateDeployButton() {
-    const deployBtn = document.getElementById('btn-deploy-squad') as HTMLButtonElement;
-    if (deployBtn) {
-      const hasMembers = this.currentSquad.filter(s => s).length > 0;
-      deployBtn.disabled = !hasMembers;
-    }
+    // Initialize - UI components handled in updateSquadDisplay
   }
 
   private getCurrentGuild() {

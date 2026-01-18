@@ -524,197 +524,69 @@
 
             <!-- VEREINIGUNG PANEL -->
             <div class="panel" id="panel-vereinigung">
-                <!-- Guild Header with Name and Stats -->
-                <div class="guild-header">
-                    <div class="guild-header-left">
-                        <div class="guild-name-display">
-                            <span class="guild-bracket">[</span>
-                            <span class="guild-name-text" id="guild-header-name">KEINE VEREINIGUNG</span>
-                            <span class="guild-bracket">]</span>
+                
+                <!-- Universe-Style Header -->
+                <div class="universe-header">
+                    <span class="universe-icon">🏛️</span>
+                    <h2 class="universe-title">VEREINIGUNGEN</h2>
+                </div>
+
+                <!-- Current Guild Display -->
+                <div class="current-guild-banner" id="current-guild-banner">
+                    <div class="guild-banner-left">
+                        <span class="guild-banner-icon">🏰</span>
+                        <div class="guild-banner-info">
+                            <div class="guild-banner-label">AKTUELLE VEREINIGUNG</div>
+                            <div class="guild-banner-name" id="guild-banner-name">KEINE VEREINIGUNG</div>
                         </div>
-                        <div class="guild-tag" id="guild-header-tag">-</div>
                     </div>
-                    <div class="guild-header-right">
-                        <div class="guild-stat-item">
-                            <span class="guild-stat-icon">👥</span>
-                            <span class="guild-stat-label">MITGLIEDER</span>
-                            <span class="guild-stat-value" id="guild-members-count">0</span>
-                        </div>
+                    <div class="guild-banner-actions">
+                        <button class="filter-icon-btn" id="btn-leave-guild" style="display: none;">
+                            <span>🚪</span> VERLASSEN
+                        </button>
+                        <button class="filter-icon-btn" id="btn-create-guild">
+                            <span>🏛️</span> GRÜNDEN
+                        </button>
                     </div>
                 </div>
 
-                <!-- Main Guild Content Grid -->
-                <div class="guild-content-grid">
-                    <!-- Left: Guild Information -->
-                    <div class="guild-info-panel">
-                        <div class="guild-panel-header">
-                            <span class="guild-panel-icon">ℹ️</span>
-                            <span class="guild-panel-title">INFORMATION ÜBER</span>
-                        </div>
-                        <div class="guild-panel-content">
-                            <div class="guild-info-row">
-                                <span class="guild-info-icon">👑</span>
-                                <span class="guild-info-label">Rang</span>
-                                <span class="guild-info-value" id="guild-user-rank">-</span>
-                            </div>
-                            <div class="guild-info-row">
-                                <span class="guild-info-icon">👥</span>
-                                <span class="guild-info-label">Mitglieder</span>
-                                <span class="guild-info-value" id="guild-members-display">0/0 Memberliste</span>
-                            </div>
-                            
-                            <div class="guild-action-buttons">
-                                <button class="guild-action-btn" id="btn-create-guild">
-                                    <span class="guild-btn-icon">🏛️</span>
-                                    <span>VEREINIGUNG GRÜNDEN</span>
-                                </button>
-                                <button class="guild-action-btn" id="btn-guild-management" style="display: none;">
-                                    <span class="guild-btn-icon">⚙️</span>
-                                    <span>ALLIANZ VERWALTUNG</span>
-                                </button>
-                                <button class="guild-action-btn secondary" id="btn-guild-chat" style="display: none;">
-                                    <span class="guild-btn-icon">💬</span>
-                                    <span>ZUM ALLIANZ-CHAT</span>
-                                </button>
-                                <button class="guild-action-btn danger" id="btn-leave-guild" style="display: none;">
-                                    <span class="guild-btn-icon">🚪</span>
-                                    <span>VERLASSEN</span>
-                                </button>
-                            </div>
-                        </div>
+                <!-- Guild NPCs Section -->
+                <div class="guild-npcs-section" id="guild-npcs-section" style="display: none;">
+                    <div class="gate-filter-control">
+                        <span style="font-weight: 700; color: #00d4ff; letter-spacing: 1px;">👥 VERFÜGBARE NPCs</span>
+                        <span class="gate-counter">NPCs: <span id="npc-count">0</span></span>
                     </div>
-
-                    <!-- Center: Guild Description -->
-                    <div class="guild-description-panel">
-                        <div class="guild-panel-header">
-                            <span class="guild-panel-icon">📝</span>
-                            <span class="guild-panel-title">NAME</span>
-                        </div>
-                        <div class="guild-panel-content">
-                            <div class="guild-description-text" id="guild-description">
-                                Für die Allianz wurde Keine Beschreibung hinterlegt.
-                            </div>
-                        </div>
-
-                        <div class="guild-panel-header" style="margin-top: 1.5rem;">
-                            <span class="guild-panel-icon">🔒</span>
-                            <span class="guild-panel-title">INTERNER BEREICH</span>
-                        </div>
-                        <div class="guild-panel-content">
-                            <div class="guild-internal-text" id="guild-internal">
-                                Interner Text
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: NPCs & Trupp -->
-                    <div class="guild-events-panel">
-                        <div class="guild-panel-header">
-                            <span class="guild-panel-icon">👥</span>
-                            <span class="guild-panel-title">VERFÜGBARE NPCs</span>
-                        </div>
-                        <div class="guild-panel-content">
-                            <div class="guild-npc-list" id="guild-npc-list">
-                                Tritt einer Vereinigung bei, um NPCs zu rekrutieren
-                            </div>
-                        </div>
+                    <div class="gates-universe-grid" id="guild-npc-grid">
+                        <!-- NPCs werden hier eingefügt -->
                     </div>
                 </div>
 
-                <!-- Trupp-Verwaltung -->
-                <div class="guild-squad-section">
-                    <div class="guild-panel-header">
-                        <span class="guild-panel-icon">⚔️</span>
-                        <span class="guild-panel-title">DEIN TRUPP</span>
-                        <span class="guild-squad-count" id="squad-count">0/4</span>
+                <!-- Squad Display -->
+                <div class="squad-display-section" id="squad-display-section">
+                    <div class="gate-filter-control">
+                        <span style="font-weight: 700; color: #00d4ff; letter-spacing: 1px;">⚔️ DEIN TRUPP</span>
+                        <span class="gate-counter" id="squad-counter">0/4 MITGLIEDER</span>
+                        <button class="filter-icon-btn" id="btn-clear-squad" style="margin-left: auto;">LEEREN</button>
                     </div>
-                    <div class="guild-panel-content">
-                        <div class="squad-grid" id="squad-grid">
-                            <div class="squad-slot empty" data-slot="0">
-                                <div class="squad-slot-icon">👤</div>
-                                <div class="squad-slot-label">LEER</div>
-                            </div>
-                            <div class="squad-slot empty" data-slot="1">
-                                <div class="squad-slot-icon">👤</div>
-                                <div class="squad-slot-label">LEER</div>
-                            </div>
-                            <div class="squad-slot empty" data-slot="2">
-                                <div class="squad-slot-icon">👤</div>
-                                <div class="squad-slot-label">LEER</div>
-                            </div>
-                            <div class="squad-slot empty" data-slot="3">
-                                <div class="squad-slot-icon">👤</div>
-                                <div class="squad-slot-label">LEER</div>
-                            </div>
-                        </div>
-                        <div class="squad-actions">
-                            <button class="guild-action-btn" id="btn-deploy-squad" disabled>
-                                <span class="guild-btn-icon">🚀</span>
-                                <span>TRUPP IN DUNGEON SENDEN</span>
-                            </button>
-                            <button class="guild-action-btn secondary" id="btn-clear-squad">
-                                <span class="guild-btn-icon">🗑️</span>
-                                <span>TRUPP LEEREN</span>
-                            </button>
-                        </div>
+                    <div class="squad-grid-display" id="squad-grid-display">
+                        <!-- Squad slots -->
                     </div>
                 </div>
 
-                <!-- Bottom: Combat Stats and Guild Lists -->
-                <div class="guild-bottom-section">
-                    <div class="guild-stats-panel">
-                        <div class="guild-panel-header">
-                            <span class="guild-panel-icon">📊</span>
-                            <span class="guild-panel-title">KAMPFSTATISTIK</span>
-                        </div>
-                        <div class="guild-panel-content">
-                            <div class="guild-stats-grid">
-                                <div class="guild-stat-row">
-                                    <span class="stat-label">Siege</span>
-                                    <span class="stat-value" id="guild-stat-wins">0</span>
-                                </div>
-                                <div class="guild-stat-row">
-                                    <span class="stat-label">Verluste</span>
-                                    <span class="stat-value" id="guild-stat-losses">0</span>
-                                </div>
-                                <div class="guild-stat-row">
-                                    <span class="stat-label">Unentschieden</span>
-                                    <span class="stat-value" id="guild-stat-draws">0</span>
-                                </div>
-                                <div class="guild-stat-row">
-                                    <span class="stat-label">Geschützte Sternensysteme</span>
-                                    <span class="stat-value" id="guild-stat-systems">0</span>
-                                </div>
-                                <div class="guild-stat-row">
-                                    <span class="stat-label">Verlorene Sternensysteme</span>
-                                    <span class="stat-value" id="guild-stat-lost-systems">0</span>
-                                </div>
-                                <div class="guild-stat-row">
-                                    <span class="stat-label">Besiegte Truppenmacht (Metall)</span>
-                                    <span class="stat-value" id="guild-stat-metal">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Available Guilds -->
+                <div class="gate-filter-control">
+                    <button class="filter-icon-btn active" data-guild-tab="official">
+                        <span>🏛️</span> OFFIZIELLE
+                    </button>
+                    <button class="filter-icon-btn" data-guild-tab="player">
+                        <span>👥</span> SPIELER
+                    </button>
+                    <span class="gate-counter">Vereinigungen: <span id="guild-count">0</span></span>
+                </div>
 
-                    <div class="guild-lists-panel">
-                        <div class="guild-panel-header">
-                            <span class="guild-panel-icon">🏛️</span>
-                            <span class="guild-panel-title">VERFÜGBARE VEREINIGUNGEN</span>
-                        </div>
-                        <div class="guild-panel-content">
-                            <div class="guild-tabs">
-                                <button class="guild-tab active" data-tab="official">OFFIZIELLE</button>
-                                <button class="guild-tab" data-tab="player">SPIELER</button>
-                            </div>
-                            <div class="guild-list" id="npc-guild-list">
-                                <!-- Dynamically populated -->
-                            </div>
-                            <div class="guild-list" id="player-guild-list" style="display: none;">
-                                <!-- Dynamically populated -->
-                            </div>
-                        </div>
-                    </div>
+                <!-- Guild Grid -->
+                <div class="gates-universe-grid" id="guilds-grid">
+                    <!-- Guilds werden hier eingefügt -->
                 </div>
             </div>
 
@@ -737,6 +609,25 @@
             <div class="modal-footer">
                 <button id="btn-awaken" class="system-btn primary">ERWACHEN</button>
                 <button id="btn-close-awakening" class="system-btn secondary">SPÄTER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GUILD APPLICATION MODAL -->
+    <div id="guild-application-modal" class="system-modal" style="display: none;">
+        <div class="modal-content portal-style">
+            <div class="modal-header portal-header">
+                <h2 class="modal-title portal-title" id="guild-modal-title">VEREINIGUNG</h2>
+            </div>
+            <div class="modal-body portal-body">
+                <div class="guild-application-message">
+                    <div class="guild-modal-icon" id="guild-modal-icon">📜</div>
+                    <p class="guild-modal-status" id="guild-modal-status">Bewerbung wird bearbeitet...</p>
+                    <p class="guild-modal-text" id="guild-modal-text"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-close-guild-modal" class="system-btn portal-btn">SCHLIESSEN</button>
             </div>
         </div>
     </div>
