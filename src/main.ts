@@ -523,13 +523,30 @@ class SystemUI {
     const grid = document.getElementById('guilds-grid');
     const countEl = document.getElementById('guild-count');
     
-    if (!grid) return;
+    console.log('🏛️ renderGuildGrid called:', {
+      npcGuilds: npcGuilds?.length,
+      playerGuilds: playerGuilds?.length,
+      availableIds: availableIds?.length,
+      gridElement: !!grid
+    });
+    
+    if (!grid) {
+      console.error('❌ guilds-grid element not found!');
+      return;
+    }
 
     // Start with NPC guilds (official tab active by default)
     let currentGuilds = npcGuilds;
     
     const renderGuilds = (guilds: any[], isNpc: boolean = true) => {
+      console.log(`🎨 Rendering ${isNpc ? 'NPC' : 'Player'} guilds:`, guilds?.length);
       grid.innerHTML = '';
+      
+      if (!guilds || guilds.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">Keine Vereinigungen verfügbar</div>';
+        if (countEl) countEl.textContent = '0';
+        return;
+      }
       
       guilds.forEach(guild => {
         const isAvailable = isNpc ? availableIds.includes(guild.id) : true;
@@ -665,9 +682,22 @@ class SystemUI {
   }
 
   private renderGuildNPCs(guild: any) {
-    const container = document.getElementById('npc-grid');
-    if (!container || !guild?.npcs) return;
+    const container = document.getElementById('guild-npc-grid');
+    const section = document.getElementById('guild-npcs-section');
+    const npcCount = document.getElementById('npc-count');
+    
+    if (!container || !section) {
+      console.warn('NPC grid or section not found');
+      return;
+    }
 
+    if (!guild?.npcs) {
+      section.style.display = 'none';
+      return;
+    }
+
+    // Show section and render NPCs
+    section.style.display = 'block';
     container.innerHTML = '';
 
     guild.npcs.forEach((npc: any) => {
@@ -688,6 +718,10 @@ class SystemUI {
 
       container.appendChild(card);
     });
+
+    if (npcCount) {
+      npcCount.textContent = guild.npcs.length.toString();
+    }
 
     // Event delegation for recruit buttons
     const newContainer = container.cloneNode(true) as HTMLElement;
@@ -732,14 +766,24 @@ class SystemUI {
   }
 
   private updateSquadDisplay() {
-    const container = document.getElementById('squad-display');
-    if (!container) return;
+    const container = document.getElementById('squad-grid-display');
+    const counter = document.getElementById('squad-counter');
+    
+    if (!container) {
+      console.warn('Squad display container not found');
+      return;
+    }
 
     container.innerHTML = '';
 
     if (this.currentSquad.length === 0) {
-      container.innerHTML = '<div class="empty-squad">Kein Trupp-Mitglied ausgewählt</div>';
+      container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">Kein Trupp-Mitglied ausgewählt</div>';
+      if (counter) counter.textContent = '0/4 MITGLIEDER';
       return;
+    }
+
+    if (counter) {
+      counter.textContent = `${this.currentSquad.length}/4 MITGLIEDER`;
     }
 
     this.currentSquad.forEach((member, index) => {
