@@ -1,0 +1,120 @@
+/* RPG Combat - Modern Design ohne Emojis */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes glowPulse { 0%, 100% { box-shadow: 0 0 20px currentColor; } 50% { box-shadow: 0 0 40px currentColor; } }
+
+.combat-screen { position: relative; width: 100%; height: 100vh; background: linear-gradient(180deg, #0a0a0a 0%, #1a1410 50%, #0a0a0a 100%); overflow: hidden; animation: fadeIn 0.5s ease-out; }
+
+/* Player HP - Links */
+.player-hp-bar { position: absolute; top: 20px; left: 20px; width: 300px; z-index: 10; animation: slideInLeft 0.6s ease-out; }
+.player-hp-entry { background: linear-gradient(135deg, rgba(20,40,30,0.95), rgba(10,30,20,0.95)); border: 2px solid rgba(100,255,150,0.6); border-radius: 12px; padding: 12px; box-shadow: 0 4px 20px rgba(100,255,150,0.3); }
+.player-name { font-size: 16px; font-weight: bold; color: #66ff88; margin-bottom: 8px; text-shadow: 0 0 10px rgba(100,255,150,0.8); }
+.player-level { font-size: 13px; color: #aaffcc; margin-left: 10px; padding: 2px 8px; background: rgba(100,255,150,0.2); border-radius: 4px; }
+
+/* Enemy HP - Rechts */
+.enemy-hp-bars { position: absolute; top: 20px; right: 20px; width: 300px; display: flex; flex-direction: column; gap: 12px; z-index: 10; animation: slideInRight 0.6s ease-out; }
+.enemy-hp-entry { background: linear-gradient(135deg, rgba(40,20,20,0.95), rgba(30,10,10,0.95)); border: 2px solid rgba(255,100,100,0.6); border-radius: 12px; padding: 12px; box-shadow: 0 4px 20px rgba(255,100,100,0.3); transition: all 0.3s; }
+.enemy-hp-entry:hover { border-color: rgba(255,150,150,0.9); transform: translateX(-5px); }
+.enemy-hp-entry.defeated { opacity: 0.4; filter: grayscale(1); }
+.enemy-name { font-size: 15px; font-weight: bold; color: #ff6666; margin-bottom: 8px; text-shadow: 0 0 10px rgba(255,100,100,0.8); }
+.enemy-level { font-size: 12px; color: #ffaa88; margin-left: 10px; padding: 2px 8px; background: rgba(255,100,100,0.2); border-radius: 4px; }
+
+.hp-bar-container { position: relative; width: 100%; height: 28px; background: rgba(0,0,0,0.7); border-radius: 6px; overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+.hp-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 15px currentColor; }
+.hp-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 13px; font-weight: bold; color: white; text-shadow: 0 0 4px black; }
+
+/* Battle Stage */
+.battle-stage { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 1100px; height: 450px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+.player-sprites { display: flex; gap: 40px; align-items: center; animation: slideInLeft 0.8s ease-out 0.2s both; }
+.enemy-sprites { display: flex; gap: 40px; align-items: center; animation: slideInRight 0.8s ease-out 0.2s both; }
+
+.character-sprite { position: relative; width: 150px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; transition: all 0.3s; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5)); }
+.character-sprite:hover { transform: translateY(-10px) scale(1.05); }
+.character-sprite.defeated { opacity: 0.3; filter: grayscale(1); }
+
+/* Sprites - Player verwendet echtes Bild */
+.sprite-character { width: 120px; height: 150px; position: relative; transition: all 0.3s; }
+
+/* Player Sprite - Alle Rollen bekommen das gleiche Bild */
+.sprite-waechter,
+.sprite-jaeger,
+.sprite-magier { 
+    background: 
+        url('/public/assets/sprites/player.png') center bottom / contain no-repeat,
+        linear-gradient(180deg, transparent 0%, rgba(100,200,255,0.2) 100%),
+        radial-gradient(ellipse at 50% 60%, rgba(100,200,255,0.3) 0%, transparent 60%);
+    box-shadow: inset 0 -30px 50px rgba(100,200,255,0.2), 0 0 40px rgba(100,200,255,0.4);
+    border: 2px solid rgba(100,200,255,0.5);
+    border-radius: 12px;
+}
+
+/* Fallback wenn Bild nicht lädt - CSS Shape */
+.sprite-waechter::before,
+.sprite-jaeger::before,
+.sprite-magier::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    background: radial-gradient(ellipse at 50% 30%, rgba(100,200,255,0.6) 0%, transparent 50%),
+                linear-gradient(180deg, transparent 40%, rgba(100,200,255,0.4) 100%);
+    clip-path: polygon(50% 10%, 60% 40%, 80% 45%, 65% 60%, 70% 90%, 50% 80%, 30% 90%, 35% 60%, 20% 45%, 40% 40%);
+    filter: drop-shadow(0 0 15px rgba(100,200,255,0.8));
+    opacity: 0;
+}
+
+.sprite-enemy-monster { background: linear-gradient(180deg, transparent 0%, rgba(255,100,100,0.3) 100%), radial-gradient(ellipse at 50% 60%, rgba(255,100,100,0.6) 0%, transparent 60%); box-shadow: inset 0 -30px 60px rgba(255,100,100,0.5), 0 0 60px rgba(255,100,100,0.6); border: 2px solid rgba(255,100,100,0.7); border-radius: 12px; }
+.sprite-enemy-monster::before { content: ''; position: absolute; width: 85%; height: 85%; top: 8%; left: 7.5%; background: radial-gradient(circle at 50% 25%, rgba(255,100,100,0.9) 0%, transparent 40%), linear-gradient(180deg, transparent 35%, rgba(255,100,100,0.8) 100%); clip-path: polygon(50% 5%, 65% 25%, 90% 30%, 80% 50%, 95% 70%, 70% 85%, 55% 100%, 50% 90%, 45% 100%, 30% 85%, 5% 70%, 20% 50%, 10% 30%, 35% 25%); filter: drop-shadow(0 0 25px rgba(255,100,100,1)); }
+
+.sprite-enemy-boss { background: linear-gradient(180deg, transparent 0%, rgba(255,50,50,0.4) 100%), radial-gradient(ellipse at 50% 60%, rgba(255,50,50,0.7) 0%, transparent 60%); box-shadow: inset 0 -30px 70px rgba(255,50,50,0.6), 0 0 70px rgba(255,50,50,0.8); border: 3px solid rgba(255,50,50,0.9); border-radius: 12px; animation: glowPulse 2s ease-in-out infinite; }
+.sprite-enemy-boss::before { content: ''; position: absolute; width: 90%; height: 90%; top: 5%; left: 5%; background: radial-gradient(circle at 50% 20%, rgba(255,50,50,1) 0%, transparent 35%), linear-gradient(180deg, transparent 30%, rgba(255,50,50,0.9) 100%); clip-path: polygon(50% 0%, 70% 20%, 100% 25%, 85% 45%, 95% 70%, 75% 85%, 60% 100%, 50% 95%, 40% 100%, 25% 85%, 5% 70%, 15% 45%, 0% 25%, 30% 20%); filter: drop-shadow(0 0 30px rgba(255,50,50,1)); }
+
+.preparing-indicator { position: absolute; top: -20px; right: -10px; width: 40px; height: 40px; background: radial-gradient(circle, rgba(255,200,0,0.9), rgba(255,150,0,0.6)); border-radius: 50%; border: 3px solid #ffc800; animation: pulse 1s ease-in-out infinite; box-shadow: 0 0 20px rgba(255,200,0,0.8); }
+
+/* Skill Bar */
+.skill-bar { position: absolute; bottom: 30px; left: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 20; animation: fadeIn 0.8s ease-out 0.4s both; }
+.skill-bar-target { font-size: 15px; font-weight: bold; color: #ffcc66; background: linear-gradient(135deg, rgba(40,30,10,0.95), rgba(30,20,5,0.95)); padding: 8px 25px; border-radius: 25px; border: 2px solid rgba(255,200,100,0.6); box-shadow: 0 4px 15px rgba(255,200,100,0.3); }
+.skill-icons { display: flex; gap: 12px; background: linear-gradient(135deg, rgba(10,10,15,0.95), rgba(5,5,10,0.95)); padding: 15px 20px; border-radius: 16px; border: 2px solid rgba(100,200,255,0.4); box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+
+.skill-icon { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: all 0.3s; }
+.skill-icon:hover:not(:disabled) { transform: translateY(-8px); }
+.skill-icon:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.skill-icon-bg { width: 70px; height: 70px; border: 3px solid rgba(100,200,255,0.6); border-radius: 12px; background: linear-gradient(135deg, rgba(30,40,60,0.95), rgba(20,30,50,0.95)); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: all 0.3s; }
+.skill-icon:hover:not(:disabled) .skill-icon-bg { border-color: rgba(100,200,255,1); box-shadow: 0 6px 25px rgba(100,200,255,0.6); }
+
+.skill-icon.angriff .skill-icon-bg { border-color: rgba(255,100,100,0.6); background: linear-gradient(135deg, rgba(60,20,20,0.95), rgba(40,10,10,0.95)); }
+.skill-icon.angriff:hover:not(:disabled) .skill-icon-bg { border-color: #ff6464; box-shadow: 0 6px 25px rgba(255,100,100,0.6); }
+
+.skill-icon.verteidigung .skill-icon-bg { border-color: rgba(100,255,150,0.6); background: linear-gradient(135deg, rgba(20,60,30,0.95), rgba(10,40,20,0.95)); }
+.skill-icon.verteidigung:hover:not(:disabled) .skill-icon-bg { border-color: #64ff96; box-shadow: 0 6px 25px rgba(100,255,150,0.6); }
+
+.skill-icon.kontrolle .skill-icon-bg { border-color: rgba(150,100,255,0.6); background: linear-gradient(135deg, rgba(40,20,60,0.95), rgba(30,10,50,0.95)); }
+.skill-icon.unterstuetzung .skill-icon-bg { border-color: rgba(255,220,100,0.6); background: linear-gradient(135deg, rgba(60,50,20,0.95), rgba(40,35,10,0.95)); }
+.skill-icon.kritisch .skill-icon-bg { border-color: rgba(255,150,50,0.8); background: linear-gradient(135deg, rgba(70,40,10,0.95), rgba(50,25,5,0.95)); animation: glowPulse 2s ease-in-out infinite; }
+
+.skill-icon-symbol { font-size: 36px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.8)); transition: transform 0.3s; }
+.skill-icon:hover:not(:disabled) .skill-icon-symbol { transform: scale(1.1); }
+
+.skill-cooldown { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.95); color: #ff6666; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 6px; border: 2px solid #ff4444; }
+.skill-locked { position: absolute; bottom: 4px; right: 4px; width: 20px; height: 20px; background: rgba(0,0,0,0.9); border-radius: 50%; border: 2px solid #ff4444; }
+
+.skill-name { font-size: 12px; color: #333; font-weight: 600; text-align: center; max-width: 80px; line-height: 1.2; text-shadow: 0 0 3px rgba(255,255,255,0.8), 0 0 6px rgba(255,255,255,0.6); transition: color 0.3s; background: rgba(255,255,255,0.9); padding: 3px 6px; border-radius: 4px; }
+.skill-icon:hover:not(:disabled) .skill-name { color: #000; background: rgba(255,255,255,1); }
+
+/* Combat Log */
+.combat-log { position: absolute; bottom: 150px; right: 20px; width: 320px; max-height: 220px; background: linear-gradient(135deg, rgba(10,10,15,0.95), rgba(5,5,10,0.95)); border: 2px solid rgba(100,200,255,0.4); border-radius: 12px; overflow: hidden; z-index: 15; box-shadow: 0 8px 30px rgba(0,0,0,0.6); animation: fadeIn 0.8s ease-out 0.3s both; }
+.combat-log-header { background: linear-gradient(135deg, rgba(30,50,70,0.95), rgba(20,40,60,0.95)); padding: 10px 15px; font-size: 13px; font-weight: bold; color: #88ccff; border-bottom: 2px solid rgba(100,200,255,0.3); }
+.combat-log-entries { padding: 10px; max-height: 180px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
+.log-entry { padding: 6px 0; color: #aaa; border-bottom: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.3s; }
+.log-entry.important { color: #ffaa66; font-weight: bold; }
+.log-tick { color: #66aaff; margin-right: 8px; font-weight: 600; }
+
+.tick-counter { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, rgba(10,10,15,0.95), rgba(5,5,10,0.95)); border: 2px solid rgba(100,200,255,0.4); border-radius: 25px; padding: 10px 25px; font-size: 14px; font-weight: bold; color: #88ccff; z-index: 20; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+
+.status-effects { position: absolute; bottom: -30px; display: flex; gap: 6px; }
+.status-effect { position: relative; font-size: 20px; background: rgba(0,0,0,0.8); border-radius: 50%; padding: 4px; border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }

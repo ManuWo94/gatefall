@@ -256,18 +256,30 @@ export class GatesUIManager {
     private enterGate(gate: Gate): void {
         console.log('Entering gate:', gate.name);
         
-        // Erstelle Dungeon-Objekt
-        const dungeon = {
-            name: gate.name,
-            enemies: gate.enemies,
-            gateRank: gate.rank
-        };
-
-        // Starte Combat
-        const engine = (window as any).engine;
-        if (engine) {
-            console.log('Starting dungeon combat...');
-            engine.startDungeon(dungeon);
+        // Starte das NEUE Combat-System
+        import('./combat/combat-init.js').then(({ combatSystem }) => {
+            const gameState = (window as any).gameState;
+            const mainApp = (window as any).mainApp;
+            
+            // Trupp-Mitglieder abrufen
+            const squadMembers = mainApp?.currentSquad || [];
+            
+            // Combat starten
+            combatSystem.startCombat({
+                playerLevel: gameState?.level || 1,
+                playerRole: gameState?.role || 'waechter',
+                playerHunterRank: gameState?.hunterRank || 'E',
+                enemies: gate.enemies.map((e: any) => ({
+                    name: e.name,
+                    level: e.level,
+                    isBoss: e.isBoss || false
+                })),
+                squadMembers: squadMembers.map((s: any) => ({
+                    name: s.name,
+                    level: s.level || 1,
+                    role: s.role || 'jaeger'
+                }))
+            });
             
             // Wechsle zum Combat-Panel
             const combatNavBtn = document.querySelector('.nav-item[data-panel="combat"]') as HTMLElement;
@@ -275,10 +287,10 @@ export class GatesUIManager {
                 combatNavBtn.click();
             }
             
-            console.log(`Gate "${gate.name}" betreten!`);
-        } else {
-            console.error('Combat engine not found!');
-        }
+            console.log(`Gate "${gate.name}" betreten - Neues Combat-System gestartet!`);
+        }).catch(error => {
+            console.error('Failed to start combat:', error);
+        });
     }
 
     /**

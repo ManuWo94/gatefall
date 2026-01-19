@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Karten - Demo</title>
+    <link rel="stylesheet" href="skill-cards.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1e2e 100%);
+            min-height: 100vh;
+            padding: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚔️ Skill-Karten System</h1>
+    
+    <div class="skills-grid">
+        <!-- Skill 1: Schattenstoß (Angriff) -->
+        <div class="skill-card angriff">
+            <div class="skill-type-badge">ANGRIFF</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Schattenstoß</div>
+                <div class="skill-description">
+                    Ein schneller Angriff aus den Schatten, der dem Gegner erheblichen Schaden zufügt.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">0 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>VORBEREITUNG: -</span>
+                        </div>
+                    </div>
+                    <div class="skill-meta-row">
+                        <div class="skill-cooldown">
+                            <span class="skill-cooldown-icon">⏳</span>
+                            <span>ABKLINGZEIT: <strong class="skill-cooldown-value">-</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 2: Unterbrechen (Kontrolle) -->
+        <div class="skill-card kontrolle">
+            <div class="skill-type-badge">KONTROLLE</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Unterbrechen</div>
+                <div class="skill-description">
+                    Unterbricht kanalisierte Fähigkeiten des Gegners und fügt geringen Schaden zu.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">0 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>BEREIT SOFORT EINSETZEN</span>
+                        </div>
+                    </div>
+                    <div class="skill-meta-row">
+                        <div class="skill-cooldown">
+                            <span class="skill-cooldown-icon">⏳</span>
+                            <span>ABKLINGZEIT: <strong class="skill-cooldown-value">3 TICKS</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 3: Schattenfessel (Kontrolle) -->
+        <div class="skill-card kontrolle">
+            <div class="skill-type-badge">KONTROLLE</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Schattenfessel</div>
+                <div class="skill-description">
+                    Bindet den Gegner in Schatten und verhindert Bewegung für kurze Zeit.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">40 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>VORBEREITUNG: -</span>
+                        </div>
+                    </div>
+                    <div class="skill-meta-row">
+                        <div class="skill-cooldown">
+                            <span class="skill-cooldown-icon">⏳</span>
+                            <span>ABKLINGZEIT: <strong class="skill-cooldown-value">5 TICKS</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 4: Schattenrüstung (Verteidigung) -->
+        <div class="skill-card verteidigung">
+            <div class="skill-type-badge">VERTEIDIGUNG</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Schattenrüstung</div>
+                <div class="skill-description">
+                    Erschafft eine schützende Rüstung aus Schatten, die Schaden absorbiert.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">30 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>GESCHLOSSEN</span>
+                        </div>
+                    </div>
+                    <div class="skill-meta-row">
+                        <div class="skill-cooldown">
+                            <span class="skill-cooldown-icon">⏳</span>
+                            <span><strong class="skill-cooldown-value">3 TICKS</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 5: Düstere Klinge (Kritisch) -->
+        <div class="skill-card kritisch">
+            <div class="skill-type-badge">KRITISCH</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Düstere Klinge</div>
+                <div class="skill-description">
+                    Ein verheerender Angriff mit hohem kritischem Schaden. Lange Vorbereitung erforderlich.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">60 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>VORBEREITUNG: 2 TICKS</span>
+                        </div>
+                    </div>
+                    <div class="skill-meta-row">
+                        <div class="skill-cooldown">
+                            <span class="skill-cooldown-icon">⏳</span>
+                            <span>ABKLINGZEIT: <strong class="skill-cooldown-value">9 TICKS</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 6: Heilen (Unterstützung) -->
+        <div class="skill-card unterstuetzung">
+            <div class="skill-type-badge">UNTERSTÜTZUNG</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Heilen</div>
+                <div class="skill-description">
+                    Stellt Gesundheit wieder her und entfernt negative Effekte vom Ziel.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">50 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>VORBEREITUNG: 1 TICK</span>
+                        </div>
+                    </div>
+                    <div class="skill-meta-row">
+                        <div class="skill-cooldown">
+                            <span class="skill-cooldown-icon">⏳</span>
+                            <span>ABKLINGZEIT: <strong class="skill-cooldown-value">3 TICKS</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 7: Disabled Example -->
+        <div class="skill-card angriff disabled">
+            <div class="skill-type-badge">ANGRIFF</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Gesperrt</div>
+                <div class="skill-description">
+                    Diese Fähigkeit ist noch nicht freigeschaltet.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">??? MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">🔒</span>
+                            <span>GESPERRT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill 8: Cooldown Example -->
+        <div class="skill-card kontrolle">
+            <div class="skill-cooldown-overlay">
+                <div class="skill-cooldown-number">5</div>
+            </div>
+            <div class="skill-type-badge">KONTROLLE</div>
+            <div class="skill-icon-container">
+                <div class="skill-icon-placeholder">
+                    <!-- Icon hier später einfügen -->
+                </div>
+            </div>
+            <div class="skill-card-content">
+                <div class="skill-name">Auf Cooldown</div>
+                <div class="skill-description">
+                    Diese Fähigkeit ist derzeit auf Cooldown.
+                </div>
+                <div class="skill-meta">
+                    <div class="skill-meta-row">
+                        <div class="skill-cost">
+                            <span class="skill-cost-icon">💠</span>
+                            <span class="skill-cost-value">30 MP</span>
+                        </div>
+                        <div class="skill-prep">
+                            <span class="skill-prep-icon">⏱️</span>
+                            <span>Cooldown aktiv</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

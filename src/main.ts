@@ -664,6 +664,9 @@ class SystemUI {
         const btn = target.closest('.guild-apply-btn') as HTMLElement;
         
         if (btn) {
+          e.stopPropagation();
+          e.preventDefault();
+          
           console.log('🎯 BEWERBEN clicked!', btn);
           const guildId = btn.getAttribute('data-guild-id');
           console.log('Guild ID:', guildId);
@@ -705,6 +708,31 @@ class SystemUI {
 
     // Show section and render NPCs
     section.style.display = 'block';
+    
+    // Event delegation VOR innerHTML - nur einmal setzen
+    if (!(container as any)._hasRecruitListener) {
+      (container as any)._hasRecruitListener = true;
+      
+      container.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.recruit-btn') as HTMLElement;
+        
+        if (btn) {
+          e.stopPropagation();
+          e.preventDefault();
+          
+          const npcId = btn.getAttribute('data-npc-id');
+          const currentGuild = this.currentGuildData;
+          if (npcId && currentGuild?.npcs) {
+            const npc = currentGuild.npcs.find((n: any) => n.id === npcId);
+            if (npc) {
+              this.recruitToSquad(npc);
+            }
+          }
+        }
+      });
+    }
+    
     container.innerHTML = '';
 
     const roleNames: {[key: string]: string} = {
@@ -737,26 +765,6 @@ class SystemUI {
 
     if (npcCount) {
       npcCount.textContent = guild.npcs.length.toString();
-    }
-
-    // Event delegation OHNE cloneNode - nur wenn noch nicht gesetzt
-    if (!(container as any)._hasRecruitListener) {
-      (container as any)._hasRecruitListener = true;
-      
-      container.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const btn = target.closest('.recruit-btn') as HTMLElement;
-        
-        if (btn) {
-          const npcId = btn.getAttribute('data-npc-id');
-          if (npcId && guild?.npcs) {
-            const npc = guild.npcs.find((n: any) => n.id === npcId);
-            if (npc) {
-              this.recruitToSquad(npc);
-            }
-          }
-        }
-      });
     }
   }
 
@@ -1056,6 +1064,7 @@ const systemUI = new SystemUI(engine);
 // Make globally accessible
 (window as any).engine = engine;
 (window as any).systemUI = systemUI;
+(window as any).mainApp = systemUI; // Für Combat-System Zugriff
 
 // Global game state
 (window as any).gameState = {
@@ -1099,3 +1108,14 @@ engine.setOnStateUpdate((state: CombatState) => {
 });
 
 console.log('🎮 SYSTEM INITIALIZED');
+
+// ==================== NEUES KAMPFSYSTEM TEST ====================
+// Debug: Test-Button für Combat-System
+(window as any).startTestCombat = () => {
+  import('./combat/combat-init.js').then(({ startTestCombat }) => {
+    startTestCombat();
+  });
+};
+
+console.log('💡 Tipp: Nutze startTestCombat() in der Console um das neue Kampfsystem zu testen!');
+

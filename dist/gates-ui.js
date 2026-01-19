@@ -216,27 +216,37 @@ export class GatesUIManager {
      */
     enterGate(gate) {
         console.log('Entering gate:', gate.name);
-        // Erstelle Dungeon-Objekt
-        const dungeon = {
-            name: gate.name,
-            enemies: gate.enemies,
-            gateRank: gate.rank
-        };
-        // Starte Combat
-        const engine = window.engine;
-        if (engine) {
-            console.log('Starting dungeon combat...');
-            engine.startDungeon(dungeon);
+        // Starte das NEUE Combat-System
+        import('./combat/combat-init.js').then(({ combatSystem }) => {
+            const gameState = window.gameState;
+            const mainApp = window.mainApp;
+            // Trupp-Mitglieder abrufen
+            const squadMembers = mainApp?.currentSquad || [];
+            // Combat starten
+            combatSystem.startCombat({
+                playerLevel: gameState?.level || 1,
+                playerRole: gameState?.role || 'waechter',
+                playerHunterRank: gameState?.hunterRank || 'E',
+                enemies: gate.enemies.map((e) => ({
+                    name: e.name,
+                    level: e.level,
+                    isBoss: e.isBoss || false
+                })),
+                squadMembers: squadMembers.map((s) => ({
+                    name: s.name,
+                    level: s.level || 1,
+                    role: s.role || 'jaeger'
+                }))
+            });
             // Wechsle zum Combat-Panel
             const combatNavBtn = document.querySelector('.nav-item[data-panel="combat"]');
             if (combatNavBtn) {
                 combatNavBtn.click();
             }
-            console.log(`Gate "${gate.name}" betreten!`);
-        }
-        else {
-            console.error('Combat engine not found!');
-        }
+            console.log(`Gate "${gate.name}" betreten - Neues Combat-System gestartet!`);
+        }).catch(error => {
+            console.error('Failed to start combat:', error);
+        });
     }
     /**
      * Markiert Gate als abgeschlossen

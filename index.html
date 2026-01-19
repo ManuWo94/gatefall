@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SYSTEM - Gatefall</title>
     <link rel="icon" href="favicon.ico" type="image/svg+xml">
-    <link rel="stylesheet" href="system-ui.css">
-    <link rel="stylesheet" href="portal-ui.css">
+    <link rel="stylesheet" href="system-ui.css?v=7">
+    <link rel="stylesheet" href="portal-ui.css?v=7">
+    <link rel="stylesheet" href="src/combat/combat-rpg.css?v=7">
 </head>
 <body>
     <!-- ==================== AUTH SCREEN ==================== -->
@@ -367,116 +368,14 @@
 
             <!-- COMBAT PANEL -->
             <div class="panel" id="panel-combat">
-                <!-- Combat Header -->
-                <div class="combat-header-section">
-                    <div class="combat-title-display">
-                        <span class="combat-icon">⚔️</span>
-                        <span class="combat-title-text">KAMPFSYSTEM</span>
-                    </div>
-                </div>
-
-                <!-- Combat Display -->
-                <div class="combat-arena">
-                    <div class="combat-fighter player-fighter">
-                        <div class="fighter-card">
-                            <div class="fighter-avatar">👤</div>
-                            <div class="fighter-info">
-                                <div class="fighter-name" id="player-name">JÄGER</div>
-                                <div class="fighter-bars">
-                                    <div class="fighter-bar-group">
-                                        <div class="fighter-bar-label">
-                                            <span>❤️ HP</span>
-                                            <span id="combat-player-hp-text">85/85</span>
-                                        </div>
-                                        <div class="fighter-bar-track">
-                                            <div class="fighter-bar-fill hp" id="combat-player-hp" style="width: 100%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="fighter-bar-group">
-                                        <div class="fighter-bar-label">
-                                            <span>💠 MP</span>
-                                            <span id="combat-player-mp-text">60/60</span>
-                                        </div>
-                                        <div class="fighter-bar-track">
-                                            <div class="fighter-bar-fill mp" id="combat-player-mp" style="width: 100%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="combat-vs-divider">
-                        <div class="vs-text">VS</div>
-                        <div class="vs-line"></div>
-                    </div>
-
-                    <div class="combat-fighter enemy-fighter">
-                        <div class="fighter-card">
-                            <div class="fighter-avatar enemy">👹</div>
-                            <div class="fighter-info">
-                                <div class="fighter-name" id="enemy-name">GEGNER</div>
-                                <div class="fighter-bars">
-                                    <div class="fighter-bar-group">
-                                        <div class="fighter-bar-label">
-                                            <span>❤️ HP</span>
-                                            <span id="combat-enemy-hp-text">80/80</span>
-                                        </div>
-                                        <div class="fighter-bar-track">
-                                            <div class="fighter-bar-fill hp" id="combat-enemy-hp" style="width: 100%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Combat Controls -->
-                <div class="combat-control-section">
-                    <button id="btn-start-combat" class="combat-btn primary">⚔️ KAMPF STARTEN</button>
-                    <button id="btn-stop-combat" class="combat-btn danger" style="display: none;">🛑 KAMPF BEENDEN</button>
-                    
-                    <div class="skill-buttons-grid" id="skill-buttons" style="display: none;">
-                        <button id="btn-skill-1" class="combat-skill-btn" disabled>
-                            <span class="skill-number">1</span>
-                            <div class="skill-info">
-                                <span class="skill-name">SKILL 1</span>
-                                <span class="skill-cost">0 MP</span>
-                            </div>
-                        </button>
-                        <button id="btn-skill-2" class="combat-skill-btn" disabled>
-                            <span class="skill-number">2</span>
-                            <div class="skill-info">
-                                <span class="skill-name">SKILL 2</span>
-                                <span class="skill-cost">0 MP</span>
-                            </div>
-                        </button>
-                        <button id="btn-skill-3" class="combat-skill-btn" disabled>
-                            <span class="skill-number">3</span>
-                            <div class="skill-info">
-                                <span class="skill-name">SKILL 3</span>
-                                <span class="skill-cost">0 MP</span>
-                            </div>
-                        </button>
-                        <button id="btn-interrupt" class="combat-skill-btn interrupt" disabled>
-                            <span class="skill-number">⛔</span>
-                            <div class="skill-info">
-                                <span class="skill-name">UNTERBRECHEN</span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Combat Log -->
-                <div class="combat-log-section">
-                    <div class="section-header">
-                        <span class="section-icon">📜</span>
-                        <span class="section-title">KAMPFPROTOKOLL</span>
-                    </div>
-                    <div class="combat-log-content" id="combat-log">
-                        <div class="log-entry system">System bereit</div>
-                    </div>
+                <!-- Neues Combat-System wird hier gerendert -->
+                <div id="combat-ui-container"></div>
+                
+                <!-- Platzhalter wenn kein Kampf läuft -->
+                <div id="combat-placeholder" style="text-align: center; padding: 4rem; color: rgba(255,255,255,0.5);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">⚔️</div>
+                    <div style="font-size: 1.5rem; margin-bottom: 1rem;">KEIN AKTIVER KAMPF</div>
+                    <div>Wähle ein Gate um einen Kampf zu starten</div>
                 </div>
             </div>
 
@@ -672,6 +571,6 @@
         </div>
     </div>
 
-    <script type="module" src="dist/main.js"></script>
+    <script type="module" src="dist/main.js?v=7"></script>
 </body>
 </html>
