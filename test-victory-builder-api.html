@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victory Builder API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #00d4ff;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00b8e6;
+        }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .success {
+            color: #00ff88;
+        }
+        .error {
+            color: #ff5252;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏆 Victory Builder API Test</h1>
+    
+    <div>
+        <button onclick="testSave()">💾 Test Save</button>
+        <button onclick="testLoad()">📂 Test Load</button>
+        <button onclick="testList()">📋 Test List</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'http://localhost:3001';
+
+        async function testSave() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<p>⏳ Speichere...</p>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/admin/victory-builder/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        settingName: 'test',
+                        cssCode: '.victory-popup { width: 500px; }',
+                        settings: {
+                            popupWidth: 500,
+                            titleText: 'TEST VICTORY!'
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                result.innerHTML = `
+                    <h3 class="success">✅ Erfolgreich gespeichert!</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <h3 class="error">❌ Fehler beim Speichern</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        async function testLoad() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<p>⏳ Lade...</p>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/admin/victory-builder/load/test`);
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <h3 class="success">✅ Erfolgreich geladen!</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <h3 class="error">❌ Fehler beim Laden</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        async function testList() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<p>⏳ Lade Liste...</p>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/admin/victory-builder/list`);
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <h3 class="success">✅ Liste geladen!</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <h3 class="error">❌ Fehler beim Laden der Liste</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

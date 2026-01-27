@@ -1,0 +1,27 @@
+RewriteEngine On
+
+# Proxy für Node.js API (läuft auf Port 3000)
+RewriteCond %{REQUEST_URI} ^/Gatefall/api/
+RewriteRule ^api/(.*)$ http://localhost:3000/api/$1 [P,L]
+
+# Statische Dateien NICHT umleiten (WICHTIG!)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .* - [L]
+
+# SPA Fallback - NUR für nicht-existierende Dateien
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/Gatefall/api/
+RewriteRule ^.*$ /Gatefall/index.html [L]
+
+# MIME-Type für JavaScript-Module
+<FilesMatch "\.(js|mjs)$">
+    Header set Content-Type "application/javascript; charset=UTF-8"
+</FilesMatch>
+
+AddType application/javascript .js .mjs
+
+# CORS Headers für Development
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weltkarten Editor - Gatefall Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4CAF50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 20px;
+            height: calc(100vh - 120px);
+        }
+
+        .sidebar {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 1px solid rgba(100,200,255,0.3);
+        }
+
+        .canvas-container {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(100,200,255,0.3);
+            position: relative;
+        }
+
+        #worldMapCanvas {
+            border: 2px solid #4CAF50;
+            cursor: crosshair;
+            background: #1a1a2e;
+        }
+
+        .properties-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 1px solid rgba(100,200,255,0.3);
+        }
+
+        .city-item {
+            background: rgba(76,175,80,0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .city-item:hover {
+            background: rgba(76,175,80,0.2);
+            transform: translateX(5px);
+        }
+
+        .city-item.selected {
+            background: rgba(255,215,0,0.2);
+            border-color: #FFD700;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(100,200,255,0.3);
+            border-radius: 4px;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76,175,80,0.5);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(76,175,80,0.3);
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+
+        h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(76,175,80,0.3);
+        }
+
+        .coordinates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(100,200,255,0.3);
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Weltkarten Editor</h1>
+        
+        <div class="editor-layout">
+            <!-- Left Sidebar - Cities List -->
+            <div class="sidebar">
+                <h3>Städte</h3>
+                <button class="btn" onclick="addNewCity()">+ Neue Stadt</button>
+                <div id="cities-list"></div>
+            </div>
+
+            <!-- Center - Canvas -->
+            <div class="canvas-container">
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('select')" id="mode-select">✋ Auswählen</button>
+                    <button class="mode-btn" onclick="setMode('move')" id="mode-move">🖱️ Verschieben</button>
+                    <button class="mode-btn" onclick="setMode('add')" id="mode-add">➕ Hinzufügen</button>
+                </div>
+                <canvas id="worldMapCanvas" width="1000" height="600"></canvas>
+                <div style="margin-top: 10px; color: rgba(255,255,255,0.6);">
+                    <span id="canvas-info">Modus: Auswählen | Keine Stadt ausgewählt</span>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Properties -->
+            <div class="properties-panel">
+                <h3>Eigenschaften</h3>
+                <div id="properties-content">
+                    <p style="color: rgba(255,255,255,0.6);">Wähle eine Stadt aus, um ihre Eigenschaften zu bearbeiten.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        let cities = [];
+        let selectedCity = null;
+        let mode = 'select'; // select, move, add
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+
+        const canvas = document.getElementById('worldMapCanvas');
+        const ctx = canvas.getContext('2d');
+        let mapImage = null;
+
+        // Load world map image from API
+        async function loadWorldMapImage() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/world-map-image`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.imageUrl) {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => {
+                        console.log('World map loaded successfully');
+                        mapImage = img;
+                        render();
+                    };
+                    img.onerror = () => {
+                        console.warn('Failed to load world map, using canvas fallback');
+                        mapImage = null;
+                        render();
+                    };
+                    img.src = data.imageUrl;
+                } else {
+                    console.log('No image URL, using canvas fallback');
+                    render();
+                }
+            } catch (error) {
+                console.error('Error loading world map:', error);
+                render();
+            }
+        }
+
+        // Create world map background directly on canvas (fallback)
+        function createWorldMapBackground() {
+            // Draw ocean background
+            const gradient = ctx.createLinearGradient(0, 0, 1000, 600);
+            gradient.addColorStop(0, '#1a3a52');
+            gradient.addColorStop(0.5, '#2d5a7b');
+            gradient.addColorStop(1, '#1a3a52');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1000, 600);
+
+            // Draw continents (simplified)
+            ctx.fillStyle = '#3a5f3a';
+            
+            // North America
+            ctx.beginPath();
+            ctx.ellipse(180, 200, 100, 150, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Europe/Africa
+            ctx.beginPath();
+            ctx.ellipse(520, 300, 80, 200, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Asia
+            ctx.beginPath();
+            ctx.ellipse(750, 250, 150, 120, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Grid overlay
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 1000; i += 100) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, 600);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= 600; i += 100) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(1000, i);
+                ctx.stroke();
+            }
+        }
+
+        // Initialize - load image
+        loadWorldMapImage();
+
+        // Load cities
+        async function loadCities() {
+            try {
+                const response = await fetch(`${API_BASE}/api/cities/cities`, { credentials: 'include' });
+                const data = await response.json();
+                cities = data.cities || [];
+                renderCitiesList();
+                render();
+            } catch (error) {
+                console.error('Error loading cities:', error);
+            }
+        }
+
+        // Render cities list
+        function renderCitiesList() {
+            const list = document.getElementById('cities-list');
+            list.innerHTML = cities.map(city => {
+                const isSelected = selectedCity && selectedCity.id === city.id;
+                return `
+                    <div class="city-item ${isSelected ? 'selected' : ''}" onclick="selectCity(${city.id})">
+                        <strong>${city.display_name}</strong><br>
+                        <small style="color: rgba(255,255,255,0.7);">
+                            Position: (${city.map_x}, ${city.map_y})
+                        </small>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render canvas
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw map - use image if loaded, otherwise canvas background
+            if (mapImage && mapImage.complete) {
+                ctx.drawImage(mapImage, 0, 0, 1000, 600);
+            } else {
+                createWorldMapBackground();
+            }
+
+            // Draw cities
+            for (const city of cities) {
+                drawCity(city, selectedCity?.id === city.id);
+            }
+
+            updateCanvasInfo();
+        }
+
+        // Draw city
+        function drawCity(city, isSelected) {
+            // Skip cities that haven't been placed yet
+            if (city.map_x < 0 || city.map_y < 0) return;
+
+            const x = city.map_x;
+            const y = city.map_y;
+            const radius = city.map_radius;
+
+            ctx.save();
+
+            // City circle
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            
+            if (isSelected) {
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 4;
+            } else {
+                ctx.fillStyle = 'rgba(76, 175, 80, 0.4)';
+                ctx.strokeStyle = '#4CAF50';
+                ctx.lineWidth = 3;
+            }
+            
+            ctx.fill();
+            ctx.stroke();
+
+            // City marker
+            ctx.fillStyle = isSelected ? '#FFD700' : '#4CAF50';
+            ctx.beginPath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner dot
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // City name
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = isSelected ? '#FFD700' : '#FFF';
+            ctx.textAlign = 'center';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 4;
+            ctx.strokeText(city.display_name, x, y - radius - 15);
+            ctx.fillText(city.display_name, x, y - radius - 15);
+
+            ctx.restore();
+        }
+
+        // Select city
+        function selectCity(cityId) {
+            selectedCity = cities.find(c => c.id === cityId);
+            renderCitiesList();
+            showProperties();
+            render();
+        }
+
+        // Show properties panel
+        function showProperties() {
+            if (!selectedCity) {
+                document.getElementById('properties-content').innerHTML = '<p style="color: rgba(255,255,255,0.6);">Wähle eine Stadt aus.</p>';
+                return;
+            }
+
+            document.getElementById('properties-content').innerHTML = `
+                <div class="form-group">
+                    <label>Stadt Name</label>
+                    <input type="text" id="prop-name" value="${selectedCity.display_name}" onchange="updateProperty('display_name', this.value)">
+                </div>
+                
+                <div class="form-group">
+                    <label>Beschreibung</label>
+                    <textarea id="prop-desc" rows="3" onchange="updateProperty('description', this.value)">${selectedCity.description || ''}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🖼️ Stadtbild</label>
+                    ${selectedCity.image_url ? 
+                        '<div style="margin-bottom: 10px;">' +
+                            '<img src="http://localhost:3001' + selectedCity.image_url + '" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);">' +
+                            '<button class="btn btn-danger" style="margin-top: 5px; width: 100%; padding: 8px;" onclick="deleteCityImage()">🗑️ Bild löschen</button>' +
+                        '</div>'
+                     : '<div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 10px;">Kein Stadtbild vorhanden</div>'}
+                    <input type="file" id="city-image-input" accept="image/*" style="display: none;" onchange="uploadCityImage()">
+                    <button class="btn" style="width: 100%; padding: 10px;" onclick="document.getElementById('city-image-input').click()">📤 Stadtbild hochladen</button>
+                    <div class="help-text">Wird in Stadtinfo-Box angezeigt</div>
+                </div>
+
+                <div class="form-group">
+                    <label>🗺️ Stadtkarte (Map)</label>
+                    ${selectedCity.city_map_url ? 
+                        '<div style="margin-bottom: 10px;">' +
+                            '<img src="http://localhost:3001' + selectedCity.city_map_url + '" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);">' +
+                            '<button class="btn btn-danger" style="margin-top: 5px; width: 100%; padding: 8px;" onclick="deleteCityMap()">🗑️ Karte löschen</button>' +
+                        '</div>'
+                     : '<div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 10px;">Keine Stadtkarte vorhanden</div>'}
+                    <input type="file" id="city-map-input" accept="image/*" style="display: none;" onchange="uploadCityMap()">
+                    <button class="btn" style="width: 100%; padding: 10px;" onclick="document.getElementById('city-map-input').click()">📤 Stadtkarte hochladen</button>
+                    <div class="help-text">Hintergrund für Gates/Zonen in der Stadt</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Position</label>
+                    <div class="coordinates">
+                        <div>
+                            <label style="font-size: 0.85rem;">X-Koordinate</label>
+                            <input type="number" id="prop-x" value="${selectedCity.map_x}" onchange="updateProperty('map_x', parseInt(this.value))">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem;">Y-Koordinate</label>
+                            <input type="number" id="prop-y" value="${selectedCity.map_y}" onchange="updateProperty('map_y', parseInt(this.value))">
+                        </div>
+                    </div>
+                    <div class="help-text">Tipp: Ziehe die Stadt auf der Karte</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Radius</label>
+                    <input type="number" id="prop-radius" value="${selectedCity.map_radius}" onchange="updateProperty('map_radius', parseInt(this.value))">
+                    <div class="help-text">Standard: 50</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Reisezeit (Minuten)</label>
+                    <input type="number" id="prop-travel" value="${selectedCity.travel_time_minutes}" onchange="updateProperty('travel_time_minutes', parseInt(this.value))">
+                    <div class="help-text">Standard: 10 Minuten</div>
+                </div>
+
+                <button class="btn" onclick="saveCity()">💾 Speichern</button>
+                <button class="btn btn-danger" onclick="deleteCity()">🗑️ Löschen</button>
+            `;
+        }
+
+        // Update property
+        function updateProperty(prop, value) {
+            if (selectedCity) {
+                selectedCity[prop] = value;
+                render();
+            }
+        }
+
+        // Save city
+        async function saveCity() {
+            if (!selectedCity) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/cities/${selectedCity.id}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(selectedCity)
+                });
+
+                if (response.ok) {
+                    alert('✅ Stadt gespeichert!');
+                    await loadCities();
+                } else {
+                    alert('❌ Fehler beim Speichern');
+                }
+            } catch (error) {
+                console.error('Error saving city:', error);
+                alert('❌ Fehler beim Speichern');
+            }
+        }
+
+        // Delete city
+        async function deleteCity() {
+            if (!selectedCity || !confirm(`Stadt "${selectedCity.display_name}" wirklich löschen?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/cities/${selectedCity.id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('✅ Stadt gelöscht!');
+                    selectedCity = null;
+                    await loadCities();
+                    showProperties();
+                } else {
+                    alert('❌ Fehler beim Löschen');
+                }
+            } catch (error) {
+                console.error('Error deleting city:', error);
+                alert('❌ Fehler beim Löschen');
+            }
+        }
+
+        // Add new city
+        function addNewCity() {
+            const name = prompt('Stadt Name:');
+            if (!name) return;
+
+            const newCity = {
+                id: 'temp-' + Date.now(),
+                name: name.toLowerCase().replace(/\s+/g, '_'),
+                display_name: name,
+                map_x: -1,  // Will be set by click
+                map_y: -1,
+                map_radius: 50,
+                travel_time_minutes: 10,
+                description: '',
+                active: true
+            };
+
+            cities.push(newCity);
+            selectCity(newCity.id);
+            setMode('add');
+            alert('Klicke auf die Karte um die Stadt zu platzieren');
+        }
+
+        // Set mode
+        function setMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('mode-' + newMode).classList.add('active');
+            
+            if (mode === 'select') canvas.style.cursor = 'pointer';
+            else if (mode === 'move') canvas.style.cursor = 'move';
+            else if (mode === 'add') canvas.style.cursor = 'crosshair';
+            
+            render();
+        }
+
+        // Update canvas info
+        function updateCanvasInfo() {
+            const modeText = mode === 'select' ? 'Auswählen' : mode === 'move' ? 'Verschieben' : 'Hinzufügen';
+            const cityText = selectedCity ? selectedCity.display_name : 'Keine Stadt';
+            document.getElementById('canvas-info').textContent = `Modus: ${modeText} | ${cityText}`;
+        }
+
+        // Canvas events
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (mode === 'select' || mode === 'move') {
+                // Find clicked city
+                for (const city of cities) {
+                    // Skip unplaced cities
+                    if (city.map_x < 0 || city.map_y < 0) continue;
+                    
+                    const dx = x - city.map_x;
+                    const dy = y - city.map_y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance <= city.map_radius) {
+                        selectCity(city.id);
+                        if (mode === 'move') {
+                            isDragging = true;
+                            dragOffset = { x: dx, y: dy };
+                        }
+                        return;
+                    }
+                }
+            } else if (mode === 'add' && selectedCity) {
+                // Place new city at click position
+                selectedCity.map_x = x;
+                selectedCity.map_y = y;
+                setMode('move');  // Switch to move mode after placing
+                render();
+                showProperties();
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging || !selectedCity || mode !== 'move') return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            selectedCity.map_x = x - dragOffset.x;
+            selectedCity.map_y = y - dragOffset.y;
+            
+            // Update properties panel
+            document.getElementById('prop-x').value = Math.round(selectedCity.map_x);
+            document.getElementById('prop-y').value = Math.round(selectedCity.map_y);
+            
+            render();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Upload city image
+        async function uploadCityImage() {
+            if (!selectedCity) return;
+
+            const fileInput = document.getElementById('city-image-input');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('cityImage', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/cities/${selectedCity.id}/upload-image`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    selectedCity.image_url = data.imageUrl;
+                    alert('✅ Stadtbild hochgeladen!');
+                    await loadCities();
+                    showProperties();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Fehler: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error uploading city image:', error);
+                alert('❌ Fehler beim Hochladen');
+            }
+        }
+
+        // Delete city image
+        async function deleteCityImage() {
+            if (!selectedCity || !confirm('Stadtbild wirklich löschen?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/cities/${selectedCity.id}/image`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    selectedCity.image_url = null;
+                    alert('✅ Stadtbild gelöscht!');
+                    await loadCities();
+                    showProperties();
+                } else {
+                    alert('❌ Fehler beim Löschen');
+                }
+            } catch (error) {
+                console.error('Error deleting city image:', error);
+                alert('❌ Fehler beim Löschen');
+            }
+        }
+
+        // Upload city map
+        async function uploadCityMap() {
+            if (!selectedCity) return;
+
+            const fileInput = document.getElementById('city-map-input');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('cityMap', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/cities/${selectedCity.id}/upload-map`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    selectedCity.city_map_url = data.mapUrl;
+                    alert('✅ Stadtkarte hochgeladen!');
+                    await loadCities();
+                    showProperties();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Fehler: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error uploading city map:', error);
+                alert('❌ Fehler beim Hochladen');
+            }
+        }
+
+        // Delete city map
+        async function deleteCityMap() {
+            if (!selectedCity || !confirm('Stadtkarte wirklich löschen?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/cities/${selectedCity.id}/map`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    selectedCity.city_map_url = null;
+                    alert('✅ Stadtkarte gelöscht!');
+                    await loadCities();
+                    showProperties();
+                } else {
+                    alert('❌ Fehler beim Löschen');
+                }
+            } catch (error) {
+                console.error('Error deleting city map:', error);
+                alert('❌ Fehler beim Löschen');
+            }
+        }
+
+        // Initialize
+        loadCities();
+    </script>
+</body>
+</html>

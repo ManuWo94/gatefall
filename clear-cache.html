@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache & LocalStorage löschen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .status {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f0f4f8;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+        .success {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Cache & LocalStorage Reset</h1>
+        <div class="status" id="status">
+            <p class="success">✅ LocalStorage erfolgreich gelöscht!</p>
+            <p class="success">✅ Session-Daten zurückgesetzt!</p>
+            <p style="margin-top: 1rem; color: #666;">Die Admin-ID wurde auf <strong>1</strong> aktualisiert.</p>
+        </div>
+        <button onclick="window.location.href='index.html'">
+            🎮 Zurück zum Spiel
+        </button>
+    </div>
+
+    <script>
+        // Clear LocalStorage
+        localStorage.clear();
+        console.log('✅ LocalStorage gelöscht');
+
+        // Clear SessionStorage
+        sessionStorage.clear();
+        console.log('✅ SessionStorage gelöscht');
+
+        // Log status
+        console.log('🔄 Admin-ID wurde auf 1 zurückgesetzt');
+        console.log('💡 Beim nächsten Login wird ein neuer Admin mit ID 1 erstellt');
+    </script>
+</body>
+</html>

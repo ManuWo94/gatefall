@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victory Popup Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@700&family=Orbitron:wght@900&family=Russo+One&family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="victory-builder.css">
+</head>
+<body>
+    <div class="builder-container">
+        <div class="control-panel">
+            <h2>🎨 Victory Popup Builder</h2>
+            
+            <div class="control-group">
+                <label>Frame Bild hochladen</label>
+                <input type="file" id="frameImage" accept="image/*">
+            </div>
+
+            <div class="control-group">
+                <label>Popup Breite <span class="value-display" id="widthValue">520px</span></label>
+                <input type="range" id="popupWidth" min="300" max="800" value="520">
+            </div>
+
+            <div class="control-group">
+                <label>Popup Höhe <span class="value-display" id="heightValue">700px</span></label>
+                <input type="range" id="popupHeight" min="400" max="1000" value="700">
+            </div>
+
+            <div class="control-group">
+                <label>Padding <span class="value-display" id="paddingValue">40px</span></label>
+                <input type="range" id="popupPadding" min="20" max="100" value="40">
+            </div>
+
+            <h2 style="margin-top: 30px;">📝 SIEG! Text</h2>
+
+            <div class="control-group">
+                <label>Schriftart</label>
+                <select id="titleFont">
+                    <option value="'Impact', sans-serif">Impact (Standard)</option>
+                    <option value="'Arial Black', sans-serif">Arial Black</option>
+                    <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+                    <option value="'Cinzel', serif">Cinzel (Medieval)</option>
+                    <option value="'Orbitron', sans-serif">Orbitron (Futuristisch)</option>
+                    <option value="'Russo One', sans-serif">Russo One</option>
+                    <option value="'Bangers', cursive">Bangers</option>
+                    <option value="'Black Ops One', cursive">Black Ops One</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Text</label>
+                <input type="text" id="titleText" value="SIEG!">
+            </div>
+
+            <div class="control-group">
+                <label>Schriftgröße <span class="value-display" id="titleSizeValue">64px</span></label>
+                <input type="range" id="titleSize" min="24" max="120" value="64">
+            </div>
+
+            <div class="control-group">
+                <label>Position Y <span class="value-display" id="titleTopValue">40px</span></label>
+                <input type="range" id="titleTop" min="-100" max="300" value="40">
+            </div>
+
+            <div class="control-group">
+                <label>Buchstabenabstand <span class="value-display" id="titleSpacingValue">14px</span></label>
+                <input type="range" id="titleSpacing" min="0" max="40" value="14">
+            </div>
+
+            <div class="control-group">
+                <label>Textfarbe</label>
+                <input type="color" id="titleColor" value="#ffffff">
+            </div>
+
+            <div class="control-group">
+                <label>Umrissfarbe</label>
+                <input type="color" id="titleOutline" value="#d4af37">
+            </div>
+
+            <div class="control-group">
+                <label>Umriss-Stärke <span class="value-display" id="titleOutlineWidthValue">3px</span></label>
+                <input type="range" id="titleOutlineWidth" min="0" max="10" value="3">
+            </div>
+
+            <div class="control-group">
+                <label>Schatten-Glow <span class="value-display" id="titleGlowValue">40px</span></label>
+                <input type="range" id="titleGlow" min="0" max="100" value="40">
+            </div>
+
+            <h2 style="margin-top: 30px;">📋 Untertitel</h2>
+
+            <div class="control-group">
+                <label>Schriftart</label>
+                <select id="subtitleFont">
+                    <option value="'Arial', sans-serif">Arial (Standard)</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Text</label>
+                <input type="text" id="subtitleText" value="Alle Gegner besiegt!">
+            </div>
+
+            <div class="control-group">
+                <label>Schriftgröße <span class="value-display" id="subtitleSizeValue">18px</span></label>
+                <input type="range" id="subtitleSize" min="10" max="40" value="18">
+            </div>
+
+            <div class="control-group">
+                <label>Position Y <span class="value-display" id="subtitleTopValue">120px</span></label>
+                <input type="range" id="subtitleTop" min="0" max="400" value="120">
+            </div>
+
+            <div class="control-group">
+                <label>Textfarbe</label>
+                <input type="color" id="subtitleColor" value="#ffffff">
+            </div>
+
+            <h2 style="margin-top: 30px;">💎 Rewards</h2>
+
+            <div class="control-group">
+                <label>Position Y <span class="value-display" id="rewardsTopValue">170px</span></label>
+                <input type="range" id="rewardsTop" min="100" max="500" value="170">
+            </div>
+
+            <div class="control-group">
+                <label>Breite <span class="value-display" id="rewardsWidthValue">100%</span></label>
+                <input type="range" id="rewardsWidth" min="200" max="600" value="440">
+            </div>
+
+            <div class="control-group">
+                <label>EXP Wert</label>
+                <input type="number" id="expValue" value="25000">
+            </div>
+
+            <div class="control-group">
+                <label>Gold Wert</label>
+                <input type="number" id="goldValue" value="15000">
+            </div>
+
+            <div class="control-group">
+                <label>Hintergrundfarbe</label>
+                <input type="color" id="rewardBgColor" value="#1f2937">
+            </div>
+
+            <div class="control-group">
+                <label>Transparenz <span class="value-display" id="rewardOpacityValue">0.60</span></label>
+                <input type="range" id="rewardOpacity" min="0" max="100" value="60">
+            </div>
+
+            <div class="control-group">
+                <label>Glow Farbe</label>
+                <input type="color" id="rewardGlowColor" value="#d4af37">
+            </div>
+
+            <div class="control-group">
+                <label>Glow <span class="value-display" id="rewardGlowValue">10px</span></label>
+                <input type="range" id="rewardGlow" min="0" max="40" value="10">
+            </div>
+
+            <div class="control-group">
+                <label>Hover Glow <span class="value-display" id="rewardHoverGlowValue">20px</span></label>
+                <input type="range" id="rewardHoverGlow" min="0" max="40" value="20">
+            </div>
+
+            <h2 style="margin-top: 30px;">🎁 Loot Items</h2>
+
+            <div class="control-group">
+                <label>Position Y <span class="value-display" id="lootTopValue">280px</span></label>
+                <input type="range" id="lootTop" min="200" max="500" value="280">
+            </div>
+
+            <div class="control-group">
+                <label>Items pro Zeile <span class="value-display" id="lootColumnsValue">3</span></label>
+                <input type="range" id="lootColumns" min="2" max="5" value="3">
+            </div>
+
+            <div class="control-group">
+                <label>Hintergrundfarbe</label>
+                <input type="color" id="lootBgColor" value="#1f2937">
+            </div>
+
+            <div class="control-group">
+                <label>Rahmenfarbe</label>
+                <input type="color" id="lootBorderColor" value="#d4af37">
+            </div>
+
+            <div class="control-group">
+                <label>Transparenz <span class="value-display" id="lootOpacityValue">0.60</span></label>
+                <input type="range" id="lootOpacity" min="0" max="100" value="60">
+            </div>
+
+            <div class="control-group">
+                <label>Glow Farbe</label>
+                <input type="color" id="lootGlowColor" value="#d4af37">
+            </div>
+
+            <div class="control-group">
+                <label>Hover Glow <span class="value-display" id="lootHoverGlowValue">30px</span></label>
+                <input type="range" id="lootHoverGlow" min="0" max="50" value="30">
+            </div>
+
+            <div class="control-group">
+                <label>Item Breite <span class="value-display" id="lootWidthValue">80px</span></label>
+                <input type="range" id="lootWidth" min="60" max="150" value="80">
+            </div>
+
+            <div class="control-group">
+                <label>Item Höhe <span class="value-display" id="lootHeightValue">80px</span></label>
+                <input type="range" id="lootHeight" min="60" max="150" value="80">
+            </div>
+
+            <div class="control-group">
+                <label>Abstand <span class="value-display" id="lootGapValue">10px</span></label>
+                <input type="range" id="lootGap" min="4" max="30" value="10">
+            </div>
+
+            <h2 style="margin-top: 30px;">🎮 Buttons</h2>
+
+            <div class="control-group">
+                <label>Position von unten <span class="value-display" id="buttonsBottomValue">40px</span></label>
+                <input type="range" id="buttonsBottom" min="20" max="200" value="40">
+            </div>
+
+            <div class="control-group">
+                <label>Hintergrundfarbe (Verlassen)</label>
+                <input type="color" id="btnSecondaryBg" value="#6b7280">
+            </div>
+
+            <div class="control-group">
+                <label>Hintergrundfarbe (Weiter)</label>
+                <input type="color" id="btnPrimaryBg" value="#3b82f6">
+            </div>
+
+            <div class="control-group">
+                <label>Transparenz <span class="value-display" id="btnOpacityValue">0.60</span></label>
+                <input type="range" id="btnOpacity" min="0" max="100" value="60">
+            </div>
+
+            <div class="control-group">
+                <label>Hover Glow <span class="value-display" id="btnHoverGlowValue">16px</span></label>
+                <input type="range" id="btnHoverGlow" min="0" max="40" value="16">
+            </div>
+
+            <h2 style="margin-top: 30px;">� Speichern & Laden</h2>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <button class="btn-export" id="saveSettings" style="flex: 1; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                    💾 Speichern
+                </button>
+                <button class="btn-export" id="loadSettings" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    📂 Laden
+                </button>
+            </div>
+
+            <h2 style="margin-top: 20px;">�📤 Export & Demo</h2>
+            
+            <button class="btn-export" id="exportCSS">📥 CSS in Zwischenablage</button>
+            <button class="btn-export" id="downloadCSS" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); margin-top: 12px;" onclick="downloadVictoryCSS()">
+                💾 CSS als Datei speichern
+            </button>
+            <button class="btn-export" id="openDemo" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); margin-top: 12px;">
+                🚀 Demo öffnen
+            </button>
+        </div>
+
+        <div class="preview-area">
+            <div class="preview-info">Live Preview - Ziehe Elemente mit der Maus</div>
+
+            <div class="victory-popup" id="victoryPopup">
+                <div id="uploadZone" class="upload-zone">
+                    <p>⬆️ Bild hochladen oder hier ablegen</p>
+                </div>
+                
+                <div class="victory-title draggable" id="titlePreview">SIEG!</div>
+                <div class="victory-subtitle draggable" id="subtitlePreview">Alle Gegner besiegt!</div>
+                
+                <div class="rewards-container draggable" id="rewardsContainer">
+                    <div class="reward-row">
+                        <div class="reward-icon">⭐</div>
+                        <div class="reward-label">Erfahrung</div>
+                        <div class="reward-value">+25.000</div>
+                    </div>
+                    <div class="reward-row">
+                        <div class="reward-icon">💰</div>
+                        <div class="reward-label">Gold</div>
+                        <div class="reward-value">+15.000</div>
+                    </div>
+                </div>
+
+                <div class="loot-grid draggable" id="lootGrid">
+                    <div class="loot-item"><span>💎</span></div>
+                    <div class="loot-item"><span>⚔️</span></div>
+                    <div class="loot-item"><span>🛡️</span></div>
+                </div>
+
+                <div class="victory-buttons draggable" id="buttonsContainer">
+                    <button class="victory-btn secondary">VERLASSEN</button>
+                    <button class="victory-btn primary">WEITER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="victory-builder.js"></script>
+</body>
+</html>

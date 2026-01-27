@@ -1,0 +1,41 @@
+{
+  "name": "gatefall",
+  "version": "0.1.0",
+  "description": "Solo Leveling-style dungeon game",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "server": "node server/index.js",
+    "server:watch": "nodemon server/index.js",
+    "browser:sync": "browser-sync start --proxy localhost:3001 --files \"*.html, *.css, *.js\" --no-notify --port 3000 --ui-port 3002",
+    "dev": "concurrently \"npm run watch\" \"npm run server:watch\" \"npm run browser:sync\"",
+    "dev:simple": "npm run build && npm run server",
+    "deploy": "node deploy.js",
+    "plesk-test": "node plesk-test.js",
+    "debug-session": "node debug-session.js"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "concurrently": "^9.2.1",
+    "http-server": "^14.1.1",
+    "nodemon": "^3.1.11",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@types/multer": "^2.0.0",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^12.6.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.22.1",
+    "express-session": "^1.18.2",
+    "multer": "^2.0.2",
+    "mysql2": "^3.11.5",
+    "nodemailer": "^7.0.12",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4",
+    "session-file-store": "^1.5.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  }
+}

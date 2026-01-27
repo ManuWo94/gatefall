@@ -1,0 +1,424 @@
+/* ============================================
+   GALACTIC GATES UI - Universums-Grid Stil
+   ============================================ */
+
+/* Universe Header */
+.universe-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 150, 255, 0.1) 0%, rgba(0, 255, 200, 0.1) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.universe-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px rgba(0, 200, 255, 0.8));
+}
+
+.universe-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 200, 255, 0.8);
+    letter-spacing: 0.2em;
+}
+
+/* Galaxy Navigation */
+.galaxy-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 25, 45, 0.8);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.galaxy-btn {
+    background: linear-gradient(135deg, #1a3a52 0%, #0f1f35 100%);
+    border: 1px solid rgba(0, 200, 255, 0.4);
+    color: #00d4ff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.galaxy-btn:hover {
+    background: linear-gradient(135deg, #2a4a62 0%, #1f2f45 100%);
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.galaxy-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 100px;
+}
+
+.galaxy-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.1em;
+}
+
+.galaxy-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-shadow: 0 0 8px rgba(0, 200, 255, 0.6);
+}
+
+.deploy-btn {
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border: 1px solid #00d4ff;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    transition: all 0.3s ease;
+}
+
+.deploy-btn:hover {
+    background: linear-gradient(135deg, #0077ee 0%, #0055cc 100%);
+    box-shadow: 0 0 20px rgba(0, 120, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.deploy-icon {
+    font-size: 1.2rem;
+}
+
+/* Filter Control Bar */
+.gate-filter-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 25, 45, 0.6);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-icon-btn {
+    background: rgba(30, 50, 80, 0.8);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-icon-btn:hover {
+    background: rgba(40, 60, 90, 0.9);
+    border-color: #00d4ff;
+    color: white;
+}
+
+.filter-icon-btn.active {
+    background: linear-gradient(135deg, #0066cc 0%, #0044aa 100%);
+    border-color: #00d4ff;
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 120, 255, 0.5);
+}
+
+.gate-search-box {
+    background: rgba(10, 20, 35, 0.8);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.gate-search-box:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.4);
+}
+
+.gate-counter {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.gate-counter span {
+    color: #00d4ff;
+    font-weight: 700;
+}
+
+/* System Label */
+.system-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 0.75rem;
+    background: rgba(15, 25, 45, 0.5);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.15em;
+}
+
+/* Gates Universe Grid - 5x3 Layout wie im Screenshot */
+.gates-universe-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(10, 20, 35, 0.5);
+    border: 2px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    min-height: 500px;
+}
+
+/* Gate Planet Card - Stil wie im Screenshot */
+.gate-planet-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(15, 30, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.4);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.gate-planet-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 200, 255, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gate-planet-card:hover::before {
+    opacity: 1;
+}
+
+.gate-planet-card:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 0 25px rgba(0, 200, 255, 0.5);
+    transform: translateY(-4px);
+}
+
+/* Info Button im Gate Card */
+.gate-info-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 150, 255, 0.8);
+    border: 1px solid #00d4ff;
+    border-radius: 50%;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.gate-info-btn:hover {
+    background: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.8);
+    transform: scale(1.1);
+}
+
+/* Planet Icon/Image */
+.gate-planet-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.6));
+    transition: all 0.3s ease;
+}
+
+.gate-planet-card:hover .gate-planet-icon {
+    transform: scale(1.1) rotate(5deg);
+    filter: drop-shadow(0 0 25px rgba(0, 200, 255, 0.9));
+}
+
+/* Planet Name */
+.gate-planet-name {
+    color: #00d4ff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(0, 200, 255, 0.6);
+    letter-spacing: 0.05em;
+}
+
+/* Planet Owner Badge */
+.gate-owner-badge {
+    background: rgba(0, 150, 255, 0.2);
+    border: 1px solid rgba(0, 200, 255, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Rank Badge */
+.gate-rank-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: linear-gradient(135deg, rgba(255, 100, 0, 0.9) 0%, rgba(200, 50, 0, 0.9) 100%);
+    border: 1px solid rgba(255, 150, 0, 0.6);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    box-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+}
+
+/* Rank-specific colors */
+.gate-rank-badge.rank-d { background: linear-gradient(135deg, #8b6f47 0%, #654321 100%); border-color: #a68560; }
+.gate-rank-badge.rank-c { background: linear-gradient(135deg, #4169e1 0%, #1e3a8a 100%); border-color: #6495ed; }
+.gate-rank-badge.rank-b { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); border-color: #4ade80; }
+.gate-rank-badge.rank-a { background: linear-gradient(135deg, #eab308 0%, #a16207 100%); border-color: #fbbf24; }
+.gate-rank-badge.rank-s { background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%); border-color: #f87171; }
+.gate-rank-badge.rank-ss { background: linear-gradient(135deg, #9333ea 0%, #581c87 100%); border-color: #a855f7; }
+
+/* Empty Slot */
+.gate-planet-card.empty-slot {
+    background: rgba(10, 20, 35, 0.4);
+    border: 2px dashed rgba(100, 100, 100, 0.3);
+}
+
+.gate-planet-card.empty-slot:hover {
+    border-color: rgba(150, 150, 150, 0.5);
+    box-shadow: none;
+}
+
+.gate-planet-card.empty-slot .gate-planet-icon {
+    opacity: 0.3;
+    font-size: 3rem;
+}
+
+.gate-planet-card.empty-slot .gate-planet-name {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Completed/Conquered Gates */
+.gate-planet-card.completed {
+    border-color: rgba(0, 255, 100, 0.6);
+    background: linear-gradient(135deg, rgba(0, 80, 40, 0.6) 0%, rgba(0, 50, 25, 0.6) 100%);
+}
+
+.gate-planet-card.completed::after {
+    content: '✓';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 255, 100, 0.9);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 255, 100, 0.6);
+}
+
+/* Responsive Grid */
+@media (max-width: 1400px) {
+    .gates-universe-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .gates-universe-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .gates-universe-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .galaxy-nav {
+        flex-wrap: wrap;
+    }
+}
+
+/* Combat Title Display */
+.combat-title-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(150, 50, 50, 0.2) 0%, rgba(100, 30, 30, 0.2) 100%);
+    border: 2px solid rgba(200, 50, 50, 0.4);
+    border-radius: 8px;
+}
+
+.combat-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px rgba(255, 100, 100, 0.6));
+}
+
+.combat-title-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff6666;
+    text-shadow: 0 0 10px rgba(255, 100, 100, 0.6);
+    letter-spacing: 0.15em;
+}

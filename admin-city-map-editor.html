@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - City Map Editor</title>
+    <style>
+        /* Font Awesome Icons inline (reduzierte Version) */
+        .fas, .fa { 
+            font-family: 'Arial Unicode MS', sans-serif;
+        }
+    </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #64B5F6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        .sidebar, .tools-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .canvas-area {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #0a0a0a;
+            border: 2px solid rgba(100, 181, 246, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+            cursor: crosshair;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .section-title {
+            color: #64B5F6;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .city-selector {
+            margin-bottom: 20px;
+        }
+
+        .city-selector select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .tool-group {
+            margin-bottom: 20px;
+        }
+
+        .tool-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(100, 181, 246, 0.1);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .tool-btn:hover {
+            background: rgba(100, 181, 246, 0.2);
+            border-color: rgba(100, 181, 246, 0.5);
+        }
+
+        .tool-btn.active {
+            background: rgba(100, 181, 246, 0.3);
+            border-color: #64B5F6;
+            box-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+        }
+
+        .poi-list, .zone-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .poi-item, .zone-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .poi-item:hover, .zone-item:hover {
+            background: rgba(100, 181, 246, 0.1);
+            border-color: rgba(100, 181, 246, 0.3);
+        }
+
+        .poi-item.selected, .zone-item.selected {
+            background: rgba(100, 181, 246, 0.2);
+            border-color: #64B5F6;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #b0b0b0;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #64B5F6 0%, #2196F3 100%);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(100, 181, 246, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .info-box {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(100, 181, 246, 0.3);
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #64B5F6;
+            background: rgba(100, 181, 246, 0.05);
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .current-image {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 181, 246, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 181, 246, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-map-marked-alt"></i> City Map Editor</h1>
+            <div>
+                <button class="tool-btn" onclick="window.location.href='admin.html'" style="width: auto;">
+                    <i class="fas fa-arrow-left"></i> Zurück zum Admin
+                </button>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Sidebar: City Selection & Tools -->
+            <div class="sidebar">
+                <div class="section-title">
+                    <i class="fas fa-city"></i> Stadt Auswahl
+                </div>
+                <div class="city-selector">
+                    <select id="city-select">
+                        <option value="">Lade Städte...</option>
+                    </select>
+                </div>
+
+                <div class="section-title">
+                    <i class="fas fa-tools"></i> Werkzeuge
+                </div>
+                <div class="tool-group">
+                    <button class="tool-btn active" data-tool="poi" onclick="setTool('poi')">
+                        <i class="fas fa-map-pin"></i> POI hinzufügen
+                    </button>
+                    <button class="tool-btn" data-tool="zone" onclick="setTool('zone')">
+                        <i class="fas fa-map-marker"></i> Spawn-Zone setzen
+                    </button>
+                    <button class="tool-btn" data-tool="select" onclick="setTool('select')">
+                        <i class="fas fa-mouse-pointer"></i> Auswählen/Bearbeiten
+                    </button>
+                </div>
+
+                <div class="section-title">
+                    <i class="fas fa-image"></i> Stadtbild
+                </div>
+                <div class="upload-area" onclick="document.getElementById('city-image-upload').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #64B5F6; margin-bottom: 10px;"></i>
+                    <p>Klicken zum Hochladen</p>
+                    <p style="font-size: 12px; color: #888;">1000x600 empfohlen</p>
+                    <input type="file" id="city-image-upload" accept="image/*">
+                </div>
+                <div id="current-image-preview"></div>
+                <button class="btn-primary" onclick="uploadCityImage()">
+                    <i class="fas fa-upload"></i> Bild Hochladen
+                </button>
+            </div>
+
+            <!-- Center: Canvas -->
+            <div class="canvas-area">
+                <div class="info-box">
+                    <strong>Aktuelles Werkzeug:</strong> <span id="current-tool-name">POI hinzufügen</span><br>
+                    <strong>City ID:</strong> <span id="current-city-id">-</span><br>
+                    <strong>Hinweis:</strong> <span id="tool-hint">Klicke auf die Karte um einen POI zu setzen</span>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="city-map-canvas" width="1000" height="600"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: POIs & Zones -->
+            <div class="tools-panel">
+                <!-- POI Editor -->
+                <div id="poi-editor">
+                    <div class="section-title">
+                        <i class="fas fa-map-pin"></i> Points of Interest
+                    </div>
+                    <div class="poi-list" id="poi-list">
+                        <!-- POIs werden hier dynamisch geladen -->
+                    </div>
+                    <div id="poi-form" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="margin-bottom: 15px; color: #64B5F6;">POI Bearbeiten</h3>
+                        <input type="hidden" id="edit-poi-id">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="poi-name" placeholder="z.B. Item Shop">
+                        </div>
+                        <div class="form-group">
+                            <label>Typ</label>
+                            <select id="poi-type">
+                                <option value="shop">Shop</option>
+                                <option value="arena">Arena</option>
+                                <option value="guild">Gildenhalle</option>
+                                <option value="inn">Gasthof</option>
+                                <option value="bank">Bank</option>
+                                <option value="crafting">Crafting</option>
+                                <option value="quest">Quest Board</option>
+                                <option value="dungeon">Dungeon Eingang</option>
+                                <option value="portal">Portal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Icon (Emoji)</label>
+                            <input type="text" id="poi-icon" placeholder="🏪" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label>Beschreibung</label>
+                            <textarea id="poi-description" placeholder="Beschreibung des POI"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Panel Action (optional)</label>
+                            <input type="text" id="poi-action" placeholder="z.B. shop, combat">
+                        </div>
+                        <button class="btn-primary" onclick="savePOI()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                        <button class="btn-primary btn-danger" onclick="deletePOI()" style="margin-top: 8px;">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zone Editor -->
+                <div id="zone-editor" style="margin-top: 30px;">
+                    <div class="section-title">
+                        <i class="fas fa-draw-polygon"></i> Spawn Zonen
+                    </div>
+                    <div class="zone-list" id="zone-list">
+                        <!-- Zonen werden hier dynamisch geladen -->
+                    </div>
+                    <div id="zone-form" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="margin-bottom: 15px; color: #64B5F6;">Spawn-Zone Bearbeiten</h3>
+                        <input type="hidden" id="edit-zone-id">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="zone-name" placeholder="z.B. Anfänger Zone">
+                        </div>
+                        <div class="form-group">
+                            <label>Min Rang</label>
+                            <select id="zone-min-rank">
+                                <option value="E">E-Rang</option>
+                                <option value="D">D-Rang</option>
+                                <option value="C">C-Rang</option>
+                                <option value="B">B-Rang</option>
+                                <option value="A">A-Rang</option>
+                                <option value="S">S-Rang</option>
+                                <option value="SS">SS-Rang</option>
+                                <option value="SSS">SSS-Rang</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Rang</label>
+                            <select id="zone-max-rank">
+                                <option value="E">E-Rang</option>
+                                <option value="D">D-Rang</option>
+                                <option value="C">C-Rang</option>
+                                <option value="B">B-Rang</option>
+                                <option value="A">A-Rang</option>
+                                <option value="S">S-Rang</option>
+                                <option value="SS">SS-Rang</option>
+                                <option value="SSS">SSS-Rang</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" onclick="saveZone()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                        <button class="btn-primary btn-danger" onclick="deleteZone()" style="margin-top: 8px;">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        let canvas, ctx;
+        let currentTool = 'poi';
+        let currentCityId = null;
+        let cityImage = null;
+        let pois = [];
+        let zones = [];
+        let selectedPOI = null;
+        let selectedZone = null;
+        let zonePoints = [];
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let draggedPOI = null;
+        let draggedZone = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            canvas = document.getElementById('city-map-canvas');
+            ctx = canvas.getContext('2d');
+
+            await loadCities();
+            setupEventListeners();
+        });
+
+        async function loadCities() {
+            try {
+                const response = await fetch(`${API_BASE}/api/cities/cities`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                const cities = data.cities || [];
+
+                const select = document.getElementById('city-select');
+                select.innerHTML = '<option value="">Stadt auswählen...</option>';
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id;
+                    option.textContent = city.display_name;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        loadCity(parseInt(e.target.value));
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading cities:', error);
+                alert('Fehler beim Laden der Städte');
+            }
+        }
+
+        async function loadCity(cityId) {
+            currentCityId = cityId;
+            document.getElementById('current-city-id').textContent = cityId;
+
+            // Load city image
+            await loadCityImage(cityId);
+
+            // Load POIs
+            await loadPOIs(cityId);
+
+            // Load zones
+            await loadZones(cityId);
+
+            render();
+        }
+
+        async function loadCityImage(cityId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/cities/${cityId}/map-image`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.imageUrl) {
+                    cityImage = new Image();
+                    cityImage.onload = () => {
+                        console.log('✅ City image loaded successfully');
+                        render();
+                    };
+                    cityImage.onerror = () => {
+                        console.error('❌ Failed to load city image:', data.imageUrl);
+                        cityImage = null;
+                        render();
+                    };
+                    // Vollständige URL mit API_BASE für Cross-Origin
+                    const fullImageUrl = data.imageUrl.startsWith('http') ? data.imageUrl : `${API_BASE}${data.imageUrl}`;
+                    cityImage.src = `${fullImageUrl}?t=${Date.now()}`;
+
+                    const preview = document.getElementById('current-image-preview');
+                    const previewUrl = data.imageUrl.startsWith('http') ? data.imageUrl : `${API_BASE}${data.imageUrl}`;
+                    preview.innerHTML = `<img src="${previewUrl}?t=${Date.now()}" class="current-image">`;
+                } else {
+                    cityImage = null;
+                    render();
+                }
+            } catch (error) {
+                console.error('Error loading city image:', error);
+                cityImage = null;
+                render();
+            }
+        }
+
+        async function loadPOIs(cityId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-pois/${cityId}`, {
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const text = await response.text();
+                pois = text ? JSON.parse(text) : [];
+                renderPOIList();
+                render();
+            } catch (error) {
+                console.error('Error loading POIs:', error);
+                pois = [];
+            }
+        }
+
+        async function loadZones(cityId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-spawn-zones/${cityId}`, {
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const text = await response.text();
+                zones = text ? JSON.parse(text) : [];
+                renderZoneList();
+                render();
+            } catch (error) {
+                console.error('Error loading zones:', error);
+                zones = [];
+            }
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+
+            const toolNames = {
+                'poi': 'POI hinzufügen',
+                'zone': 'Spawn-Zone setzen (1 Klick)',
+                'select': 'Auswählen/Bearbeiten'
+            };
+
+            const toolHints = {
+                'poi': 'Klicke auf die Karte um einen POI zu setzen',
+                'zone': 'Klicke 1x um eine Spawn-Zone zu setzen',
+                'select': '🖱️ Klicke auf POIs oder Zonen zum Bearbeiten • Drag & Drop zum Verschieben'
+            };
+
+            document.getElementById('current-tool-name').textContent = toolNames[tool];
+            document.getElementById('tool-hint').textContent = toolHints[tool];
+            render();
+        }
+
+        function setupEventListeners() {
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('mousemove', handleCanvasMove);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mouseup', handleMouseUp);
+
+            document.getElementById('city-image-upload').addEventListener('change', previewImage);
+        }
+
+        function handleCanvasClick(e) {
+            if (!currentCityId) {
+                alert('Bitte wähle erst eine Stadt aus');
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            if (currentTool === 'poi') {
+                createPOIAtPosition(x, y);
+            } else if (currentTool === 'zone') {
+                addZonePoint(x, y);
+            } else if (currentTool === 'select') {
+                selectAtPosition(x, y);
+            }
+        }
+
+        function handleCanvasMove(e) {
+            if (!currentCityId) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            // Dragging
+            if (isDragging) {
+                if (draggedPOI) {
+                    draggedPOI.map_x = Math.round(x);
+                    draggedPOI.map_y = Math.round(y);
+                    render();
+                } else if (draggedZone) {
+                    const dx = x - dragStartX;
+                    const dy = y - dragStartY;
+                    const points = JSON.parse(draggedZone.polygon_points);
+                    points.forEach(p => {
+                        p.x += dx;
+                        p.y += dy;
+                    });
+                    draggedZone.polygon_points = JSON.stringify(points);
+                    dragStartX = x;
+                    dragStartY = y;
+                    render();
+                }
+                return;
+            }
+
+            // Hover effect
+            let hovering = false;
+            for (const poi of pois) {
+                const dist = Math.sqrt(Math.pow(x - poi.map_x, 2) + Math.pow(y - poi.map_y, 2));
+                if (dist < 25) {
+                    canvas.style.cursor = 'pointer';
+                    hovering = true;
+                    break;
+                }
+            }
+            if (!hovering) {
+                canvas.style.cursor = currentTool === 'select' ? 'default' : 'crosshair';
+            }
+        }
+
+        function handleMouseDown(e) {
+            if (!currentCityId || currentTool !== 'select') return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            // Check POIs
+            for (const poi of pois) {
+                const dist = Math.sqrt(Math.pow(x - poi.map_x, 2) + Math.pow(y - poi.map_y, 2));
+                if (dist < 25) {
+                    isDragging = true;
+                    draggedPOI = poi;
+                    canvas.style.cursor = 'grabbing';
+                    return;
+                }
+            }
+
+            // Check Zones
+            for (const zone of zones) {
+                const points = JSON.parse(zone.polygon_points);
+                if (isPointInPolygon(x, y, points)) {
+                    isDragging = true;
+                    draggedZone = zone;
+                    dragStartX = x;
+                    dragStartY = y;
+                    canvas.style.cursor = 'grabbing';
+                    return;
+                }
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (isDragging) {
+                // Save dragged item
+                if (draggedPOI) {
+                    savePOI(draggedPOI);
+                } else if (draggedZone) {
+                    saveZone(draggedZone);
+                }
+            }
+            isDragging = false;
+            draggedPOI = null;
+            draggedZone = null;
+            canvas.style.cursor = 'crosshair';
+        }
+
+        function isPointInPolygon(x, y, polygon) {
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                const xi = polygon[i].x, yi = polygon[i].y;
+                const xj = polygon[j].x, yj = polygon[j].y;
+                const intersect = ((yi > y) !== (yj > y))
+                    && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function createPOIAtPosition(x, y) {
+            const newPOI = {
+                city_id: currentCityId,
+                name: 'Neuer POI',
+                type: 'shop',
+                map_x: Math.round(x),
+                map_y: Math.round(y),
+                icon: '📍',
+                description: '',
+                action: ''
+            };
+
+            pois.push(newPOI);
+            selectedPOI = newPOI;
+            showPOIForm(newPOI);
+            render();
+        }
+
+        function addZonePoint(x, y) {
+            // Punkt-basierte Zonen - erstelle sofort
+            const newZone = {
+                city_id: currentCityId,
+                name: 'Neue Spawn-Zone',
+                zone_type: 'spawn',
+                min_rank: 'E',
+                max_rank: 'D',
+                map_x: Math.round(x),
+                map_y: Math.round(y)
+            };
+
+            zones.push(newZone);
+            selectedZone = newZone;
+            showZoneForm(newZone);
+            render();
+        }
+
+        function selectAtPosition(x, y) {
+            // Check POIs
+            for (let poi of pois) {
+                const dx = x - poi.map_x;
+                const dy = y - poi.map_y;
+                if (Math.sqrt(dx * dx + dy * dy) <= 30) {
+                    selectedPOI = poi;
+                    showPOIForm(poi);
+                    render();
+                    return;
+                }
+            }
+
+            // Check zones (Punkte statt Polygone)
+            for (let zone of zones) {
+                if (zone.map_x !== undefined && zone.map_y !== undefined) {
+                    const dx = x - zone.map_x;
+                    const dy = y - zone.map_y;
+                    if (Math.sqrt(dx * dx + dy * dy) <= 30) {
+                        selectedZone = zone;
+                        showZoneForm(zone);
+                        render();
+                        return;
+                    }
+                }
+            }
+        }
+
+        function isPointInPolygon(point, polygon) {
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                const xi = polygon[i].x, yi = polygon[i].y;
+                const xj = polygon[j].x, yj = polygon[j].y;
+
+                const intersect = ((yi > point.y) !== (yj > point.y)) &&
+                    (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function showPOIForm(poi) {
+            document.getElementById('poi-form').style.display = 'block';
+            document.getElementById('poi-name').value = poi.name || '';
+            document.getElementById('poi-type').value = poi.type || 'shop';
+            document.getElementById('poi-icon').value = poi.icon || '';
+            document.getElementById('poi-description').value = poi.description || '';
+            document.getElementById('poi-action').value = poi.action || '';
+        }
+
+        function showZoneForm(zone) {
+            document.getElementById('zone-form').style.display = 'block';
+            document.getElementById('zone-name').value = zone.name || '';
+            document.getElementById('zone-min-rank').value = zone.min_rank || 'E';
+            document.getElementById('zone-max-rank').value = zone.max_rank || 'D';
+        }
+
+        async function savePOI(poiToSave = null) {
+            const poi = poiToSave || selectedPOI;
+            if (!poi) return;
+
+            // Update from form only if not dragging
+            if (!poiToSave) {
+                poi.name = document.getElementById('poi-name').value;
+                poi.type = document.getElementById('poi-type').value;
+                poi.icon = document.getElementById('poi-icon').value;
+                poi.description = document.getElementById('poi-description').value;
+                poi.action = document.getElementById('poi-action').value;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-pois`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(poi)
+                });
+
+                if (response.ok) {
+                    if (!poiToSave) alert('✅ POI gespeichert!');
+                    await loadPOIs(currentCityId);
+                } else {
+                    alert('❌ Fehler beim Speichern');
+                }
+            } catch (error) {
+                console.error('Error saving POI:', error);
+                alert('❌ Fehler beim Speichern');
+            }
+        }
+
+        async function deletePOI() {
+            if (!selectedPOI || !selectedPOI.id) return;
+
+            if (!confirm('POI wirklich löschen?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-pois/${selectedPOI.id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('POI gelöscht!');
+                    document.getElementById('poi-form').style.display = 'none';
+                    await loadPOIs(currentCityId);
+                }
+            } catch (error) {
+                console.error('Error deleting POI:', error);
+            }
+        }
+
+        async function saveZone(zoneToSave = null) {
+            const zone = zoneToSave || selectedZone;
+            if (!zone) return;
+
+            // Update from form only if not dragging
+            if (!zoneToSave) {
+                zone.name = document.getElementById('zone-name').value;
+                zone.min_rank = document.getElementById('zone-min-rank').value;
+                zone.max_rank = document.getElementById('zone-max-rank').value;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-spawn-zones`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(zone)
+                });
+
+                if (response.ok) {
+                    if (!zoneToSave) alert('✅ Zone gespeichert!');
+                    await loadZones(currentCityId);
+                } else {
+                    alert('❌ Fehler beim Speichern');
+                }
+            } catch (error) {
+                console.error('Error saving zone:', error);
+                alert('❌ Fehler beim Speichern');
+            }
+        }
+
+        async function deleteZone() {
+            if (!selectedZone || !selectedZone.id) return;
+
+            if (!confirm('Zone wirklich löschen?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-spawn-zones/${selectedZone.id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('Zone gelöscht!');
+                    document.getElementById('zone-form').style.display = 'none';
+                    await loadZones(currentCityId);
+                }
+            } catch (error) {
+                console.error('Error deleting zone:', error);
+            }
+        }
+
+        function previewImage(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    cityImage = new Image();
+                    cityImage.onload = () => render();
+                    cityImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function uploadCityImage() {
+            const fileInput = document.getElementById('city-image-upload');
+            if (!fileInput.files[0]) {
+                alert('Bitte wähle erst ein Bild aus');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            formData.append('cityId', currentCityId);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/city-map-image`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Bild hochgeladen!');
+                    await loadCityImage(currentCityId);
+                } else {
+                    alert('Fehler beim Hochladen');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('Fehler beim Hochladen');
+            }
+        }
+
+        function renderPOIList() {
+            const list = document.getElementById('poi-list');
+            if (pois.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Keine POIs vorhanden</div>';
+                return;
+            }
+
+            list.innerHTML = pois.map(poi => `
+                <div class="poi-item ${selectedPOI === poi ? 'selected' : ''}" onclick="selectPOIFromList(${pois.indexOf(poi)})">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 1.5rem; margin-right: 8px;">${poi.icon || '📍'}</span>
+                            <strong>${poi.name}</strong>
+                        </div>
+                        <span style="color: #64B5F6; font-size: 12px;">${poi.type}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #888; margin-top: 4px;">
+                        Position: ${poi.map_x}, ${poi.map_y}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderZoneList() {
+            const list = document.getElementById('zone-list');
+            if (zones.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Keine Zonen vorhanden</div>';
+                return;
+            }
+
+            list.innerHTML = zones.map(zone => `
+                <div class="zone-item ${selectedZone === zone ? 'selected' : ''}" onclick="selectZoneFromList(${zones.indexOf(zone)})">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>${zone.name}</strong>
+                        <span style="color: #64B5F6; font-size: 12px;">📍</span>
+                    </div>
+                    <div style="font-size: 12px; color: #888; margin-top: 4px;">
+                        Rang ${zone.min_rank || 'E'}-${zone.max_rank || 'D'} | Pos: ${zone.map_x || 0}, ${zone.map_y || 0}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectPOIFromList(index) {
+            selectedPOI = pois[index];
+            showPOIForm(selectedPOI);
+            render();
+        }
+
+        function selectZoneFromList(index) {
+            selectedZone = zones[index];
+            showZoneForm(selectedZone);
+            render();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw city image or background
+            if (cityImage && cityImage.complete && cityImage.naturalWidth > 0) {
+                ctx.drawImage(cityImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                // Professional gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#1a1a2e');
+                gradient.addColorStop(1, '#16213e');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Draw zones (jetzt als Punkte statt Polygone)
+            zones.forEach(zone => {
+                if (zone.map_x !== undefined && zone.map_y !== undefined) {
+                    // Zeichne Kreis um Zone-Punkt
+                    ctx.beginPath();
+                    ctx.arc(zone.map_x, zone.map_y, 30, 0, 2 * Math.PI);
+                    ctx.fillStyle = selectedZone === zone ? 'rgba(100, 181, 246, 0.3)' : 'rgba(255, 152, 0, 0.2)';
+                    ctx.fill();
+                    ctx.strokeStyle = selectedZone === zone ? '#64B5F6' : '#FF9800';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+
+                    // Marker in der Mitte
+                    ctx.beginPath();
+                    ctx.arc(zone.map_x, zone.map_y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = selectedZone === zone ? '#64B5F6' : '#FF9800';
+                    ctx.fill();
+
+                    // Label
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(zone.name, zone.map_x, zone.map_y - 35);
+                    
+                    // Rang-Info
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillText(`${zone.min_rank || 'E'}-${zone.max_rank || 'D'}`, zone.map_x, zone.map_y + 45);
+                }
+            });
+
+            // Draw zone points (temporary)
+            if (zonePoints.length > 0) {
+                ctx.beginPath();
+                ctx.moveTo(zonePoints[0].x, zonePoints[0].y);
+                zonePoints.forEach(p => ctx.lineTo(p.x, p.y));
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                zonePoints.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fill();
+                });
+            }
+
+            // Draw POIs
+            pois.forEach(poi => {
+                ctx.beginPath();
+                ctx.arc(poi.map_x, poi.map_y, 25, 0, Math.PI * 2);
+                ctx.fillStyle = selectedPOI === poi ? 'rgba(100, 181, 246, 0.8)' : 'rgba(33, 150, 243, 0.6)';
+                ctx.fill();
+                ctx.strokeStyle = selectedPOI === poi ? '#FFD700' : '#2196F3';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(poi.icon || '📍', poi.map_x, poi.map_y);
+
+                ctx.font = 'bold 12px Arial';
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 3;
+                ctx.strokeText(poi.name, poi.map_x, poi.map_y + 35);
+                ctx.fillText(poi.name, poi.map_x, poi.map_y + 35);
+            });
+        }
+    </script>
+</body>
+</html>

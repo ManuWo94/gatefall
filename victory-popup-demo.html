@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victory Popup Demo - Gatefall</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .demo-container {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-description {
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .demo-btn {
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 2px solid #4a90e2;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+            color: #60a5fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.4) 100%);
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .code-info {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            margin-top: 32px;
+        }
+
+        .code-info h3 {
+            color: #fbbf24;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .code-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .code-info li {
+            color: #cbd5e1;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .code-info li:last-child {
+            border-bottom: none;
+        }
+
+        .code-info code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        #root {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #root > * {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🏆 Victory Popup Demo</h1>
+        <p class="demo-description">
+            Klicke auf den Button, um das Victory-Popup mit Rare-Belohnungen anzuzeigen.
+            Das Design ist an das Referenzbild angelehnt mit goldener "SIEG!"-Schrift, metallischen Flügeln und Kristall-Partikel-Effekten.
+        </p>
+
+        <div class="demo-buttons">
+            <button class="demo-btn" onclick="showVictoryPopup('rare')">
+                💎 Victory anzeigen
+            </button>
+        </div>
+
+        <div class="code-info">
+            <h3>📋 Verwendung in React:</h3>
+            <ul>
+                <li><strong>Komponente:</strong> <code>VictoryPopup.jsx</code></li>
+                <li><strong>Styles:</strong> <code>VictoryPopup.css</code></li>
+                <li><strong>Props:</strong> 
+                    <code>open, onClose, onNext, rewards, lootItems, bonusItems</code>
+                </li>
+                <li><strong>Icons:</strong> Inline SVG (keine externen Dateien nötig)</li>
+                <li><strong>Responsive:</strong> Mobile-optimiert</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- React Root -->
+    <div id="root"></div>
+
+    <!-- React & Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Victory Popup Component (Inline für Demo) -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Inline CSS Import (in echtem Projekt: import './VictoryPopup.css')
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = 'src/VictoryPopup.css';
+        document.head.appendChild(cssLink);
+
+        // Kopiere den VictoryPopup Code hier (oder lade als externe Komponente)
+        const VictoryPopup = ({ 
+          open = false, 
+          onClose, 
+          onNext,
+          rewards = { exp: 0, gold: 0 },
+          lootItems = [],
+          bonusItems = []
+        }) => {
+          if (!open) return null;
+
+          const dummyLoot = [
+            { id: 1, name: 'Legendary Gem', rarity: 'epic', icon: 'gem' },
+            { id: 2, name: 'Mythril Blade', rarity: 'rare', icon: 'sword' },
+            { id: 3, name: 'Dragon Scale Cloak', rarity: 'rare', icon: 'cloak' }
+          ];
+
+          const dummyBonus = [
+            { id: 1, name: 'Mega Potion', count: 3, icon: 'potion' },
+            { id: 2, name: 'Rare Scroll', count: 2, icon: 'scroll' }
+          ];
+
+          const displayLoot = lootItems.length > 0 ? lootItems : dummyLoot;
+          const displayBonus = bonusItems.length > 0 ? bonusItems : dummyBonus;
+
+          const IconGem = () => (
+            <svg viewBox="0 0 100 100" className="item-icon-svg">
+              <defs>
+                <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{stopColor: '#b66dff', stopOpacity: 1}} />
+                  <stop offset="100%" style={{stopColor: '#6b21ff', stopOpacity: 1}} />
+                </linearGradient>
+              </defs>
+              <polygon points="50,10 70,35 50,90 30,35" fill="url(#gemGrad)" stroke="#fff" strokeWidth="2"/>
+              <polygon points="50,10 70,35 50,45" fill="rgba(255,255,255,0.3)"/>
+            </svg>
+          );
+
+          const IconSword = () => (
+            <svg viewBox="0 0 100 100" className="item-icon-svg">
+              <defs>
+                <linearGradient id="swordGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{stopColor: '#c0c0c0', stopOpacity: 1}} />
+                  <stop offset="100%" style={{stopColor: '#606060', stopOpacity: 1}} />
+                </linearGradient>
+              </defs>
+              <rect x="45" y="15" width="10" height="50" fill="url(#swordGrad)"/>
+              <polygon points="50,10 55,15 45,15" fill="#d4af37"/>
+              <rect x="38" y="65" width="24" height="8" rx="2" fill="#8b4513"/>
+              <circle cx="50" cy="72" r="6" fill="#d4af37"/>
+            </svg>
+          );
+
+          const IconCloak = () => (
+            <svg viewBox="0 0 100 100" className="item-icon-svg">
+              <defs>
+                <linearGradient id="cloakGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style={{stopColor: '#4a5568', stopOpacity: 1}} />
+                  <stop offset="100%" style={{stopColor: '#1a202c', stopOpacity: 1}} />
+                </linearGradient>
+              </defs>
+              <ellipse cx="50" cy="30" rx="20" ry="15" fill="#2d3748"/>
+              <path d="M 30,30 Q 20,60 25,90 L 75,90 Q 80,60 70,30" fill="url(#cloakGrad)"/>
+              <circle cx="50" cy="30" r="5" fill="#60a5fa"/>
+            </svg>
+          );
+
+          const IconPotion = () => (
+            <svg viewBox="0 0 100 100" className="item-icon-svg">
+              <defs>
+                <linearGradient id="potionGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style={{stopColor: '#ef4444', stopOpacity: 0.8}} />
+                  <stop offset="100%" style={{stopColor: '#991b1b', stopOpacity: 0.9}} />
+                </linearGradient>
+              </defs>
+              <rect x="35" y="20" width="30" height="10" rx="2" fill="#8b4513"/>
+              <ellipse cx="50" cy="65" rx="22" ry="28" fill="url(#potionGrad)"/>
+              <ellipse cx="50" cy="50" rx="15" ry="8" fill="rgba(255,255,255,0.3)"/>
+            </svg>
+          );
+
+          const IconScroll = () => (
+            <svg viewBox="0 0 100 100" className="item-icon-svg">
+              <defs>
+                <linearGradient id="scrollGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{stopColor: '#d4a574', stopOpacity: 1}} />
+                  <stop offset="100%" style={{stopColor: '#b8956a', stopOpacity: 1}} />
+                </linearGradient>
+              </defs>
+              <rect x="25" y="20" width="50" height="60" rx="3" fill="url(#scrollGrad)"/>
+              <rect x="30" y="30" width="40" height="2" fill="#8b6f47"/>
+              <rect x="30" y="38" width="35" height="2" fill="#8b6f47"/>
+              <rect x="30" y="46" width="38" height="2" fill="#8b6f47"/>
+              <rect x="30" y="54" width="30" height="2" fill="#8b6f47"/>
+            </svg>
+          );
+
+          const getItemIcon = (iconType) => {
+            switch(iconType) {
+              case 'gem': return <IconGem />;
+              case 'sword': return <IconSword />;
+              case 'cloak': return <IconCloak />;
+              case 'potion': return <IconPotion />;
+              case 'scroll': return <IconScroll />;
+              default: return <div className="item-placeholder">?</div>;
+            }
+          };
+
+          const getRarityClass = (rarity) => {
+            switch(rarity) {
+              case 'epic': return 'rarity-epic';
+              case 'rare': return 'rarity-rare';
+              case 'uncommon': return 'rarity-uncommon';
+              default: return 'rarity-common';
+            }
+          };
+
+          return (
+            <div className="victory-overlay">
+              <div className="victory-particles"></div>
+              
+              <div className="victory-modal">
+                <div className="modal-frame-top"></div>
+                <div className="modal-frame-bottom"></div>
+                <div className="modal-frame-left"></div>
+                <div className="modal-frame-right"></div>
+                
+                <div className="corner-decoration corner-tl"></div>
+                <div className="corner-decoration corner-tr"></div>
+                <div className="corner-decoration corner-bl"></div>
+                <div className="corner-decoration corner-br"></div>
+
+                <div className="modal-content">
+                  <div className="victory-header">
+                    <div className="victory-glow"></div>
+                    <h1 className="victory-title">SIEG!</h1>
+                    <p className="victory-subtitle">ALLE GEGNER BESIEGT!</p>
+                  </div>
+
+                  <div className="rewards-section">
+                    <div className="reward-row">
+                      <div className="reward-icon">
+                        <svg viewBox="0 0 50 50" className="icon-exp">
+                          <defs>
+                            <radialGradient id="expGlow">
+                              <stop offset="0%" style={{stopColor: '#60a5fa', stopOpacity: 1}} />
+                              <stop offset="100%" style={{stopColor: '#1e40af', stopOpacity: 1}} />
+                            </radialGradient>
+                          </defs>
+                          <circle cx="25" cy="25" r="20" fill="url(#expGlow)"/>
+                          <circle cx="25" cy="25" r="15" fill="rgba(255,255,255,0.2)"/>
+                          <circle cx="25" cy="25" r="8" fill="rgba(255,255,255,0.4)"/>
+                        </svg>
+                      </div>
+                      <span className="reward-label">ERFAHRUNG ERHALTEN</span>
+                      <span className="reward-value">+{rewards.exp?.toLocaleString() || '25,000'}</span>
+                    </div>
+
+                    <div className="reward-row">
+                      <div className="reward-icon">
+                        <svg viewBox="0 0 50 50" className="icon-gold">
+                          <defs>
+                            <radialGradient id="goldGlow">
+                              <stop offset="0%" style={{stopColor: '#fbbf24', stopOpacity: 1}} />
+                              <stop offset="100%" style={{stopColor: '#b45309', stopOpacity: 1}} />
+                            </radialGradient>
+                          </defs>
+                          <ellipse cx="25" cy="25" rx="18" ry="20" fill="url(#goldGlow)"/>
+                          <ellipse cx="25" cy="22" rx="12" ry="8" fill="rgba(255,255,255,0.3)"/>
+                          <circle cx="25" cy="25" r="8" fill="rgba(180,83,9,0.4)"/>
+                        </svg>
+                      </div>
+                      <span className="reward-label">GOLD ERHALTEN</span>
+                      <span className="reward-value">+{rewards.gold?.toLocaleString() || '15,000'}</span>
+                    </div>
+                  </div>
+
+                  <div className="loot-section">
+                    <div className="section-divider">
+                      <div className="divider-line"></div>
+                      <h2 className="section-title">BEUTE</h2>
+                      <div className="divider-line"></div>
+                    </div>
+
+                    <div className="loot-grid">
+                      {displayLoot.slice(0, 3).map((item, idx) => (
+                        <div key={item.id || idx} className={`loot-card ${getRarityClass(item.rarity)}`}>
+                          <div className="card-glow"></div>
+                          <div className="card-icon">
+                            {getItemIcon(item.icon)}
+                          </div>
+                          <div className="card-label">
+                            <span className="item-name">{item.name}</span>
+                            {item.count && <span className="item-count">x{item.count}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bonus-section">
+                    <div className="section-divider">
+                      <div className="divider-line"></div>
+                      <h2 className="section-title">BONUS-BELOHNUNGEN</h2>
+                      <div className="divider-line"></div>
+                    </div>
+
+                    <div className="bonus-grid">
+                      {displayBonus.slice(0, 2).map((item, idx) => (
+                        <div key={item.id || idx} className="bonus-card">
+                          <div className="card-icon">
+                            {getItemIcon(item.icon)}
+                          </div>
+                          <div className="card-label">
+                            <span className="item-name">{item.name}</span>
+                            {item.count && <span className="item-count">x{item.count}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="action-buttons">
+                    <button className="btn-secondary" onClick={onClose}>
+                      VERLASSEN
+                    </button>
+                    <button className="btn-primary" onClick={onNext}>
+                      WEITER
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // Demo App
+        function App() {
+          const [popupOpen, setPopupOpen] = useState(false);
+          const [popupData, setPopupData] = useState({});
+
+          useEffect(() => {
+            window.showVictoryPopup = (type) => {
+              const data = {
+                rewards: { exp: 25000, gold: 15000 },
+                lootItems: [
+                  { id: 1, name: 'Legendary Gem', rarity: 'epic', icon: 'gem' },
+                  { id: 2, name: 'Mythril Blade', rarity: 'rare', icon: 'sword' },
+                  { id: 3, name: 'Dragon Scale Cloak', rarity: 'rare', icon: 'cloak' }
+                ],
+                bonusItems: [
+                  { id: 1, name: 'Mega Potion', count: 3, icon: 'potion' },
+                  { id: 2, name: 'Rare Scroll', count: 2, icon: 'scroll' }
+                ]
+              };
+              
+              setPopupData(data);
+              setPopupOpen(true);
+            };
+          }, []);
+
+          return (
+            <VictoryPopup
+              open={popupOpen}
+              onClose={() => {
+                setPopupOpen(false);
+                console.log('Victory popup closed');
+              }}
+              onNext={() => {
+                setPopupOpen(false);
+                console.log('Next level!');
+              }}
+              rewards={popupData.rewards}
+              lootItems={popupData.lootItems}
+              bonusItems={popupData.bonusItems}
+            />
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

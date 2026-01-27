@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔴 RELOAD TEST - Gatefall</title>
+    <link rel="icon" href="favicon.ico" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="system-ui.css?v=24">
+    <link rel="stylesheet" href="portal-ui.css?v=12">
+    <link rel="stylesheet" href="src/combat/turn-based.css?v=12">
+    <link rel="stylesheet" href="src/combat/ff-combat.css?v=13">
+    <link rel="stylesheet" href="src/combat/combat-cards-v2.css?v=1">
+    <link rel="stylesheet" href="src/combat/combat-hotbar.css?v=1">
+    <link rel="stylesheet" href="multiplayer.css?v=1">
+    
+    <!-- Socket.io Client Library - IM HEAD LADEN -->
+    <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+    <script>
+      console.log('🎯 HEAD: Socket.io check =', typeof window.io);
+    </script>
+</head>
+<body>
+    <!-- ==================== AUTH SCREEN ==================== -->
+    <div id="auth-screen" class="auth-screen">
+        
+        <!-- Animated Background Effects -->
+        <div class="fire-glow-login-left"></div>
+        <div class="fire-glow-login-right"></div>
+        <div class="sword-gleam-login"></div>
+        
+        <!-- Sky Lightning Effects -->
+        <div class="lightning-flash-1"></div>
+        <div class="lightning-flash-2"></div>
+        
+        <!-- Frame Fire Effects -->
+        <div class="frame-fire-bottom-left"></div>
+        <div class="frame-fire-bottom-right"></div>
+        
+        <div class="auth-container">
+            <div class="frame-login-title" id="form-title">LOGIN</div>
+            
+            <!-- Login Form -->
+            <div id="form-login" class="auth-form active">
+                <div class="input-with-icon">
+                    <span class="input-icon">✉</span>
+                    <input type="email" id="login-email" autocomplete="email" placeholder="E-Mail">
+                </div>
+                <div class="input-with-icon">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="login-password" autocomplete="current-password" placeholder="Passwort">
+                </div>
+                <button id="btn-login" class="frame-login-btn">LOGIN</button>
+                <div id="login-error" class="auth-error"></div>
+                <div class="frame-login-footer">
+                    <a href="#" id="link-register" class="footer-link">Registrieren</a>
+                    <span class="footer-separator">•</span>
+                    <a href="#" id="link-forgot" class="footer-link">Passwort vergessen?</a>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="form-register" class="auth-form">
+                <div class="input-with-icon">
+                    <span class="input-icon">✉</span>
+                    <input type="email" id="register-email" autocomplete="email" placeholder="E-Mail">
+                </div>
+                <div class="input-with-icon">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="register-password" autocomplete="new-password" placeholder="Passwort">
+                </div>
+                <div class="input-with-icon">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="register-displayname" autocomplete="username" placeholder="Anzeigename">
+                </div>
+                <div class="input-with-icon">
+                    <span class="input-icon">⚔️</span>
+                    <select id="register-role" class="role-select-compact">
+                        <option value="waechter">🛡️ WÄCHTER</option>
+                        <option value="assassine">🗡️ ASSASSINE</option>
+                        <option value="magier">✨ MAGIER</option>
+                        <option value="heiler">💚 HEILER</option>
+                        <option value="beschwoerer">🐉 BESCHWÖRER</option>
+                        <option value="berserker">⚔️ BERSERKER</option>
+                        <option value="fluchwirker">💀 FLUCHWIRKER</option>
+                    </select>
+                </div>
+                <div class="input-with-icon">
+                    <span class="input-icon">🏙️</span>
+                    <button type="button" id="register-select-city-btn" class="role-select-compact" style="background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.3); color: white; cursor: pointer; text-align: left; padding: 12px 15px;">
+                        <span id="register-selected-city-display">🗺️ Heimatstadt auf Karte wählen...</span>
+                    </button>
+                    <input type="hidden" id="register-home-city" value="">
+                </div>
+                <button id="btn-register" class="frame-login-btn">REGISTRIEREN</button>
+                <div id="register-error" class="auth-error"></div>
+                <div class="frame-login-footer">
+                    <a href="#" id="link-login" class="footer-link">Zurück zum Login</a>
+                </div>
+            </div>
+
+            <!-- Email Verification Message -->
+            <div id="email-verification-message" class="verification-message" style="display: none;">
+                <div class="verification-icon">⚠️</div>
+                <p>E-Mail noch nicht verifiziert</p>
+                <button id="btn-resend-verification" class="system-btn secondary">Verifizierung erneut senden</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SYSTEM INTERFACE ==================== -->
+    <div id="system-interface" class="system-interface" style="display: none;">
+        
+        <!-- Animated Background Effects -->
+        <div class="fire-glow-left"></div>
+        <div class="fire-glow-right"></div>
+        <div class="sword-gleam"></div>
+        
+        <!-- TOP: Status Bar (MMORPG Style) -->
+        <div class="top-status-bar">
+            <!-- Left: Character Portrait & Name -->
+            <div class="character-info">
+                <div class="character-portrait">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="character-details">
+                    <div class="character-name" id="user-display-name">HUNTER</div>
+                    <div class="character-level">Level <span id="char-level">1</span></div>
+                </div>
+            </div>
+
+            <!-- Center: Resources/Items Placeholders -->
+            <div class="resources-container">
+                <div class="resource-display">
+                    <i class="fas fa-coins"></i>
+                    <span id="gold-display">0</span>
+                </div>
+                <div class="resource-display">
+                    <i class="fas fa-gem"></i>
+                    <span>0</span>
+                </div>
+                <div class="resource-display">
+                    <i class="fas fa-flask"></i>
+                    <span>0</span>
+                </div>
+                <div class="resource-display">
+                    <i class="fas fa-star"></i>
+                    <span>0</span>
+                </div>
+            </div>
+
+            <!-- Right: XP Bar + Level -->
+            <div class="xp-section">
+                <div class="xp-bar-container">
+                    <div class="xp-label">EXP</div>
+                    <div class="xp-bar-wrapper">
+                        <div class="xp-bar-fill" style="width: 45%;"></div>
+                        <div class="xp-bar-text">45%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Content Panels (Full Width) -->
+        <main class="system-content">
+            
+            <!-- DASHBOARD PANEL -->
+            <div class="panel active" id="panel-dashboard">
+
+                <!-- 2-Column Layout for compact view -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto;">
+                    
+                    <!-- Left Column -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- Character Stats (compact 2 cards) -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="dash-card rank-card">
+                                <div class="dash-card-icon">⭐</div>
+                                <div class="dash-card-content">
+                                    <div class="dash-card-label">RANG</div>
+                                    <div class="dash-card-value" id="dash-hunter-rank">D</div>
+                                </div>
+                            </div>
+                            <div class="dash-card guild-card">
+                                <div class="dash-card-icon">🏛️</div>
+                                <div class="dash-card-content">
+                                    <div class="dash-card-label">GILDE</div>
+                                    <div class="dash-card-value small" id="dash-guild">KEINE</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Location -->
+                        <div class="dash-section">
+                            <div class="section-header">
+                                <span class="section-icon">📍</span>
+                                <span class="section-title">STANDORT</span>
+                            </div>
+                            <div class="dash-location" style="background: rgba(33, 150, 243, 0.1); border: 2px solid rgba(33, 150, 243, 0.3); border-radius: 8px; padding: 15px;">
+                                <div style="font-size: 1.1rem; font-weight: bold; color: #64b5f6; margin-bottom: 5px;" id="dash-current-city">Lädt...</div>
+                                <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Aktuelle Position</div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Access -->
+                        <div class="dash-section">
+                            <div class="section-header">
+                                <span class="section-icon">⚡</span>
+                                <span class="section-title">SCHNELLZUGRIFF</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <button class="dash-action-btn compact" onclick="switchPanel('world')">
+                                    <div class="action-icon">🌍</div>
+                                    <div class="action-content">
+                                        <div class="action-title">WELTKARTE</div>
+                                    </div>
+                                </button>
+                                <button class="dash-action-btn compact" onclick="switchPanel('city-map')">
+                                    <div class="action-icon">🏛️</div>
+                                    <div class="action-content">
+                                        <div class="action-title">STADTKARTE</div>
+                                    </div>
+                                </button>
+                                <button class="dash-action-btn compact" onclick="switchPanel('combat')">
+                                    <div class="action-icon">⚔️</div>
+                                    <div class="action-content">
+                                        <div class="action-title">KAMPF</div>
+                                    </div>
+                                </button>
+                                <button class="dash-action-btn compact" onclick="switchPanel('vereinigung')">
+                                    <div class="action-icon">👥</div>
+                                    <div class="action-content">
+                                        <div class="action-title">GILDE</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - News -->
+                    <div class="dash-section">
+                        <div class="section-header">
+                            <span class="section-icon">📢</span>
+                            <span class="section-title">SYSTEM-NEWS</span>
+                        </div>
+                        <div class="news-feed">
+                            <div class="news-item">
+                                <div class="news-header">
+                                    <span class="news-badge new">NEU</span>
+                                    <span class="news-date">23.01.2026</span>
+                                </div>
+                                <div class="news-title">🌍 Weltkarte verfügbar!</div>
+                                <div class="news-text">Das Reisesystem ist nun aktiv. Besuche 6 neue Städte: New Port, Kyato, Bruchthal, Arden, Eastvale, Longford.</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-header">
+                                    <span class="news-badge update">UPDATE</span>
+                                    <span class="news-date">23.01.2026</span>
+                                </div>
+                                <div class="news-title">🏛️ Stadtkarten kommen bald</div>
+                                <div class="news-text">Bald kannst du Städte erkunden und NPCs treffen.</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-header">
+                                    <span class="news-badge info">INFO</span>
+                                    <span class="news-date">22.01.2026</span>
+                                </div>
+                                <div class="news-title">⚔️ Kampfsystem aktiv</div>
+                                <div class="news-text">Das rundenbasierte Kampfsystem steht zur Verfügung.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- STATUS PANEL -->
+            <div class="panel" id="panel-status">
+                <!-- Character Overview -->
+                <div class="status-overview">
+                    <div class="status-level-display">
+                        <div class="level-circle">
+                            <div class="level-number" id="status-level">1</div>
+                        </div>
+                        <div class="level-text">LEVEL</div>
+                    </div>
+                    <div class="status-info-grid">
+                        <div class="status-info-item">
+                            <div class="info-icon">🏆</div>
+                            <div class="info-content">
+                                <div class="info-label">TITEL</div>
+                                <div class="info-value" id="status-title">HUNTER</div>
+                            </div>
+                        </div>
+                        <div class="status-info-item">
+                            <div class="info-icon">⭐</div>
+                            <div class="info-content">
+                                <div class="info-label">RANG</div>
+                                <div class="info-value" id="status-rank">D</div>
+                            </div>
+                        </div>
+                        <div class="status-info-item">
+                            <div class="info-icon">⚔️</div>
+                            <div class="info-content">
+                                <div class="info-label">ROLLE</div>
+                                <div class="info-value" id="status-role">ASSASSINE</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HP/MP Bars -->
+                <div class="status-vitals">
+                    <div class="vital-bar-container">
+                        <div class="vital-header">
+                            <span class="vital-icon">❤️</span>
+                            <span class="vital-label">LEBENSPUNKTE</span>
+                            <span class="vital-value" id="status-hp">85 / 85</span>
+                        </div>
+                        <div class="vital-bar-track">
+                            <div class="vital-bar-fill hp" id="status-hp-bar" style="width: 100%">
+                                <div class="bar-shine"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vital-bar-container">
+                        <div class="vital-header">
+                            <span class="vital-icon">💠</span>
+                            <span class="vital-label">MANAPUNKTE</span>
+                            <span class="vital-value" id="status-mp">60 / 60</span>
+                        </div>
+                        <div class="vital-bar-track">
+                            <div class="vital-bar-fill mp" id="status-mp-bar" style="width: 100%">
+                                <div class="bar-shine"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attributes -->
+                <div class="status-attrs">
+                    <div class="section-header">
+                        <span class="section-icon">📊</span>
+                        <span class="section-title">ATTRIBUTE</span>
+                    </div>
+                    <div class="attr-grid">
+                        <div class="attr-card">
+                            <div class="attr-icon">💪</div>
+                            <div class="attr-content">
+                                <div class="attr-label">STÄRKE</div>
+                                <div class="attr-value" id="attr-str">10</div>
+                            </div>
+                        </div>
+                        <div class="attr-card">
+                            <div class="attr-icon">❤️</div>
+                            <div class="attr-content">
+                                <div class="attr-label">VITALITÄT</div>
+                                <div class="attr-value" id="attr-vit">10</div>
+                            </div>
+                        </div>
+                        <div class="attr-card">
+                            <div class="attr-icon">⚡</div>
+                            <div class="attr-content">
+                                <div class="attr-label">BEWEGLICHKEIT</div>
+                                <div class="attr-value" id="attr-agi">10</div>
+                            </div>
+                        </div>
+                        <div class="attr-card">
+                            <div class="attr-icon">🧠</div>
+                            <div class="attr-content">
+                                <div class="attr-label">INTELLIGENZ</div>
+                                <div class="attr-value" id="attr-int">10</div>
+                            </div>
+                        </div>
+                        <div class="attr-card">
+                            <div class="attr-icon">👁️</div>
+                            <div class="attr-content">
+                                <div class="attr-label">WAHRNEHMUNG</div>
+                                <div class="attr-value" id="attr-per">10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SKILLS PANEL -->
+            <div class="panel" id="panel-skills">
+                <!-- Skill System Info -->
+                <div class="info-box" id="skill-system-info" style="margin-bottom: 1rem; padding: 1rem; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span style="font-size: 1.2rem;">ℹ️</span>
+                        <strong id="skill-phase-title">PHASE 1: VOR DEM ERWACHEN</strong>
+                    </div>
+                    <div id="skill-phase-description" style="font-size: 0.9rem; opacity: 0.8; line-height: 1.5;">
+                        Nur rollenspezifische Skills verfügbar. Erwache bei Level 10 um Zugriff auf alle Skills zu erhalten!
+                    </div>
+                </div>
+                
+                <!-- Equipped Skills -->
+                <div class="skills-equipped-section">
+                    <div class="section-header">
+                        <span class="section-icon">⚡</span>
+                        <span class="section-title">AUSGERÜSTETE FÄHIGKEITEN</span>
+                        <span class="skill-count" id="skill-count">(0/4)</span>
+                    </div>
+                    <div class="skill-slots-grid">
+                        <div class="skill-slot empty" data-slot="1">
+                            <div class="slot-bg"></div>
+                            <div class="slot-number">1</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
+                        </div>
+                        <div class="skill-slot empty" data-slot="2">
+                            <div class="slot-bg"></div>
+                            <div class="slot-number">2</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
+                        </div>
+                        <div class="skill-slot empty" data-slot="3">
+                            <div class="slot-bg"></div>
+                            <div class="slot-number">3</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
+                        </div>
+                        <div class="skill-slot empty" data-slot="4">
+                            <div class="slot-bg"></div>
+                            <div class="slot-number">4</div>
+                            <div class="slot-content">
+                                <div class="slot-icon">🔒</div>
+                                <div class="slot-label">LEER</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Skills -->
+                <div class="skills-library-section">
+                    <div class="section-header">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">VERFÜGBARE FÄHIGKEITEN</span>
+                    </div>
+                    <div class="skill-library" id="skill-list">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMBAT PANEL -->
+            <div class="panel" id="panel-combat">
+                <!-- Neues Combat-System wird hier gerendert -->
+                <div id="combat-container"></div>
+                
+                <!-- Platzhalter wenn kein Kampf läuft -->
+                <div id="combat-placeholder" style="text-align: center; padding: 4rem; color: rgba(255,255,255,0.5);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">⚔️</div>
+                    <div style="font-size: 1.5rem; margin-bottom: 1rem;">KEIN AKTIVER KAMPF</div>
+                    <div>Wähle ein Gate um einen Kampf zu starten</div>
+                </div>
+            </div>
+
+            <!-- WORLD MAP PANEL -->
+            <div class="panel" id="panel-world">
+                <!-- Kompaktes Grid-Layout -->
+                <div style="display: grid; grid-template-columns: 1fr 300px; gap: 15px; max-width: 1200px; margin: 0 auto;">
+                    
+                    <!-- Linke Spalte: Karte -->
+                    <div>
+                        <div style="position: relative; width: 850px; background: #1a1a2e; border-radius: 8px; overflow: hidden; border: 2px solid rgba(100,200,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                            <canvas id="world-map-canvas" style="display: block;"></canvas>
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px 15px; background: rgba(33,150,243,0.1); border-radius: 6px; border: 1px solid rgba(33,150,243,0.3); font-size: 0.9rem;">
+                            <span style="color: rgba(255,255,255,0.6);">💡 Klicke auf eine Stadt um zu reisen. Heimatstadt ist sofort erreichbar!</span>
+                        </div>
+                    </div>
+
+                    <!-- Rechte Spalte: Info-Boxen -->
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        
+                        <!-- Current City Info -->
+                        <div id="current-city-info" style="background: rgba(76,175,80,0.1); border: 2px solid #4CAF50; border-radius: 8px; padding: 0; overflow: hidden;">
+                            <!-- City Image Header -->
+                            <div id="current-city-image" style="display: none; width: 100%; height: 120px; background-size: cover; background-position: center; position: relative;">
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 8px 12px;">
+                                    <div style="font-size: 1.1rem; font-weight: bold; color: white;" id="current-city-name-header"></div>
+                                </div>
+                            </div>
+                            <!-- City Info Content -->
+                            <div style="padding: 12px;">
+                                <h3 style="color: #4CAF50; margin: 0 0 8px 0; font-size: 1rem;">📍 Aktuelle Stadt</h3>
+                                <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 6px;" id="current-city-name">Lade...</div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.6);">
+                                    <span>🏠 Heimat: </span><strong id="home-city-name">-</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Travel Status -->
+                        <div id="travel-status" style="display: none; background: rgba(255,200,0,0.1); border: 2px solid #FFD700; border-radius: 8px; padding: 12px;">
+                            <h3 style="color: #FFD700; margin: 0 0 10px 0; font-size: 1rem;">🚶 Reise läuft</h3>
+                            <div style="margin-bottom: 6px; font-size: 0.9rem;">
+                                <span style="color: rgba(255,255,255,0.6);">Ziel:</span> <strong id="travel-destination">-</strong>
+                            </div>
+                            <div style="margin-bottom: 10px; font-size: 0.9rem;">
+                                <span style="color: rgba(255,255,255,0.6);">Zeit:</span> <strong id="travel-remaining">-</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; height: 24px; overflow: hidden; position: relative; margin-bottom: 10px;">
+                                <div id="travel-progress-bar" style="background: linear-gradient(90deg, #4CAF50, #FFD700); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: 0.85rem;" id="travel-progress-text">0%</div>
+                            </div>
+                            <button id="cancel-travel-btn" style="width: 100%; background: #f44336; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; font-weight: bold;">Reise abbrechen</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- CITY MAP PANEL -->
+            <div class="panel" id="panel-city-map">
+                <!-- Stadt Info -->
+                <div style="background: linear-gradient(135deg, rgba(100,200,255,0.15), rgba(50,150,255,0.1)); border: 1px solid rgba(100,200,255,0.3); border-radius: 8px; padding: 12px 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.8rem;">🏙️</span>
+                        <div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px;">Aktuelle Stadt</div>
+                            <div id="current-city-name-citymap" style="font-size: 1.3rem; font-weight: bold; color: #64c8ff;">Lädt...</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        <span>🏠</span>
+                        <span>Heimat: <span id="home-city-name-citymap" style="color: #ffd700;">-</span></span>
+                    </div>
+                </div>
+
+                <!-- Kompaktes Grid-Layout -->
+                <div style="display: grid; grid-template-columns: 1fr 300px; gap: 15px; max-width: 1200px; margin: 0 auto;">
+                    
+                    <!-- Linke Spalte: Karte -->
+                    <div>
+                        <div style="position: relative; width: 850px; background: #1a1a2e; border-radius: 8px; overflow: hidden; border: 2px solid rgba(100,200,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                            <canvas id="city-map-canvas" style="display: block;"></canvas>
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px 15px; background: rgba(33,150,243,0.1); border-radius: 6px; border: 1px solid rgba(33,150,243,0.3); font-size: 0.9rem;">
+                            <span style="color: rgba(255,255,255,0.6);">💡 Klicke auf ein Gebäude um es zu besuchen!</span>
+                        </div>
+                    </div>
+
+                    <!-- Rechte Spalte: Gates & Notifications -->
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- GATES PANEL -->
+                        <div style="background: linear-gradient(135deg, rgba(139,0,0,0.2), rgba(0,0,0,0.4)); border-radius: 8px; border: 2px solid rgba(220,53,69,0.5); padding: 15px; box-shadow: 0 4px 20px rgba(220,53,69,0.3);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(220,53,69,0.3); padding-bottom: 10px;">
+                                <span style="font-size: 1.5rem;">🌀</span>
+                                <div>
+                                    <div style="font-size: 1.1rem; font-weight: bold; color: #dc3545;">AKTIVE GATES</div>
+                                    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">Gates verschwinden nach Schließung</div>
+                                </div>
+                            </div>
+                            <div id="gates-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;">
+                                <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.3); font-size: 0.9rem;">
+                                    ⏳ Lade Gates...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QUESTS PANEL (Platzhalter für später) -->
+                        <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(0,0,0,0.4)); border-radius: 8px; border: 2px solid rgba(255,215,0,0.3); padding: 15px; box-shadow: 0 4px 20px rgba(255,215,0,0.2);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,215,0,0.3); padding-bottom: 10px;">
+                                <span style="font-size: 1.5rem;">📜</span>
+                                <div>
+                                    <div style="font-size: 1.1rem; font-weight: bold; color: #ffd700;">QUESTS</div>
+                                    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">Verfügbare Aufträge</div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; padding: 15px; color: rgba(255,255,255,0.3); font-size: 0.85rem;">
+                                Bald verfügbar...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VEREINIGUNG PANEL -->
+            <div class="panel" id="panel-vereinigung">
+                <!-- Current Guild Display -->
+                <div class="current-guild-banner" id="current-guild-banner">
+                    <div class="guild-banner-left">
+                        <span class="guild-banner-icon">🏰</span>
+                        <div class="guild-banner-info">
+                            <div class="guild-banner-label">AKTUELLE VEREINIGUNG</div>
+                            <div class="guild-banner-name" id="guild-banner-name">KEINE VEREINIGUNG</div>
+                        </div>
+                    </div>
+                    <div class="guild-banner-actions">
+                        <button class="system-btn secondary small" id="btn-leave-guild" style="display: none;">
+                            🚪 Verlassen
+                        </button>
+                        <button class="filter-icon-btn" id="btn-create-guild">
+                            <span>🏛️</span> GRÜNDEN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Guild NPCs Section -->
+                <div class="guild-npcs-section" id="guild-npcs-section" style="display: none;">
+                    <div class="gate-filter-control">
+                        <span style="font-weight: 700; color: #00d4ff; letter-spacing: 1px;">👥 VERFÜGBARE NPCs</span>
+                        <span class="gate-counter">NPCs: <span id="npc-count">0</span></span>
+                    </div>
+                    <div class="gates-universe-grid" id="guild-npc-grid">
+                        <!-- NPCs werden hier eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Squad Display -->
+                <div class="squad-display-section" id="squad-display-section">
+                    <div class="gate-filter-control">
+                        <span style="font-weight: 700; color: #00d4ff; letter-spacing: 1px;">⚔️ DEIN TRUPP</span>
+                        <span class="gate-counter" id="squad-counter">0/4 MITGLIEDER</span>
+                        <button class="filter-icon-btn" id="btn-clear-squad" style="margin-left: auto;">LEEREN</button>
+                    </div>
+                    <div class="squad-grid-display" id="squad-grid-display">
+                        <!-- Squad slots -->
+                    </div>
+                </div>
+
+                <!-- Available Guilds -->
+                <div class="gate-filter-control">
+                    <button class="filter-icon-btn active" data-guild-tab="official">
+                        <span>🏛️</span> OFFIZIELLE
+                    </button>
+                    <button class="filter-icon-btn" data-guild-tab="player">
+                        <span>👥</span> SPIELER
+                    </button>
+                    <span class="gate-counter">Vereinigungen: <span id="guild-count">0</span></span>
+                </div>
+
+                <!-- Guild Grid -->
+                <div class="gates-universe-grid" id="guilds-grid">
+                    <!-- Guilds werden hier eingefügt -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM: Skill Bar (Icon Only) -->
+        <nav class="skill-bar">
+            <button class="skill-btn active" onclick="switchPanel('dashboard')" data-panel="dashboard" title="Dashboard">
+                <i class="fas fa-home"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('status')" data-panel="status" title="Status">
+                <i class="fas fa-shield-alt"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('skills')" data-panel="skills" title="Fähigkeiten">
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('combat')" data-panel="combat" title="Kampf">
+                <i class="fas fa-fist-raised"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('inventory')" data-panel="inventory" title="Inventar">
+                <i class="fas fa-boxes"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('quests')" data-panel="quests" title="Quests">
+                <i class="fas fa-scroll"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('world')" data-panel="world" title="Weltkarte">
+                <i class="fas fa-globe"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('city-map')" data-panel="city-map" title="Stadtkarte">
+                <i class="fas fa-city"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('crafting')" data-panel="crafting" title="Crafting">
+                <i class="fas fa-hammer"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('trading')" data-panel="trading" title="Trading">
+                <i class="fas fa-exchange-alt"></i>
+            </button>
+            <button class="skill-btn" onclick="switchPanel('vereinigung')" data-panel="vereinigung" title="Vereinigung">
+                <i class="fas fa-users"></i>
+            </button>
+            <button class="skill-btn admin-skill-btn" id="admin-nav-button" onclick="window.location.href='admin.html'" style="display: none;" title="Admin">
+                <i class="fas fa-crown"></i>
+            </button>
+            <button class="skill-btn logout" id="btn-logout" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </nav>
+
+        <!-- Chat Button (Separate, Right Side) -->
+        <button class="chat-floating-btn" onclick="document.getElementById('multiplayer-panel').style.display='flex'; this.classList.add('active')" title="Chat">
+            <i class="fas fa-comments"></i>
+        </button>
+    </div>
+
+    <!-- AWAKENING MODAL (System Popup) -->
+    <div id="awakening-modal" class="system-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">SYSTEM-BENACHRICHTIGUNG</h2>
+            </div>
+            <div class="modal-body">
+                <div class="awakening-message">
+                    <div class="awakening-icon">⚡</div>
+                    <p class="awakening-text">ERWACHEN VERFÜGBAR</p>
+                    <p class="awakening-desc">Du hast das Erwachen freigeschaltet.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-awaken" class="system-btn primary">ERWACHEN</button>
+                <button id="btn-close-awakening" class="system-btn secondary">SPÄTER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GUILD APPLICATION MODAL -->
+    <div id="guild-application-modal" class="system-modal" style="display: none;">
+        <div class="modal-content portal-style">
+            <div class="modal-header portal-header">
+                <h2 class="modal-title portal-title" id="guild-modal-title">VEREINIGUNG</h2>
+            </div>
+            <div class="modal-body portal-body">
+                <div class="guild-application-message">
+                    <div class="guild-modal-icon" id="guild-modal-icon">📜</div>
+                    <p class="guild-modal-status" id="guild-modal-status">Bewerbung wird bearbeitet...</p>
+                    <p class="guild-modal-text" id="guild-modal-text"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-close-guild-modal" class="system-btn portal-btn">SCHLIESSEN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GUILD CREATION MODAL -->
+    <div id="guild-creation-modal" class="system-modal" style="display: none;">
+        <div class="modal-content portal-style">
+            <div class="modal-header portal-header">
+                <h2 class="modal-title portal-title">VEREINIGUNG GRÜNDEN</h2>
+            </div>
+            <div class="modal-body portal-body">
+                <div class="guild-creation-form">
+                    <div class="form-group">
+                        <label for="guild-name-input">Name der Vereinigung</label>
+                        <input type="text" id="guild-name-input" class="system-input" placeholder="z.B. Elite Jäger" maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="guild-desc-input">Beschreibung</label>
+                        <textarea id="guild-desc-input" class="system-input" placeholder="Beschreibe deine Vereinigung..." maxlength="200" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="guild-rank-input">Mindest-Hunter-Rang</label>
+                        <select id="guild-rank-input" class="system-input">
+                            <option value="SS" selected>SS - National Level Hunter</option>
+                            <option value="S">S - Elite Hunter</option>
+                            <option value="A">A - Veteran Hunter</option>
+                            <option value="B">B - Advanced Hunter</option>
+                            <option value="C">C - Intermediate Hunter</option>
+                            <option value="D">D - Rookie Hunter</option>
+                        </select>
+                    </div>
+                    <div class="guild-creation-cost">
+                        <div class="cost-label">Gründungskosten:</div>
+                        <div class="cost-amount">💰 <span id="creation-cost">1,000,000</span> Goldmünzen</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-confirm-create-guild" class="system-btn primary">GRÜNDEN</button>
+                <button id="btn-cancel-create-guild" class="system-btn secondary">ABBRECHEN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multiplayer Chat UI -->
+    <div id="multiplayer-panel" class="multiplayer-panel" style="display: none;">
+        <div class="mp-header">
+            <div class="mp-tabs">
+                <button class="mp-tab active" data-channel="guild">🏰 Gilde</button>
+                <button class="mp-tab" data-channel="party">👥 Party</button>
+            </div>
+            <button id="mp-close" class="mp-close">✕</button>
+        </div>
+        <div class="mp-content">
+            <div class="mp-messages" id="mp-messages"></div>
+            <div class="mp-input-area">
+                <input type="text" id="mp-input" placeholder="Nachricht eingeben..." maxlength="200">
+                <button id="mp-send">Senden</button>
+            </div>
+        </div>
+        <div class="mp-online">
+            <div class="mp-online-header">Online (<span id="mp-online-count">0</span>)</div>
+            <div class="mp-online-list" id="mp-online-list"></div>
+        </div>
+    </div>
+
+    <script type="module" src="dist/registration-city-selector.js"></script>
+    <script type="module" src="dist/main.js?v=124"></script>
+    
+    <!-- Registration City Selector -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectCityBtn = document.getElementById('register-select-city-btn');
+            if (selectCityBtn) {
+                selectCityBtn.addEventListener('click', () => {
+                    if (window.showRegistrationCitySelector) {
+                        window.showRegistrationCitySelector();
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <!-- UI Background System -->
+    <script>
+        // Load custom background on page load
+        (function() {
+            const savedBg = localStorage.getItem('customUIBackground');
+            if (savedBg) {
+                document.documentElement.style.setProperty('--custom-background', `url('${savedBg}')`);
+                console.log('✅ Custom UI background loaded:', savedBg);
+            } else {
+                console.log('ℹ️ Using default UI background');
+            }
+        })();
+    </script>
+</body>
+</html>

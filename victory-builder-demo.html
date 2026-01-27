@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victory Popup Demo - Builder Export</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .demo-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* Victory Popup Styles - Exportiert aus dem Builder */
+        .victory-popup {
+            width: 600px;
+            height: 700px;
+            padding: 40px;
+            background-size: cover;
+            background-position: center;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700"><rect width="600" height="700" fill="%231e293b"/></svg>');
+            position: relative;
+            border: 2px solid #374151;
+            border-radius: 8px;
+        }
+
+        .victory-title {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cinzel', serif;
+            font-size: 64px;
+            color: #fbbf24;
+            letter-spacing: 8px;
+            text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.8), 0px 0px 40px rgba(251, 191, 36, 0.6), 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000;
+            text-align: center;
+            z-index: 10;
+            font-weight: 900;
+        }
+
+        .victory-subtitle {
+            position: absolute;
+            top: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Lato', sans-serif;
+            font-size: 18px;
+            color: #d1d5db;
+            text-align: center;
+            z-index: 10;
+            letter-spacing: 2px;
+        }
+
+        .rewards-container {
+            position: absolute;
+            top: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .reward-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+        }
+
+        .reward-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .reward-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .reward-label {
+            flex: 1;
+            font-size: 14px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .reward-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .loot-grid {
+            position: absolute;
+            top: 350px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 440px;
+            z-index: 10;
+        }
+
+        .loot-item {
+            width: 136px;
+            height: 160px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid #60a5fa;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.4), inset 0 0 20px rgba(96, 165, 250, 0.1);
+        }
+
+        .loot-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 30px rgba(96, 165, 250, 0.6), inset 0 0 30px rgba(96, 165, 250, 0.2);
+            border-color: #93c5fd;
+        }
+
+        .loot-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .loot-name {
+            font-size: 12px;
+            color: #e2e8f0;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .victory-buttons {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .victory-btn {
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .victory-btn.secondary {
+            background: linear-gradient(135deg, rgba(100, 116, 139, 0.8) 0%, rgba(71, 85, 105, 0.8) 100%);
+            color: #e2e8f0;
+            border: 1px solid #64748b;
+        }
+
+        .victory-btn.secondary:hover {
+            background: linear-gradient(135deg, rgba(100, 116, 139, 1) 0%, rgba(71, 85, 105, 1) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(100, 116, 139, 0.4);
+        }
+
+        .victory-btn.primary {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e293b;
+            border: 1px solid #fbbf24;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .victory-btn.primary:hover {
+            background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.6), 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #60a5fa;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 300px;
+            z-index: 2000;
+        }
+
+        .info-panel h3 {
+            color: #fbbf24;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .info-panel p {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .info-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .info-btn:hover {
+            background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Info Panel -->
+    <div class="info-panel">
+        <h3>🎨 Builder Export Demo</h3>
+        <p>
+            Dies ist das Victory Popup mit den Einstellungen aus dem Builder.
+            Passe das Design im Builder an und lade diese Seite neu, um die Änderungen zu sehen.
+        </p>
+        <button class="info-btn" onclick="window.location.href='victory-popup-builder.html'">
+            🔧 Zum Builder
+        </button>
+    </div>
+
+    <!-- Victory Popup -->
+    <div class="demo-wrapper">
+        <div class="victory-popup">
+            <h1 class="victory-title">SIEG!</h1>
+            <p class="victory-subtitle">Alle Gegner besiegt</p>
+
+            <div class="rewards-container">
+                <div class="reward-row">
+                    <div class="reward-icon">
+                        <svg viewBox="0 0 50 50">
+                            <defs>
+                                <radialGradient id="expGlow">
+                                    <stop offset="0%" style="stop-color: #60a5fa; stop-opacity: 1" />
+                                    <stop offset="100%" style="stop-color: #1e40af; stop-opacity: 1" />
+                                </radialGradient>
+                            </defs>
+                            <circle cx="25" cy="25" r="20" fill="url(#expGlow)"/>
+                            <circle cx="25" cy="25" r="15" fill="rgba(255,255,255,0.2)"/>
+                            <circle cx="25" cy="25" r="8" fill="rgba(255,255,255,0.4)"/>
+                        </svg>
+                    </div>
+                    <span class="reward-label">Erfahrung erhalten</span>
+                    <span class="reward-value">+25,000</span>
+                </div>
+
+                <div class="reward-row">
+                    <div class="reward-icon">
+                        <svg viewBox="0 0 50 50">
+                            <defs>
+                                <radialGradient id="goldGlow">
+                                    <stop offset="0%" style="stop-color: #fbbf24; stop-opacity: 1" />
+                                    <stop offset="100%" style="stop-color: #b45309; stop-opacity: 1" />
+                                </radialGradient>
+                            </defs>
+                            <ellipse cx="25" cy="25" rx="18" ry="20" fill="url(#goldGlow)"/>
+                            <ellipse cx="25" cy="22" rx="12" ry="8" fill="rgba(255,255,255,0.3)"/>
+                            <circle cx="25" cy="25" r="8" fill="rgba(180,83,9,0.4)"/>
+                        </svg>
+                    </div>
+                    <span class="reward-label">Gold erhalten</span>
+                    <span class="reward-value">+15,000</span>
+                </div>
+            </div>
+
+            <div class="loot-grid">
+                <div class="loot-item">
+                    <div class="loot-icon">💎</div>
+                    <div class="loot-name">Legendary Gem</div>
+                </div>
+                <div class="loot-item">
+                    <div class="loot-icon">⚔️</div>
+                    <div class="loot-name">Mythril Blade</div>
+                </div>
+                <div class="loot-item">
+                    <div class="loot-icon">🛡️</div>
+                    <div class="loot-name">Dragon Shield</div>
+                </div>
+            </div>
+
+            <div class="victory-buttons">
+                <button class="victory-btn secondary" onclick="alert('Popup geschlossen')">
+                    Verlassen
+                </button>
+                <button class="victory-btn primary" onclick="alert('Nächste Runde!')">
+                    Weiter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Builder CSS Export Integration
+        // Diese Funktion lädt die exportierten CSS-Werte aus dem localStorage
+        function loadBuilderSettings() {
+            const builderCSS = localStorage.getItem('victoryBuilderCSS');
+            if (builderCSS) {
+                const style = document.createElement('style');
+                style.textContent = builderCSS;
+                document.head.appendChild(style);
+                console.log('✅ Builder-Einstellungen geladen');
+            } else {
+                console.log('ℹ️ Keine Builder-Einstellungen gefunden. Nutze Standard-Design.');
+            }
+        }
+
+        // Beim Laden der Seite Builder-Einstellungen anwenden
+        loadBuilderSettings();
+
+        // Listen for updates from builder
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'victoryBuilderCSS') {
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,945 @@
+/**
+ * Final Fantasy Style Combat CSS
+ * Classic side-view battle system
+ */
+
+.ff-combat-container {
+    width: 100%;
+    height: calc(100vh - 180px);
+    background: linear-gradient(to bottom, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+}
+
+/* Battle Background */
+.ff-battle-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(100, 150, 255, 0.1) 0%, transparent 70%);
+    z-index: 0;
+    transition: background 0.5s ease;
+}
+
+/* Battle Background Variants */
+.ff-battle-bg.bg-forest {
+    background: linear-gradient(to bottom, #1a3a1a 0%, #0d1f0d 50%, #000000 100%),
+                radial-gradient(ellipse at 30% 40%, rgba(50, 200, 50, 0.2) 0%, transparent 50%);
+}
+
+.ff-battle-bg.bg-cave {
+    background: linear-gradient(to bottom, #1a1a2e 0%, #0a0a14 50%, #000000 100%),
+                radial-gradient(ellipse at 50% 30%, rgba(100, 100, 150, 0.3) 0%, transparent 60%);
+}
+
+.ff-battle-bg.bg-dungeon {
+    background: linear-gradient(to bottom, #2a1a1a 0%, #150a0a 50%, #000000 100%),
+                radial-gradient(ellipse at 70% 50%, rgba(150, 50, 50, 0.2) 0%, transparent 50%);
+}
+
+.ff-battle-bg.bg-volcano {
+    background: linear-gradient(to bottom, #4a1a0a 0%, #2a0a0a 50%, #1a0000 100%),
+                radial-gradient(ellipse at 50% 70%, rgba(255, 100, 0, 0.3) 0%, transparent 60%);
+}
+
+.ff-battle-bg.bg-ice {
+    background: linear-gradient(to bottom, #0a2a4a 0%, #051425 50%, #000a14 100%),
+                radial-gradient(ellipse at 40% 30%, rgba(100, 200, 255, 0.3) 0%, transparent 50%);
+}
+
+.ff-battle-bg.bg-desert {
+    background: linear-gradient(to bottom, #4a3a1a 0%, #2a1f0a 50%, #1a1000 100%),
+                radial-gradient(ellipse at 60% 40%, rgba(255, 200, 100, 0.2) 0%, transparent 50%);
+}
+
+.ff-battle-bg.bg-ruins {
+    background: linear-gradient(to bottom, #2a2a3a 0%, #15151f 50%, #0a0a14 100%),
+                radial-gradient(ellipse at 30% 60%, rgba(150, 150, 200, 0.2) 0%, transparent 50%);
+}
+
+.ff-battle-bg.bg-abyss {
+    background: linear-gradient(to bottom, #0a0a1a 0%, #000000 50%, #000000 100%),
+                radial-gradient(ellipse at 50% 50%, rgba(100, 50, 150, 0.4) 0%, transparent 70%);
+}
+
+/* Battle Stage */
+.ff-battle-stage {
+    position: absolute;
+    top: 5%;
+    left: 0;
+    right: 0;
+    height: 40%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8%;
+    z-index: 10;
+}
+
+/* Party (Left Side) */
+.ff-party-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.ff-character {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: ff-idle 2s ease-in-out infinite;
+}
+
+@keyframes ff-idle {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+.ff-character-sprite {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-character-sprite::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+    animation: ff-shine 3s linear infinite;
+}
+
+@keyframes ff-shine {
+    0% { transform: translateX(-100%) translateY(-100%); }
+    100% { transform: translateX(100%) translateY(100%); }
+}
+
+.ff-character-name {
+    margin-top: 10px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.ff-character-hp-bar {
+    width: 120px;
+    height: 8px;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #444;
+    border-radius: 4px;
+    margin-top: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-character-hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00 0%, #00cc00 100%);
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.ff-character-hp-fill.low {
+    background: linear-gradient(90deg, #ffaa00 0%, #ff8800 100%);
+    box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+.ff-character-hp-fill.critical {
+    background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    animation: ff-pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes ff-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.ff-character-hp-text {
+    font-size: 11px;
+    color: #fff;
+    margin-top: 3px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Resource Bars (MP & Stamina) */
+.ff-resource-bar {
+    width: 120px;
+    height: 6px;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #444;
+    border-radius: 3px;
+    margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-resource-fill {
+    height: 100%;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+.mp-bar {
+    border-color: #4488ff;
+}
+
+.mp-fill {
+    background: linear-gradient(90deg, #4488ff 0%, #2266dd 100%);
+    box-shadow: 0 0 8px rgba(68, 136, 255, 0.5);
+}
+
+.stamina-bar {
+    border-color: #ffaa44;
+}
+
+.stamina-fill {
+    background: linear-gradient(90deg, #ffaa44 0%, #ff8822 100%);
+    box-shadow: 0 0 8px rgba(255, 170, 68, 0.5);
+}
+
+.ff-resource-text {
+    font-size: 10px;
+    color: #ccc;
+    margin-top: 2px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* ATB Bar */
+.ff-atb-bar {
+    width: 120px;
+    height: 6px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #666;
+    border-radius: 3px;
+    margin-top: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-atb-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ccff 0%, #0088ff 100%);
+    width: 0%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
+}
+
+.ff-atb-fill.ready {
+    width: 100%;
+    animation: ff-ready-glow 0.5s ease-in-out infinite;
+}
+
+@keyframes ff-ready-glow {
+    0%, 100% { box-shadow: 0 0 8px rgba(0, 204, 255, 0.6); }
+    50% { box-shadow: 0 0 20px rgba(0, 204, 255, 1); }
+}
+
+/* Enemies (Right Side) */
+.ff-enemies-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start; /* Oben ausrichten */
+    justify-content: flex-end;
+    max-width: 550px;
+    padding-top: 60px; /* Nach unten verschieben */
+}
+
+.ff-enemy {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: ff-enemy-idle 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 10px;
+    width: 110px; /* Verkleinert von 140px */
+    height: 170px; /* Verkleinert von 200px */
+    background: transparent !important;
+}
+
+.ff-enemy:hover {
+    background: rgba(255, 100, 100, 0.1);
+    transform: scale(1.05) !important;
+}
+
+.ff-enemy.selected {
+    background: rgba(255, 200, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 200, 0, 0.5);
+    border: 2px solid #ffaa00;
+}
+
+.ff-enemy.dead {
+    opacity: 0.4;
+    filter: grayscale(100%);
+    pointer-events: none;
+}
+
+.ff-enemy.dead .ff-enemy-sprite {
+    background: transparent; /* Auch bei toten Gegnern transparent */
+    opacity: 0.5; /* Leicht ausgegraut wenn tot */
+    filter: grayscale(100%); /* Schwarz-weiß wenn tot */
+}
+
+@keyframes ff-enemy-idle {
+    0%, 100% { transform: translateX(0px) rotate(0deg); }
+    50% { transform: translateX(-10px) rotate(-2deg); }
+}
+
+.ff-enemy-sprite {
+    width: 100px;
+    height: 100px;
+    max-height: 100px;
+    background: none !important;
+    border: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-enemy-sprite img {
+    max-width: 100%; /* Bleibe im Container */
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    /* Entferne Filter komplett - schwarze Boxen kommen möglicherweise vom Shadow */
+    /* filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5)); */
+    /* Aggressiverer Blend-Mode für schwarze Hintergründe */
+    mix-blend-mode: lighten;
+    isolation: isolate;
+}
+
+/* ==================== BOSS STYLING ==================== */
+
+/* Boss Enemy Card - Größer und mit Glow */
+.ff-enemy.boss-enemy {
+    transform: scale(1.2);
+    z-index: 10;
+    position: relative;
+}
+
+.ff-enemy.boss-enemy .ff-enemy-sprite {
+    width: 120px;
+    height: 120px;
+    max-height: 120px;
+    animation: boss-glow 2s ease-in-out infinite;
+}
+
+.ff-enemy.boss-enemy .ff-enemy-sprite.boss-sprite {
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes boss-glow {
+    0%, 100% {
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+    }
+    50% {
+        filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+    }
+}
+
+.ff-enemy.boss-enemy .ff-enemy-name {
+    color: #ffd700;
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 2px 2px 4px rgba(0,0,0,0.8);
+    font-weight: bold;
+}
+
+.ff-enemy.boss-enemy .ff-enemy-hp-bar {
+    width: 180px;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.ff-enemy.boss-enemy .ff-enemy-hp-fill {
+    background: linear-gradient(90deg, #ff9900 0%, #ff6600 50%, #cc0000 100%);
+    box-shadow: 0 0 15px rgba(255, 153, 0, 0.8);
+}
+
+/* ==================== END BOSS STYLING ==================== */
+
+.ff-enemy-name {
+    margin-top: 10px;
+    color: #ff6666;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.ff-enemy-hp-bar {
+    width: 150px;
+    height: 10px;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #666;
+    border-radius: 5px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.ff-enemy-hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3333 0%, #cc0000 100%);
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+}
+
+/* Battle UI Bottom */
+.ff-battle-ui {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.95) 100%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Status Display */
+.ff-status-display {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border-bottom: 2px solid #333;
+}
+
+.ff-status-char {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.ff-status-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+    border-radius: 8px;
+    border: 2px solid #4a90e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.ff-status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ff-status-name {
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.ff-status-hp {
+    font-size: 12px;
+    color: #00ff00;
+}
+
+.ff-status-mp {
+    font-size: 12px;
+    color: #00ccff;
+}
+
+.ff-status-atb {
+    width: 100px;
+    height: 8px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #666;
+    border-radius: 4px;
+    margin-top: 3px;
+    overflow: hidden;
+}
+
+.ff-status-atb-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffaa00 0%, #ff8800 100%);
+    transition: width 0.1s linear;
+}
+
+/* Battle Menu */
+.ff-battle-menu {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+.ff-menu-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 300px;
+}
+
+.ff-menu-btn {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.3) 0%, rgba(44, 90, 160, 0.3) 100%);
+    border: 2px solid #4a90e2;
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-menu-btn::before {
+    content: '▶';
+    position: absolute;
+    left: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.ff-menu-btn:hover::before,
+.ff-menu-btn.selected::before {
+    opacity: 1;
+}
+
+.ff-menu-btn:hover {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.6) 0%, rgba(44, 90, 160, 0.6) 100%);
+    border-color: #66b3ff;
+    transform: translateX(5px);
+}
+
+.ff-menu-btn.selected {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.8) 0%, rgba(44, 90, 160, 0.8) 100%);
+    border-color: #00ff00;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.ff-menu-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Target Selection */
+.ff-target-selector {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ff-target-title {
+    color: #ffaa00;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.ff-target-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ff-target-option {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #666;
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ff-target-option:hover {
+    border-color: #00ff00;
+    background: rgba(0, 255, 0, 0.2);
+    transform: translateX(10px);
+}
+
+.ff-target-option.selected {
+    border-color: #00ff00;
+    background: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+/* Damage Numbers */
+.ff-damage-number {
+    position: absolute;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    pointer-events: none;
+    z-index: 100;
+    animation: ff-damage-float 1s ease-out forwards;
+}
+
+@keyframes ff-damage-float {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-30px) scale(1.3);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-60px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.ff-damage-number.critical {
+    font-size: 48px;
+    color: #ffff00;
+    text-shadow: 
+        3px 3px 0 #ff0000,
+        -3px -3px 0 #ff0000,
+        3px -3px 0 #ff0000,
+        -3px 3px 0 #ff0000;
+}
+
+.ff-damage-number.heal {
+    color: #00ff00;
+    text-shadow: 
+        2px 2px 0 #004400,
+        -2px -2px 0 #004400,
+        2px -2px 0 #004400,
+        -2px 2px 0 #004400;
+}
+
+/* Attack Animation */
+.ff-attacking {
+    animation: ff-attack 0.6s ease-in-out;
+}
+
+@keyframes ff-attack {
+    0%, 100% { transform: translateX(0); }
+    30% { transform: translateX(50px); }
+    50% { transform: translateX(60px) scale(1.1); }
+    70% { transform: translateX(50px); }
+}
+
+.ff-enemy.ff-attacking {
+    animation: ff-enemy-attack 0.6s ease-in-out;
+}
+
+@keyframes ff-enemy-attack {
+    0%, 100% { transform: translateX(0); }
+    30% { transform: translateX(-50px); }
+    50% { transform: translateX(-60px) scale(1.1); }
+    70% { transform: translateX(-50px); }
+}
+
+/* Hit Flash */
+.ff-hit-flash {
+    animation: ff-flash 0.3s ease-in-out;
+}
+
+@keyframes ff-flash {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(3); }
+}
+
+/* Victory Screen */
+.ff-victory-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: ff-victory-fade-in 0.5s ease-out;
+}
+
+@keyframes ff-victory-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.ff-victory-title {
+    font-size: 48px;
+    color: #ffff00;
+    font-weight: bold;
+    letter-spacing: 4px;
+    text-shadow: 
+        3px 3px 0 #ff8800,
+        -3px -3px 0 #ff8800;
+    margin-bottom: 40px;
+    animation: ff-victory-bounce 1s ease-out;
+}
+
+@keyframes ff-victory-bounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.ff-victory-rewards {
+    background: rgba(255, 255, 255, 0.1);
+    border: 3px solid #ffaa00;
+    padding: 30px 50px;
+    border-radius: 10px;
+    min-width: 400px;
+}
+
+.ff-victory-item {
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-size: 20px;
+    margin: 15px 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.ff-victory-label {
+    color: #ffaa00;
+}
+
+.ff-victory-value {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.ff-victory-continue {
+    margin-top: 30px;
+    background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+    border: 2px solid #66b3ff;
+    color: #fff;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.ff-victory-continue:hover {
+    background: linear-gradient(135deg, #66b3ff 0%, #4a90e2 100%);
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(102, 179, 255, 0.5);
+}
+
+/* Battle Log */
+.ff-battle-log {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #4a90e2;
+    padding: 15px 30px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    min-width: 400px;
+    text-align: center;
+    z-index: 50;
+    animation: ff-log-fade-in 0.3s ease-out;
+}
+
+@keyframes ff-log-fade-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.ff-battle-log.hide {
+    animation: ff-log-fade-out 0.3s ease-out forwards;
+}
+
+@keyframes ff-log-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* ==================== COMBAT HOTBAR ==================== */
+.combat-hotbar-compact {
+    position: absolute;
+    bottom: 20px;
+    left: 30%; /* Nach links verschoben */
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.combat-hotbar-compact.ultra {
+    gap: 8px;
+}
+
+.hotbar-toggle {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #4a90e2;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.hotbar-toggle:hover {
+    background: rgba(74, 144, 226, 0.3);
+    border-color: #6ab0ff;
+}
+
+.attacks-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.hotbar-slot {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 35, 0.95));
+    border: 2px solid rgba(74, 144, 226, 0.6);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.hotbar-slot:hover {
+    transform: translateY(-3px);
+    border-color: #6ab0ff;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.5);
+    background: linear-gradient(135deg, rgba(40, 50, 80, 0.95), rgba(30, 35, 60, 0.95));
+}
+
+.hotbar-slot.selected {
+    border-color: #ffaa00;
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.6);
+}
+
+.hotbar-slot.action-slot {
+    border-color: rgba(255, 100, 100, 0.6);
+}
+
+.hotbar-slot.skill-slot {
+    border-color: rgba(100, 200, 255, 0.6);
+}
+
+.slot-key {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #aaa;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.slot-emoji {
+    font-size: 28px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.slot-img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.slot-cost {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.slot-cost.mana {
+    background: linear-gradient(135deg, rgba(0, 100, 200, 0.9), rgba(0, 50, 150, 0.9));
+}
+
+.slot-cost.stamina {
+    background: linear-gradient(135deg, rgba(200, 150, 0, 0.9), rgba(150, 100, 0, 0.9));
+}
+
+/* Ultra Compact Mode */
+.combat-hotbar-compact.ultra .hotbar-slot {
+    width: 45px;
+    height: 45px;
+}
+
+.combat-hotbar-compact.ultra .slot-emoji {
+    font-size: 20px;
+}
+
+.combat-hotbar-compact.ultra .slot-key {
+    font-size: 8px;
+    padding: 1px 3px;
+}
+
+.combat-hotbar-compact.ultra .slot-cost {
+    font-size: 8px;
+    padding: 1px 3px;
+}
